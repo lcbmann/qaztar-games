@@ -1,0 +1,141 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    padding: 50px 100px;
+    vertical-align:top;
+    font-size:x-large;
+    background-color: black;
+}
+
+.descriptions {
+    width: 800px;
+    max-width: 80%;
+    text-align:left;
+    width: 100vw;
+    height: 100vh;
+    color:white;
+}
+
+.quotes {
+    width: 800px;
+    max-width: 80%;
+    text-align: right;
+    color:antiquewhite;
+    font-style:italic;
+}
+
+.container {
+    position:absolute;
+    width: 800px;
+    max-width: 80%;
+    text-align: left; 
+    vertical-align: bottom;
+    color:white;
+}
+
+.ascii {
+
+    border-radius: 1em;
+    padding: 1em;
+    position: absolute;
+    top: 50%;
+    left: 48%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    font-weight: bolder;
+}
+
+.status {
+
+    border-radius: 1em;
+    padding: 1em;
+    position: absolute;
+    top: 80%;
+    left: 18%;
+    transform: translate(-50%, -50%);
+    color:white;
+}
+
+.land {
+
+    border-radius: 1em;
+    padding: 1em;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color:white;
+}
+
+.score {
+
+    border-radius: 1em;
+    padding: 1em;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.score-title {
+    font-weight:bold;
+    color:white;
+}
+
+.score-count {
+    font-style:italic;
+    color:green;
+}
+
+.btn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 10px;
+    margin-top: 20px;
+    color:white;
+}
+
+.continue-button {
+    margin-top: 160px;
+}
+
+.btn {
+    background-color:black;
+    display: block;
+    margin-top: 60px;
+    margin-left: 0px;
+    padding:0%;
+    color: rgb(147, 187, 138);
+    font-size:x-large;
+    font-family: inherit;
+    text-align:left;
+}
+
+.btn:hover{
+    color:green;
+}
+
+.fade-in-text {
+    animation: fadeIn 3s;
+}
+
+.fade-in-quote {
+    animation: fadeInQuote 7s;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    20% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeInQuote {
+    0% { opacity: 0; }
+    40% { opacity: 0; }
+    100% { opacity: 1; }
+}
