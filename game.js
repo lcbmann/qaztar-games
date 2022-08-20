@@ -32,6 +32,8 @@ const scoreElement = document.getElementById('score');
 const populationScoreElement = document.getElementById('population-score');
 const climateScoreElement = document.getElementById('climate-score');
 const constructionScoreElement = document.getElementById('construction-score');
+const ruinsScoreElement = document.getElementById('ruins-score');
+var totalScore = 0;
 
 
 var sailors = 100;
@@ -684,6 +686,9 @@ function showTextNode(textNodeIndex){
                 continueButtonElement.appendChild(button);
             }
         })
+        if(textNodeIndex == 11){
+            textElement.innerText = "The fleet comes to a rest at its new home. The weary sailors are the first generation of a new civilization.\n \n This new civilization would go on to last " + totalScore + " years.";
+        }
     }
     else if (textNodeIndex == 12){
         textElement.innerText = assignedScenario;
@@ -856,7 +861,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, climate
     var constructionScore = 0;
     var populationScore;
 
-    var totalScore = 0;
+    totalScore = 0;
 
     if (vegetationTier == 'None'){
         food = food - 25;
@@ -930,7 +935,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, climate
     
 
 
-    totalScore = populationScore + climateScore + constructionScore;
+    totalScore = populationScore + climateScore + constructionScore + ruinsScore;
     
 
     //Display final screen
@@ -938,6 +943,10 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, climate
     populationScoreElement.innerText = populationScore;
     climateScoreElement.innerText = climateScore;
     constructionScoreElement.innerText = constructionScore;
+    ruinsScoreElement.innerText = ruinsScore;
+
+    
+
 
     for (let i = 0; i < statusElements.length; i++) {
         statusElements[i].style.display = '';
