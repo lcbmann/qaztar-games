@@ -52,13 +52,23 @@ body {
 }
 
 .status {
-
     padding: 1em;
     position: absolute;
+    width: 10%;
     top: 80%;
     left: 10%;
     transform: translate(-50%, -50%);
     color:white;
+}
+
+.status-count {
+    position: absolute;
+    left: 160%;
+}
+
+.status-change {
+    position: absolute;
+    left: 180%;
 }
 
 .land {
@@ -101,13 +111,13 @@ body {
 }
 
 .continue-button {
-    margin-top: 160px;
+    margin-top: 180px;
 }
 
 .btn {
     background-color:black;
     display: block;
-    margin-top: 60px;
+    margin-top: 55px;
     margin-left: 0px;
     padding:0%;
     color: rgb(147, 187, 138);
@@ -125,7 +135,11 @@ body {
 }
 
 .fade-in-quote {
-    animation: fadeInQuote 7s;
+    animation: fadeInQuote 8s;
+}
+
+.fade-in-buttons {
+    animation: fadeInButtons 5s;
 }
 
 @keyframes fadeIn {
@@ -135,6 +149,12 @@ body {
 }
 
 @keyframes fadeInQuote {
+    0% { opacity: 0; }
+    40% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeInButtons{
     0% { opacity: 0; }
     40% { opacity: 0; }
     100% { opacity: 1; }

@@ -13,11 +13,19 @@ const badLand2ImageElement = document.getElementById('ascii-bad-land2');
 
 
 const statusElements = document.getElementsByClassName('status');
+
 const sailorCountElement = document.getElementById('sailor-count');
 const shipCountElement = document.getElementById('ship-count');
 const foodCountElement = document.getElementById('food-count');
 const waterCountElement = document.getElementById('water-count');
 const materialsCountElement = document.getElementById('materials-count');
+
+const sailorChangeElement = document.getElementById('sailor-change');
+const shipChangeElement = document.getElementById('ship-change');
+const foodChangeElement = document.getElementById('food-change');
+const waterChangeElement = document.getElementById('water-change');
+const materialsChangeElement = document.getElementById('materials-change');
+
 
 const landElements = document.getElementsByClassName('land');
 const vegetationTierElement = document.getElementById('vegetation-tier');
@@ -26,6 +34,7 @@ const harborTierElement = document.getElementById('harbor-tier');
 const riverTierElement = document.getElementById('river-tier');
 const nativesTierElement = document.getElementById('natives-tier');
 const ruinsTierElement = document.getElementById('ruins-tier');
+
 
 const allScoreElements = document.getElementsByClassName('score');
 const scoreElement = document.getElementById('score');
@@ -41,6 +50,12 @@ var ships = 10;
 var food = 100;
 var water = 100;
 var materials = 100;
+
+var sailorsChange = 0;
+var shipsChange = 0;
+var foodChange = 0;
+var waterChange = 0;
+var materialsChange = 0;
 
 var assignedScenario;
 var assignedQuote;
@@ -122,6 +137,21 @@ function startGame(){
 //Inspect fleet
 function inspectFleet()
 {
+    //Hide changes
+    sailorChangeElement.style.display = 'none';
+    shipChangeElement.style.display = 'none';
+    foodChangeElement.style.display = 'none';
+    waterChangeElement.style.display = 'none';
+    materialsChangeElement.style.display = 'none';
+
+    //Update changes
+    sailors = sailors + sailorsChange;
+    ships = ships + shipsChange;
+    food = food + foodChange;
+    water = water + waterChange;
+    materials = materials + materialsChange;
+
+    //Set element colors
     sailorCountElement.innerText = sailors;
     if (sailors >= 67){
         sailorCountElement.style.color = "#008000";
@@ -177,19 +207,83 @@ function inspectFleet()
         materialsCountElement.style.color = '#800000';
     }
 
+    //Changes
+    if (sailorsChange != 0){
+        sailorChangeElement.style.display = '';
+        if(sailorsChange > 0){
+            sailorChangeElement.innerText = "+" + sailorsChange;
+        }
+        else if(sailorsChange < 0){
+            sailorChangeElement.innerText = "-" + -sailorsChange;
+        }
+    }
 
+    if(shipsChange != 0){
+        shipChangeElement.style.display = '';
+        if(shipsChange > 0){
+            shipChangeElement.innerText = "+" + shipsChange;
+        }
+        else if (shipsChange < 0){
+            shipChangeElement.innerText = "-" + -shipsChange;
+        }
+    }
+
+    console.log(foodChange);
+    if (foodChange != 0){
+        foodChangeElement.style.display = '';
+        if (foodChange > 0){
+            foodChangeElement.innerText = "+" + foodChange;
+        }
+        else if (foodChange < 0){
+            foodChangeElement.innerText = "-" + -foodChange;
+        }
+    }
+
+    if(waterChange != 0){
+        waterChangeElement.style.display = '';
+        if(waterChange > 0){
+            waterChangeElement.innerText = "(+" + waterChange;
+        }
+        else if (waterChange < 0){
+            waterChangeElement.innerText = "-" + -waterChange;
+        }
+    }
+
+    if (materialsChange != 0){
+        materialsChangeElement.style.display = '';
+        if(materialsChange > 0){
+            materialsChangeElement.innerText = "+" + materialsChange;
+        }
+        else if (materialsChange < 0){
+            materialsChangeElement.innerText = "-" + -materialsChange;
+        }
+    }
+
+    //Reset changes
+    sailorsChange = 0;
+    shipsChange = 0;
+    foodChange = 0;
+    waterChange = 0;
+    materialsChange = 0;
 }
 
 //Generate new land
 function generateLand(nextTextNodeId)
 {
-    food = food - Math.floor(Math.random() * 3 + 1);
-    water = water - Math.floor(Math.random() * 3 + 1);
+
+    //Subtract food and water
+    foodChange = -Math.floor(Math.random() * 3 + 1);
+
+    waterChange = -Math.floor(Math.random() * 3 + 1);
+
+    inspectFleet();
+
+
+    //Randomize quotes
     deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
     landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
     arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
-    inspectFleet();
 
     //Base stats set
     if(nextTextNodeId != 10 && nextTextNodeId != 11){
@@ -251,7 +345,7 @@ function generateLand(nextTextNodeId)
         nativesTier = natives[Math.floor(Math.random()*natives.length)];
         ruinsTier = ruins[Math.floor(Math.random()*ruins.length)];
 
-        ships = ships - 1;
+        shipsChange = -1
         inspectFleet();
     }
 
@@ -441,8 +535,6 @@ function generateScenario(nextTextNodeId, optionId)
                 uniqueScenarioSwitch = true;
 
                 completedUniqueScenarios.push(scenarioId);
-
-                console.log(uniqueScenarioText.length);
                 
                 return;
 
@@ -477,7 +569,7 @@ function generateScenario(nextTextNodeId, optionId)
 
         var scenarioResultText = Array(
             'The group of sailors is sent to save the supplies. Two are lost to the waves, but they successfully repair the damage.',
-            'The supplies become drenched in saltwater, and are soon tossed overboard.',
+            'The supplies become drenched in saltwater, and are later tossed overboard.',
             'The ship is abandoned to the sea.',
             'The ship soon falls apart, taking its company with it.',
             'The ship struggles on, but does not sink.',
@@ -496,17 +588,18 @@ function generateScenario(nextTextNodeId, optionId)
             if(scenarioId == 0){
                 if(optionId == 1){
                     assignedScenarioResult = uniqueScenarioResultText[0];
-                    ships = ships - 1;
-                    sailors = sailors - 10;
-                    food = food - 10;
-                    water = water - 10;
-                    sailors = sailors - 10;
-                    materials = materials - 10;
+                    shipsChange = -1;
+                    
+                    sailorsChange = -10;
+                    foodChange = -8;
+                    waterChange = -8;
+                    sailorsChange = -8;
+                    materialsChange = -8;
                     inspectFleet();
                 }
                 else if (optionId == 2){
                     assignedScenarioResult = uniqueScenarioResultText[1];
-                    sailors = sailors - (Math.floor(Math.random() * 50 + 10))
+                    sailorsChange = -(Math.floor(Math.random() * 50 + 10))
                     inspectFleet();
                 }
             }
@@ -515,14 +608,14 @@ function generateScenario(nextTextNodeId, optionId)
             else if (scenarioId == 1){
                 if(optionId == 1){
                     assignedScenarioResult = uniqueScenarioResultText[2];
-                    food = food + 30;
-                    water = water + 30;
+                    foodChange = 30;
+                    waterChange = 30;
                     inspectFleet();
                 }
                 else if(optionId == 2){
                     assignedScenarioResult = uniqueScenarioResultText[3];
-                    materials = materials + 30;
-                    ships = ships + 5;
+                    materialsChange = 30;
+                    shipsChange = 5;
                     inspectFleet();
                 }
             }
@@ -536,21 +629,21 @@ function generateScenario(nextTextNodeId, optionId)
                     var choice = Math.floor(Math.random() * 2 + 1)
                     if (choice == 1){
                         assignedScenarioResult = uniqueScenarioResultText[5];
-                        food = food - 10;
-                        water = water - 10;
+                        foodChange = -10;
+                        waterChange = -10;
                     }
                     else if (choice == 2){
                         var choice = Math.floor(Math.random() * 2 + 1)
                         if (choice == 1){
                             assignedScenarioResult = uniqueScenarioResultText[6];
-                            food = food + 15;
-                            water = water + 15;
+                            foodChange = 15;
+                            waterChange = 15;
                         }
                         else if (choice == 2){
                             assignedScenarioResult = uniqueScenarioResultText[7];
-                            sailors = sailors + (Math.floor(Math.random() * 10 + 5))
-                            food = food - 5;
-                            water = water - 5;
+                            sailorsChange = (Math.floor(Math.random() * 10 + 5));
+                            foodChange = -5;
+                            waterChange = -5;
                         }
                     }
                 }
@@ -564,14 +657,14 @@ function generateScenario(nextTextNodeId, optionId)
         if(scenarioId == 0) {
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[0]
-                sailors = sailors - 2;
+                sailorsChange = -2;
                 inspectFleet();
             }
             else if (optionId == 2){
                 assignedScenarioResult = scenarioResultText[1];
-                food = food - (Math.floor(Math.random() * 5 + 1));
-                water = water - (Math.floor(Math.random() * 5 + 1));
-                materials = materials - (Math.floor(Math.random() * 5 + 1));
+                foodChange = -(Math.floor(Math.random() * 5 + 1));
+                waterChange = -(Math.floor(Math.random() * 5 + 1));
+                materialsChange = -(Math.floor(Math.random() * 5 + 1));
                 inspectFleet();
             }
         }
@@ -580,18 +673,18 @@ function generateScenario(nextTextNodeId, optionId)
         if(scenarioId == 1){
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[2];
-                ships = ships - 1;
+                shipsChange = -1;
                 inspectFleet();
             }
             else if (optionId == 2){
                 var choice = Math.floor(Math.random() * 2 + 1)
                 if (choice == 1){
                     assignedScenarioResult = scenarioResultText[3];
-                    ships = ships - 1;
-                    food = food - 10;
-                    water = water - 10;
-                    sailors = sailors - 10;
-                    materials = materials - 10;
+                    shipsChange = -1;
+                    foodChange = -10;
+                    waterChange = -10;
+                    sailorsChange -10;
+                    materialsChange = -10;
                     inspectFleet();
                 }
                 if (choice == 2){
@@ -604,7 +697,7 @@ function generateScenario(nextTextNodeId, optionId)
         if(scenarioId == 2){
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[5];
-                sailors = sailors - (Math.floor(Math.random() * 5 + 3));
+                sailorsChange = -(Math.floor(Math.random() * 5 + 3));
                 inspectFleet();
             }
             else if (optionId == 2){
@@ -621,15 +714,15 @@ function generateScenario(nextTextNodeId, optionId)
                     }
                     if(choice == 1){
                         assignedScenarioResult = scenarioResultText[7];
-                        sailors = sailors - (Math.floor(Math.random() * 15 + 5));
+                        sailorsChange = -(Math.floor(Math.random() * 15 + 5));
                         inspectFleet();
                     }
                     else if (choice == 2){
                         assignedScenarioResult = scenarioResultText[8];
-                        sailors = sailors - (Math.floor(Math.random() * 5 + 3));
-                        food = food - (Math.floor(Math.random() * 3 + 3));
-                        water = water - (Math.floor(Math.random() * 3 + 3));
-                        ships = ships - 1;
+                        sailorsChange = -(Math.floor(Math.random() * 5 + 3));
+                        foodChange = -(Math.floor(Math.random() * 3 + 3));
+                        waterChange = -(Math.floor(Math.random() * 3 + 3));
+                        shipsChange = -1;
                         inspectFleet();
                     }
                 }
@@ -640,14 +733,14 @@ function generateScenario(nextTextNodeId, optionId)
         if(scenarioId == 3){
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[9];
-                food = food + (Math.floor(Math.random() * 15 + 1));
-                water = water + (Math.floor(Math.random() * 15 + 1));
+                foodChange = (Math.floor(Math.random() * 15 + 1));
+                waterChange = (Math.floor(Math.random() * 15 + 1));
                 inspectFleet();
             }
             else if (optionId == 2){
                 assignedScenarioResult = scenarioResultText[10];
-                materials = materials + (Math.floor(Math.random() * 15 + 1));
-                ships = ships + (Math.floor(Math.random() * 3 + 1));
+                materialsChange = (Math.floor(Math.random() * 15 + 1));
+                shipsChange = (Math.floor(Math.random() * 3 + 1));
                 inspectFleet();
             }
         }
@@ -749,12 +842,24 @@ function showTextNode(textNodeIndex){
     if(textNodeIndex == 5){
         quoteElement.innerText = deathQuote;
     }
+    //Arrival
     else if (textNodeIndex == 8){
         textElement.innerText = arrivalText;
     }
+    //Land
     else if (textNodeIndex == 9){
         quoteElement.innerText = landQuote;
     }
+    //Can't scout
+    else if (textNodeIndex == 10 && ships <= 1){
+        textElement.innerText = 'With only one ship remaining, scouting is impossible.';
+    }
+
+    //Refade buttons
+    var buttons = document.getElementById("continue-button");
+    buttons.classList.remove("fade-in-buttons");
+    void buttons.offsetWidth;
+    buttons.classList.add("fade-in-buttons");
 }
 
 //Show available buttons
@@ -766,7 +871,12 @@ function showOption(option) {
 function selectOption(option){
 
 
-
+    sailorChangeElement.style.display = 'none';
+    shipChangeElement.style.display = 'none';
+    foodChangeElement.style.display = 'none';
+    waterChangeElement.style.display = 'none';
+    materialsChangeElement.style.display = 'none';
+    
     nextTextNodeId = option.nextText;
     const optionId = option.id;
 
@@ -787,6 +897,8 @@ function selectOption(option){
     element2.classList.remove("fade-in-quote");
     void element2.offsetWidth;
     element2.classList.add("fade-in-quote");
+
+
 
     
     if (nextTextNodeId <= 0) {
@@ -1074,7 +1186,7 @@ const textNodes = [
     {
         //Death
         id: 5,
-        text: 'The ship sinks below the waves.',
+        text: 'The journey of the exiles ends here, its final crewmates perishing at sea.',
         quoteText: 'Variable death quote here',
         options: [
             {
