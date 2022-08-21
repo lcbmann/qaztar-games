@@ -21,7 +21,7 @@ const materialsCountElement = document.getElementById('materials-count');
 
 const landElements = document.getElementsByClassName('land');
 const vegetationTierElement = document.getElementById('vegetation-tier');
-const climateTierElement = document.getElementById('climate-tier');
+const temperatureTierElement = document.getElementById('temperature-tier');
 const harborTierElement = document.getElementById('harbor-tier');
 const riverTierElement = document.getElementById('river-tier');
 const nativesTierElement = document.getElementById('natives-tier');
@@ -30,7 +30,7 @@ const ruinsTierElement = document.getElementById('ruins-tier');
 const allScoreElements = document.getElementsByClassName('score');
 const scoreElement = document.getElementById('score');
 const populationScoreElement = document.getElementById('population-score');
-const climateScoreElement = document.getElementById('climate-score');
+const temperatureScoreElement = document.getElementById('temperature-score');
 const constructionScoreElement = document.getElementById('construction-score');
 const ruinsScoreElement = document.getElementById('ruins-score');
 var totalScore = 0;
@@ -51,8 +51,9 @@ var assignedScenarioResult;
 var completedUniqueScenarios = Array();
 var scenarioId = 99;
 var scenarioCount = 0;
-
 var uniqueScenarioSwitch = false;
+
+
 
 var dead = false;
 
@@ -184,16 +185,20 @@ function generateLand(nextTextNodeId)
 {
     food = food - Math.floor(Math.random() * 3 + 1);
     water = water - Math.floor(Math.random() * 3 + 1);
+    deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
+    landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
+    arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
+
     inspectFleet();
 
     //Base stats set
     if(nextTextNodeId != 10 && nextTextNodeId != 11){
         var vegetation = Array('None', 'Sparse', 'Plentiful');
-        var climate = Array('Dry', 'Arid', 'Comfortable');
+        var temperature = Array('Extreme', 'Fluctuating', 'Comfortable');
         var harbor = Array('Impassable', 'Tight', 'Spacious');
 
         vegetationTier = vegetation[Math.floor(Math.random()*vegetation.length)];
-        climateTier = climate[Math.floor(Math.random()*climate.length)];
+        temperatureTier = temperature[Math.floor(Math.random()*temperature.length)];
         harborTier = harbor[Math.floor(Math.random()*harbor.length)];
 
         var river = 'Unknown';
@@ -204,8 +209,8 @@ function generateLand(nextTextNodeId)
         nativesTier = natives;
         ruinsTier = ruins;
 
-        //Set land image based on climate
-        if(climateTier == 'Dry'){
+        //Set land image based on vegetation
+        if(vegetationTier == 'None'){
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
                 badLand1ImageElement.style.display = '';
@@ -215,7 +220,7 @@ function generateLand(nextTextNodeId)
             }
         }
 
-        else if (climateTier == 'Arid'){
+        else if (vegetationTier == 'Sparse'){
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
                 mediumLand1ImageElement.style.display = '';
@@ -225,7 +230,7 @@ function generateLand(nextTextNodeId)
             }
         }
 
-        else if (climateTier == 'Comfortable'){
+        else if (vegetationTier == 'Plentiful'){
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
                 goodLand1ImageElement.style.display = '';
@@ -237,7 +242,7 @@ function generateLand(nextTextNodeId)
     }
 
     //Scouted
-    else if (nextTextNodeId == 10){
+    else if (nextTextNodeId == 10 && ships > 1){
         var river = Array('Barren', 'Trickling', 'Flowing');
         var natives = Array('Hostile', 'Indifferent', 'Generous');
         var ruins = Array('Empty', 'Relics', 'Treasures');
@@ -278,18 +283,18 @@ function generateLand(nextTextNodeId)
     }
 
     
-    climateTierElement.innerText = climateTier;
-    if(climateTier == 'Dry')
+    temperatureTierElement.innerText = temperatureTier;
+    if(temperatureTier == 'Extreme')
     {
-        climateTierElement.style.color = "#800000";
+        temperatureTierElement.style.color = "#800000";
     }
-    else if (climateTier == 'Arid')
+    else if (temperatureTier == 'Fluctuating')
     {
-        climateTierElement.style.color = "#FDDA0D";
+        temperatureTierElement.style.color = "#FDDA0D";
     }
-    else if (climateTier == 'Comfortable')
+    else if (temperatureTier == 'Comfortable')
     {
-        climateTierElement.style.color = "#008000";
+        temperatureTierElement.style.color = "#008000";
     }
 
     harborTierElement.innerText = harborTier;
@@ -351,7 +356,7 @@ function generateLand(nextTextNodeId)
 
     if(nextTextNodeId == 11)
     {
-        endGame(sailors, ships, food, water, materials, vegetationTier, climateTier, harborTier, riverTier, nativesTier, ruinsTier);
+        endGame(sailors, ships, food, water, materials, vegetationTier, temperatureTier, harborTier, riverTier, nativesTier, ruinsTier);
     }
 }
 
@@ -364,12 +369,13 @@ function generateScenario(nextTextNodeId, optionId)
 
         var islandQuotes = Array(
             '"They stretch their salt-soaked limbs along the beach. Achates was the first to strike a spark from flint and catch the fire up with leaves." \n \n - Virgil, The Aeneid',
-            '"Achates spread dry fuel about, and then he waved the tinder into flame. Tired of their trials, the Trojan crewmen carry out the tools and the sea-drenched corn of Ceres." \n \n - Virgil, The Aeneid',
-            '"Aeneas climbs a crag to seek a prospect far and wide... there is no ship in sight. All he can see are three stags wandering along the shore, with whole herds following behind, a long line grazing through the valley." \n \n - Virgil, The Aeneid'
+            '"Achates spread Extreme fuel about, and then he waved the tinder into flame. Tired of their trials, the Trojan crewmen carry out the tools and the sea-drenched corn of Ceres." \n \n - Virgil, The Aeneid',
+            '"Aeneas climbs a crag to seek a prospect far and wide... there is no ship in sight. All he can see are three stags wandering along the shore, with whole herds following behind, a long line grazing through the valley." \n \n - Virgil, The Aeneid',
+            '"There is a cove within a long, retiring bay; and there an island\'s jutting harbor where every breaker off the high sea shatters and parts into the shoreline\'s winding shelters." \n \n - Virgil, The Aeneid',
         )
         var uniqueScenarioText = Array(
             'The fleet sails on, passing between a narrow strait. A loud roaring is heard to the left - the monster Charybdis sucks vast waves into the abyss. A screeching is heard to the right - Scylla\'s mouths fly down from the cliffside. \n \n Will you go left to Charybdis\' vortex, or right to Scylla\'s cliff?',
-            'The fleet slows to a stop, arriving in the allied Sicilian city of Egesta. The king Acestes offers the fleet supplies. \n \n Will you take the food and water, or materials and ships?',
+            'The fleet slows to a stop, arriving in the allied Sicilian city of Egesta. The king Acestes offers the captain a choice of gift: food and water, or timber for ships? \n \n Will you take the food and water, or materials and ships?',
             'The fleet navigates along a rocky coastline, and a shout goes out: something has been spotted inland. It\'s too difficult to discern what the object is from the ships. \n \n Will you prepare a party to investigate or move on?',
         )
         var uniqueQuoteText = Array(
@@ -391,7 +397,7 @@ function generateScenario(nextTextNodeId, optionId)
         )
 
         var scenarioText = Array(
-            'The fleet sails on, passing under dark storm clouds. Wind lashes the ship, and lightning cracks in the distance. Water floods the cargo hold, dampening the supplies. \n \n Will you send a group of sailors to try and rescue the supplies?',
+            'The fleet sails on, passing under dark storm clouds. Wind lashes the ship, and lightning cracks in the distance. Salt water floods the cargo hold, threatening to spoil the water and food there. \n \n Will you send a group of sailors to try and rescue the supplies?',
             'The fleet sails on, moving slowly with the calm winds. One of the sailors reports that a ship in the fleet is beginning to fall apart with the wear of the sea. \n \n Will you abandon the ship and move the sailors onto the others, or hope it holds together?',
             'The fleet sails on, and night falls. One of the most trustworthy lieutenants reports that a mutiny is brewing among the crew, and points out a group of culprits. \n \n Will you have the suspected culprits thrown overboard?',
             'The fleet slows to a stop, anchoring off the coast of a small island. The sailors make camp on the white sand shore. \n \n Will you send them to gather food and water, or to chop down trees for materials and shipbuilding?',
@@ -607,7 +613,12 @@ function generateScenario(nextTextNodeId, optionId)
                     assignedScenarioResult = scenarioResultText[6];
                 }
                 else if (choice == 2){
-                    var choice = Math.floor(Math.random() * 2 + 1)
+                    if (ships > 1){
+                        var choice = Math.floor(Math.random() * 2 + 1)
+                    }
+                    else {
+                        choice = 1;
+                    }
                     if(choice == 1){
                         assignedScenarioResult = scenarioResultText[7];
                         sailors = sailors - (Math.floor(Math.random() * 15 + 5));
@@ -665,9 +676,10 @@ function Death(){
 
 //Show new description and quote
 function showTextNode(textNodeIndex){
+
     const textNode = textNodes.find(textNode => textNode.id === textNodeIndex);
 
-
+    
 
     if(textNodeIndex != 12 && textNodeIndex != 13){
         textElement.innerText = textNode.text;
@@ -731,6 +743,17 @@ function showTextNode(textNodeIndex){
                 continueButtonElement.appendChild(button);
             }
         })
+    }
+
+    //Death
+    if(textNodeIndex == 5){
+        quoteElement.innerText = deathQuote;
+    }
+    else if (textNodeIndex == 8){
+        textElement.innerText = arrivalText;
+    }
+    else if (textNodeIndex == 9){
+        quoteElement.innerText = landQuote;
     }
 }
 
@@ -850,13 +873,13 @@ function selectOption(option){
 
 
 //End Game
-function endGame(sailors, ships, food, water, materials, vegetationTier, climateTier, harborTier, riverTier, nativesTier, ruinsTier){
+function endGame(sailors, ships, food, water, materials, vegetationTier, temperatureTier, harborTier, riverTier, nativesTier, ruinsTier){
     for (let i = 0; i < allScoreElements.length; i++) {
         allScoreElements[i].style.display = '';
     }
 
     var population = sailors;
-    var climateScore = 0;
+    var temperatureScore = 0;
     var ruinsScore = 0;
     var constructionScore = 0;
     var populationScore;
@@ -926,22 +949,22 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, climate
         selectOption(5);
     }
 
-    if(climateTier == 'Dry'){
-        climateScore = -120;
+    if(temperatureTier == 'Extreme'){
+        temperatureScore = -120;
     }
-    else if (climateTier == 'Comfortable'){
-        climateScore = 120;
+    else if (temperatureTier == 'Comfortable'){
+        temperatureScore = 120;
     }
     
 
 
-    totalScore = populationScore + climateScore + constructionScore + ruinsScore;
+    totalScore = populationScore + temperatureScore + constructionScore + ruinsScore;
     
 
     //Display final screen
     scoreElement.innerText = totalScore;
     populationScoreElement.innerText = populationScore;
-    climateScoreElement.innerText = climateScore;
+    temperatureScoreElement.innerText = temperatureScore;
     constructionScoreElement.innerText = constructionScore;
     ruinsScoreElement.innerText = ruinsScore;
 
@@ -980,12 +1003,23 @@ var deathQuotes = Array(
     
     );
 
+//Arrive at land text
+var arrivalTexts = Array(
+    'The fleet pulls into a small cape, the sun low in the evening sky. Tiny waves lap against the side of the boat.',
+    'The fleet passes around a bend, revealing a new land ahead. The evening sunbeams shatter across the cresting waves.',
+    'The fleet glides along a shoreline of white sand, cliffs framing a beach ahead. Gusts of wind billow in the sails.',
+    'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.'
+)
+
+//Inspect land quotes
 var landQuotes = Array(
-    '"There is a cove within a long, retiring bay; and there an island\'s jutting harbor where every breaker off the high sea shatters and parts into the shoreline\'s winding shelters." \n \n - Virgil, The Aeneid',
     '"Along this side and that there towers, vast, a line of cliffs, each ending in like crags." \n \n - Virgil, The Aeneid',
     '"The Trojans, longing so to touch the land, now disembark to gain the wished-for sands." \n \n - Virgil, The Aeneid',
-
 )
+
+var deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
+var landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
+var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
 //Text nodes
 const textNodes = [
@@ -1041,7 +1075,7 @@ const textNodes = [
         //Death
         id: 5,
         text: 'The ship sinks below the waves.',
-        quoteText: deathQuotes[Math.floor(Math.random()*deathQuotes.length)],
+        quoteText: 'Variable death quote here',
         options: [
             {
                 text: 'Restart',
@@ -1073,7 +1107,7 @@ const textNodes = [
     },
     {
         id: 8,
-        text: 'The fleet pulls into a small cape, the sun low in the evening sky. Tiny waves lap against the side of the boat.',
+        text: 'Variable arrival text here',
         quoteText: '',
         options: [
             {
@@ -1085,7 +1119,7 @@ const textNodes = [
     {
         id: 9,
         text: 'The captain inspects the land',
-        quoteText: landQuotes[Math.floor(Math.random()*landQuotes.length)],
+        quoteText: 'Variable land quote here',
         options: [
             {
                 text: 'Restart',
