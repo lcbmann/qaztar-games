@@ -44,6 +44,10 @@ const constructionScoreElement = document.getElementById('construction-score');
 const ruinsScoreElement = document.getElementById('ruins-score');
 var totalScore = 0;
 
+var demeterLevel = 0;
+var zeusLevel = 0;
+var poseidonLevel = 0;
+var isOffering = false;
 
 var sailors = 100;
 var ships = 10;
@@ -76,7 +80,6 @@ var dead = false;
 let state = {};
 
 //TODO:
-    //Display status changes on screen
     //Make land improve over time
     //Add more cool Aeneid quotes
     //Complete colony screen 
@@ -137,6 +140,9 @@ function startGame(){
 //Inspect fleet
 function inspectFleet()
 {
+    console.log('Demeter:' + demeterLevel);
+    console.log('Zeus:' + zeusLevel);
+    console.log('Poseidon' + poseidonLevel);
     //Hide changes
     sailorChangeElement.style.display = 'none';
     shipChangeElement.style.display = 'none';
@@ -228,7 +234,6 @@ function inspectFleet()
         }
     }
 
-    console.log(foodChange);
     if (foodChange != 0){
         foodChangeElement.style.display = '';
         if (foodChange > 0){
@@ -242,7 +247,7 @@ function inspectFleet()
     if(waterChange != 0){
         waterChangeElement.style.display = '';
         if(waterChange > 0){
-            waterChangeElement.innerText = "(+" + waterChange;
+            waterChangeElement.innerText = "+" + waterChange;
         }
         else if (waterChange < 0){
             waterChangeElement.innerText = "-" + -waterChange;
@@ -290,6 +295,28 @@ function generateLand(nextTextNodeId)
         var vegetation = Array('None', 'Sparse', 'Plentiful');
         var temperature = Array('Extreme', 'Fluctuating', 'Comfortable');
         var harbor = Array('Impassable', 'Tight', 'Spacious');
+
+        //Set religious buffs
+        if (demeterLevel == 1){
+            vegetation = Array('Sparse', 'Plentiful');
+        }
+        else if (demeterLevel == 2){
+            vegetation = Array('Plentiful');
+        }
+
+        if(zeusLevel == 1){
+            temperature = Array('Fluctuating', 'Comfortable');
+        }
+        else if (zeusLevel == 2){
+            temperature = Array('Comfortable')
+        }
+
+        if(poseidonLevel == 1){
+            harbor = Array('Tight', 'Spacious');
+        }
+        else if (poseidonLevel == 2){
+            harbor = Array('Spacious');
+        }
 
         vegetationTier = vegetation[Math.floor(Math.random()*vegetation.length)];
         temperatureTier = temperature[Math.floor(Math.random()*temperature.length)];
@@ -495,26 +522,30 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet sails on, moving slowly with the calm winds. One of the sailors reports that a ship in the fleet is beginning to fall apart with the wear of the sea. \n \n Will you abandon the ship and move the sailors onto the others, or hope it holds together?',
             'The fleet sails on, and night falls. One of the most trustworthy lieutenants reports that a mutiny is brewing among the crew, and points out a group of culprits. \n \n Will you have the suspected culprits thrown overboard?',
             'The fleet slows to a stop, anchoring off the coast of a small island. The sailors make camp on the white sand shore. \n \n Will you send them to gather food and water, or to chop down trees for materials and shipbuilding?',
+            'The fleet comes to a halt at a small beach, and the sailors disembark. A few express a desire to perform rituals to improve their chances of finding an ideal homeland. \n \n Will you burn food to make an offering to the gods?',
         )
         var quoteText = Array(
             '"A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n - Virgil, The Aeneid',
             '',
             '',
             islandQuotes[Math.floor(Math.random()*islandQuotes.length)],
+            '',
 
         )
         var option1Text = Array(
             'Send the sailors',
             'Abandon the ship',
             'Throw them overboard',
-            'Send them to gather food and water'
+            'Send them to gather food and water',
+            'Burn an offering to the gods',
         )
 
         var option2Text = Array(
             'Leave the supplies',
             'Push onwards',
             'Take no action',
-            'Send them to chop trees for materials and ships'
+            'Send them to chop trees for materials and ships',
+            'Make no offering',
         )
         
         //Unique Scenario generator
@@ -578,7 +609,9 @@ function generateScenario(nextTextNodeId, optionId)
             'No action is taken and the fleet sails onward. The next night, the mutineers attack, and many sailors are killed before the captain regains control of the fleet.',
             'No action is taken and the fleet sails onward. The next night, the mutineers, having heard word that they\'d been discovered, slip away with one of the ships and some supplies.',
             'The sailors spend the evening roaming the island, collecting food and water.',
-            'The sailors spend the evening felling trees, constructing new ships and storing extra materials.'
+            'The sailors spend the evening felling trees, constructing new ships and storing extra materials.',
+            'The offering is made.',
+            'No offering is made.',
         );
         
         //Unique scenarios
@@ -631,6 +664,7 @@ function generateScenario(nextTextNodeId, optionId)
                         assignedScenarioResult = uniqueScenarioResultText[5];
                         foodChange = -10;
                         waterChange = -10;
+                        inspectFleet();
                     }
                     else if (choice == 2){
                         var choice = Math.floor(Math.random() * 2 + 1)
@@ -638,12 +672,14 @@ function generateScenario(nextTextNodeId, optionId)
                             assignedScenarioResult = uniqueScenarioResultText[6];
                             foodChange = 15;
                             waterChange = 15;
+                            inspectFleet();
                         }
                         else if (choice == 2){
                             assignedScenarioResult = uniqueScenarioResultText[7];
                             sailorsChange = (Math.floor(Math.random() * 10 + 5));
                             foodChange = -5;
                             waterChange = -5;
+                            inspectFleet();
                         }
                     }
                 }
@@ -742,6 +778,19 @@ function generateScenario(nextTextNodeId, optionId)
                 materialsChange = (Math.floor(Math.random() * 15 + 1));
                 shipsChange = (Math.floor(Math.random() * 3 + 1));
                 inspectFleet();
+            }
+        }
+
+        //Offering to the gods
+        if(scenarioId == 4){
+            if(optionId == 1){
+                assignedScenarioResult = uniqueScenarioResultText[11];
+                isOffering = true;
+                foodChange = -(Math.floor(Math.random() * 15 + 1))
+                inspectFleet();
+            }
+            else if (optionId == 2){
+                assignedScenarioResult = uniqueScenarioResultText[12];
             }
         }
     }
@@ -876,8 +925,11 @@ function selectOption(option){
     foodChangeElement.style.display = 'none';
     waterChangeElement.style.display = 'none';
     materialsChangeElement.style.display = 'none';
-    
+
     nextTextNodeId = option.nextText;
+
+    
+
     const optionId = option.id;
 
     //Check death
@@ -971,12 +1023,33 @@ function selectOption(option){
         }
         generateScenario(nextTextNodeId, optionId);
     }
+        
 
     else if (nextTextNodeId == 13)
     {
         generateScenario(nextTextNodeId, optionId);
     }
+
+    console.log('Offering status:' + isOffering)
+    if(option.id == 1 && isOffering == true){
+        nextTextNodeId = option.nextText2;
+    }
     
+    //Offering
+    else if (nextTextNodeId == 15){
+        demeterLevel = demeterLevel + 1;
+    }
+    else if (nextTextNodeId == 16){
+        zeusLevel = zeusLevel + 1;
+    }
+    else if (nextTextNodeId == 17){
+        poseidonLevel = poseidonLevel + 1;
+    }
+
+    if(option.id == 1 && assignedScenarioResult == 'The offering is made.'){
+        nextTextNodeId = option.nextText2;
+    }
+    console.log("Next text node:" + nextTextNodeId);
     showTextNode(nextTextNodeId);
     state = Object.assign(state, option.setState);
 
@@ -1234,10 +1307,6 @@ const textNodes = [
         quoteText: 'Variable land quote here',
         options: [
             {
-                text: 'Restart',
-                nextText: -1
-            },
-            {
                 text: 'Scout the land.',
                 nextText: 10
             },
@@ -1293,7 +1362,8 @@ const textNodes = [
             {
                 text:'Option 1 should be here',
                 id: 1,
-                nextText: 13
+                nextText: 13,
+                nextText2: 14,
             },
             {
                 text:'Option 2 should be here',
@@ -1314,6 +1384,63 @@ const textNodes = [
             }
         ]
     },
+    {
+        //Gods offering
+        id: 14,
+        text: 'An offering is prepared. The sailors wait expectantly for the captain to name the god who will be receiving their prayers and smoke. \n \n Demeter, to conjure more ubiquitous vegetation? \n Zeus, to gust the fleet to temperate lands? \n Poseidon, to guide the fleet to wider, safer harbors?',
+        quoteText: '',
+        options: [
+            {
+                text:'Pray to the goddess of agriculture, Demeter',
+                nextText: 15
+            },
+            {
+                text:'Pray to the king of Olympus and the winds, Zeus',
+                nextText: 16
+            },
+            {
+                text:'Pray to the god of the seas, Poseidon.',
+                nextText: 17
+            },
+            
+        ]
+    },
+    {
+        //Demeter
+        id: 15,
+        text: 'You dedicate the offering to the goddess Demeter. The smoke rises from the burnt offering into the heavens.',
+        quoteText: '',
+        options: [
+            {
+                text:'Set sail',
+                nextText: 8
+            }
+        ]
+    },
+    {
+        //Zeus
+        id: 16,
+        text: 'You dedicate the offering to the god Zeus. The smoke rises from the burnt offering into the heavens.',
+        quoteText: '',
+        options: [
+            {
+                text:'Set sail',
+                nextText: 8
+            }
+        ]
+    },
+    {
+        //Poseidon
+        id: 17,
+        text: 'You dedicate the offering to the god Poseidon. The smoke rises from the burnt offering into the heavens.',
+        quoteText: '',
+        options: [
+            {
+                text:'Set sail',
+                nextText: 8
+            }
+        ]
+    }
 ]
 
 startGame()
