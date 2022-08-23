@@ -6,7 +6,7 @@ body {
     padding: 0;
     margin: 0;
     display: flex;
-    padding: 3% 5.5%;
+    padding: 3% 4.5%;
     vertical-align:top;
     font-size:x-large;
     background-color: black;
@@ -23,7 +23,7 @@ body {
 
 .quotes {
     width: 80%;
-    max-width: 50%;
+    max-width: 30%;
     text-align: right;
     color:antiquewhite;
     font-style:italic;
@@ -69,6 +69,16 @@ body {
 .status-change {
     position: absolute;
     left: 180%;
+}
+
+.boon {
+    padding: 1em;
+    position: absolute;
+    width: 10%;
+    top: 80%;
+    left: 80%;
+    transform: translate(-50%, -50%);
+    color:white;
 }
 
 .land {

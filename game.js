@@ -44,10 +44,15 @@ const constructionScoreElement = document.getElementById('construction-score');
 const ruinsScoreElement = document.getElementById('ruins-score');
 var totalScore = 0;
 
-var demeterLevel = 0;
-var zeusLevel = 0;
-var poseidonLevel = 0;
+const boonElements = document.getElementsByClassName('boon');
+const ceresBoonElement = document.getElementById('ceres-boon');
+const jupiterBoonElement = document.getElementById('jupiter-boon');
+const neptuneBoonElement = document.getElementById('neptune-boon');
+var ceresLevel = 0;
+var jupiterLevel = 0;
+var neptuneLevel = 0;
 var isOffering = false;
+
 
 var sailors = 100;
 var ships = 10;
@@ -73,15 +78,11 @@ var scenarioCount = 0;
 var uniqueScenarioSwitch = false;
 
 
-
 var dead = false;
-
 
 let state = {};
 
 //TODO:
-    //Make land improve over time
-    //Add more cool Aeneid quotes
     //Complete colony screen 
     //Improve display look
     //Add more ascii images
@@ -101,8 +102,13 @@ function startGame(){
     badLand1ImageElement.style.display = 'none';
     badLand2ImageElement.style.display = 'none';
 
+
+
     for (let i = 0; i < statusElements.length; i++) {
         statusElements[i].style.display = 'none';
+    }
+    for (let i = 0; i < boonElements.length; i++) {
+        boonElements[i].style.display = 'none';
     }
     for (let i = 0; i < landElements.length; i++) {
         landElements[i].style.display = 'none';
@@ -140,9 +146,7 @@ function startGame(){
 //Inspect fleet
 function inspectFleet()
 {
-    console.log('Demeter:' + demeterLevel);
-    console.log('Zeus:' + zeusLevel);
-    console.log('Poseidon' + poseidonLevel);
+
     //Hide changes
     sailorChangeElement.style.display = 'none';
     shipChangeElement.style.display = 'none';
@@ -272,6 +276,68 @@ function inspectFleet()
     materialsChange = 0;
 }
 
+function updateBoons(){
+    if(ceresLevel == 0){
+        ceresBoonElement.innerText = "Unaware";
+        ceresBoonElement.style.color = "#800000";
+    }
+    else if (ceresLevel == 1){
+        ceresBoonElement.innerText = "Taken Notice";
+        ceresBoonElement.style.color = "#FDDA0D";
+    }
+    else if (ceresLevel == 2){
+        ceresBoonElement.innerText = "Supporting";
+        ceresBoonElement.style.color = "#008000";
+    }
+    else if (ceresLevel >= 3){
+        ceresBoonElement.innerText = "Maximum Favor";
+        ceresBoonElement.style.color = "#9309CF"
+    }
+    for (let i = 0; i < boonElements.length; i++) {
+        boonElements[i].style.display = '';
+    }
+
+    if(jupiterLevel == 0){
+        jupiterBoonElement.innerText = "Unaware";
+        jupiterBoonElement.style.color = "#800000";
+    }
+    else if (jupiterLevel == 1){
+        jupiterBoonElement.innerText = "Taken Notice";
+        jupiterBoonElement.style.color = "#FDDA0D";
+    }
+    else if (jupiterLevel == 2){
+        jupiterBoonElement.innerText = "Supporting";
+        jupiterBoonElement.style.color = "#008000";
+    }
+    else if (jupiterLevel >= 3){
+        jupiterBoonElement.innerText = "Maximum Favor";
+        jupiterBoonElement.style.color = "#9309CF"
+    }
+    for (let i = 0; i < boonElements.length; i++) {
+        boonElements[i].style.display = '';
+    }
+
+
+    if(neptuneLevel == 0){
+        neptuneBoonElement.innerText = "Unaware";
+        neptuneBoonElement.style.color = "#800000";
+    }
+    else if (neptuneLevel == 1){
+        neptuneBoonElement.innerText = "Taken Notice";
+        neptuneBoonElement.style.color = "#FDDA0D";
+    }
+    else if (neptuneLevel == 2){
+        neptuneBoonElement.innerText = "Supporting";
+        neptuneBoonElement.style.color = "#008000";
+    }
+    else if (neptuneLevel >= 3){
+        neptuneBoonElement.innerText = "Maximum Favor";
+        neptuneBoonElement.style.color = "#9309CF"
+    }
+    for (let i = 0; i < boonElements.length; i++) {
+        boonElements[i].style.display = '';
+    }
+}
 //Generate new land
 function generateLand(nextTextNodeId)
 {
@@ -292,29 +358,39 @@ function generateLand(nextTextNodeId)
 
     //Base stats set
     if(nextTextNodeId != 10 && nextTextNodeId != 11){
-        var vegetation = Array('None', 'Sparse', 'Plentiful');
-        var temperature = Array('Extreme', 'Fluctuating', 'Comfortable');
-        var harbor = Array('Impassable', 'Tight', 'Spacious');
+        
+        var vegetation = Array('None', 'None', 'None', 'None', 'None', 'Sparse', 'Sparse', 'Sparse', 'Plentiful');
+        var temperature = Array('Extreme', 'Extreme', 'Extreme', 'Extreme', 'Extreme', 'Fluctuating', 'Fluctuating', 'Fluctuating', 'Comfortable');
+        var harbor = Array('Impassable','Impassable', 'Impassable', 'Impassable', 'Impassable', 'Tight', 'Tight', 'Tight', 'Spacious');
 
         //Set religious buffs
-        if (demeterLevel == 1){
+        if (ceresLevel == 1){
+            vegetation = Array('Sparse', 'Sparse', 'Plentiful');
+        }
+        else if (ceresLevel == 2){
             vegetation = Array('Sparse', 'Plentiful');
         }
-        else if (demeterLevel == 2){
+        else if (ceresLevel >= 3){
             vegetation = Array('Plentiful');
         }
 
-        if(zeusLevel == 1){
+        if(jupiterLevel == 1){
+            temperature = Array('Fluctuating', 'Fluctuating', 'Comfortable');
+        }
+        else if (jupiterLevel == 2){
             temperature = Array('Fluctuating', 'Comfortable');
         }
-        else if (zeusLevel == 2){
+        else if (jupiterLevel >= 3){
             temperature = Array('Comfortable')
         }
 
-        if(poseidonLevel == 1){
+        if(neptuneLevel == 1){
+            harbor = Array('Tight', 'Tight', 'Spacious');
+        }
+        else if (neptuneLevel == 2){
             harbor = Array('Tight', 'Spacious');
         }
-        else if (poseidonLevel == 2){
+        else if (neptuneLevel >= 3){
             harbor = Array('Spacious');
         }
 
@@ -523,13 +599,16 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet sails on, and night falls. One of the most trustworthy lieutenants reports that a mutiny is brewing among the crew, and points out a group of culprits. \n \n Will you have the suspected culprits thrown overboard?',
             'The fleet slows to a stop, anchoring off the coast of a small island. The sailors make camp on the white sand shore. \n \n Will you send them to gather food and water, or to chop down trees for materials and shipbuilding?',
             'The fleet comes to a halt at a small beach, and the sailors disembark. A few express a desire to perform rituals to improve their chances of finding an ideal homeland. \n \n Will you burn food to make an offering to the gods?',
+            'The fleet comes to rest in a small inlet. The fleet\'s auger recommends the construction of an altar to improve the fleet\'s chances of finding an ideal homeland. \n \n Will you use materials to make an altar to the gods?',
+            'The fleet sails on, and the sailors\' stomachs are rumbling. Unfortunately, it\'s discovered that some of the food may have spoiled. \n \n Will you discard the potentially spoiled rations, or eat them before they can completely turn?', 
         )
         var quoteText = Array(
             '"A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n - Virgil, The Aeneid',
-            '',
-            '',
+            '', // ship falling apart
+            '', // mutiny
             islandQuotes[Math.floor(Math.random()*islandQuotes.length)],
-            '',
+            '', // burn food
+            '', // build altar
 
         )
         var option1Text = Array(
@@ -538,6 +617,8 @@ function generateScenario(nextTextNodeId, optionId)
             'Throw them overboard',
             'Send them to gather food and water',
             'Burn an offering to the gods',
+            'Build an altar to the gods',
+            'Discard the food',
         )
 
         var option2Text = Array(
@@ -546,6 +627,8 @@ function generateScenario(nextTextNodeId, optionId)
             'Take no action',
             'Send them to chop trees for materials and ships',
             'Make no offering',
+            'Build no altar',
+            'Eat it quickly',
         )
         
         //Unique Scenario generator
@@ -588,8 +671,8 @@ function generateScenario(nextTextNodeId, optionId)
     else if(nextTextNodeId == 13){
 
         var uniqueScenarioResultText = Array(
-            'The fleet goes left, to Charybdis. A ship is sucked into the abyss, but the rest of the fleet escapes.',
-            'The fleet goes right, to Scylla. Heads reach down and pluck sailors from the ships.',
+            'The fleet goes left, to Charybdis. A ship is sucked into the howling abyss, but the rest of the fleet escapes.',
+            'The fleet goes right, to Scylla. Her vicious heads stretch down and pluck sailors from the ships.',
             'The captain graciously accepts the food and water.',
             'The captain graciously accepts the materials and ships.',
             'The fleet sails onward, ignoring the sighting.',
@@ -612,6 +695,11 @@ function generateScenario(nextTextNodeId, optionId)
             'The sailors spend the evening felling trees, constructing new ships and storing extra materials.',
             'The offering is made.',
             'No offering is made.',
+            'The altar is made.',
+            'No altar is made.',
+            'The food is sent over the edge of the boat. The sailors watch it float away with begrudging acceptance.',
+            'The food is quickly eaten. Fortunately, no sailors report any sickness.',
+            'The food is quickly devoured. Unfortunately, a number of the sailors fall ill from the spoiled food.',
         );
         
         //Unique scenarios
@@ -781,16 +869,50 @@ function generateScenario(nextTextNodeId, optionId)
             }
         }
 
-        //Offering to the gods
+        //Offering to the gods (food)
         if(scenarioId == 4){
             if(optionId == 1){
-                assignedScenarioResult = uniqueScenarioResultText[11];
+                assignedScenarioResult = scenarioResultText[11];
                 isOffering = true;
                 foodChange = -(Math.floor(Math.random() * 15 + 1))
                 inspectFleet();
             }
             else if (optionId == 2){
-                assignedScenarioResult = uniqueScenarioResultText[12];
+                assignedScenarioResult = scenarioResultText[12];
+            }
+        }
+
+        //Offering to the gods (altar)
+        if(scenarioId == 5){
+            if(optionId == 1){
+                assignedScenarioResult = scenarioResultText[13];
+                isOffering = true;
+                materialsChange = -(Math.floor(Math.random() * 15 + 1))
+                inspectFleet();
+            }
+            else if (optionId == 2){
+                assignedScenarioResult = scenarioResultText[14];
+            }
+        }
+
+        //Spoiled food
+        if(scenarioId == 6){
+            if(optionId == 1){
+                assignedScenarioResult = scenarioResultText[15];
+                foodChange = -(Math.floor(Math.random() * 5 + 1));
+                inspectFleet();
+            }
+            if(optionId == 2){
+                var choice = Math.floor(Math.random() * 2 + 1)
+                if (choice == 1){
+                    assignedScenarioResult = scenarioResultText[16];
+                    inspectFleet();
+                }
+                else if (choice == 2){
+                    assignedScenarioResult = scenarioResultText[17];
+                    sailorsChange = -(Math.floor(Math.random() * 5 + 1));
+                    inspectFleet();
+                }
             }
         }
     }
@@ -899,6 +1021,10 @@ function showTextNode(textNodeIndex){
     else if (textNodeIndex == 9){
         quoteElement.innerText = landQuote;
     }
+    //Praying alter
+    else if (textNodeIndex == 14){
+        quoteElement.innerText = prayQuote;
+    }
     //Can't scout
     else if (textNodeIndex == 10 && ships <= 1){
         textElement.innerText = 'With only one ship remaining, scouting is impossible.';
@@ -925,6 +1051,9 @@ function selectOption(option){
     foodChangeElement.style.display = 'none';
     waterChangeElement.style.display = 'none';
     materialsChangeElement.style.display = 'none';
+    for (let i = 0; i < boonElements.length; i++) {
+        boonElements[i].style.display = 'none';
+    }
 
     nextTextNodeId = option.nextText;
 
@@ -977,6 +1106,7 @@ function selectOption(option){
             landElements[i].style.display = 'none';
             landElements[i].style.color = '#FFFFFF';
         }
+
         riverTierElement.style.color = '#FFFFFF';
         nativesTierElement.style.color = '#FFFFFF';
         ruinsTierElement.style.color = '#FFFFFF';
@@ -996,6 +1126,11 @@ function selectOption(option){
         shipImageElement.style.display = 'none';
         for (let i = 0; i < landElements.length; i++) {
             landElements[i].style.display = '';
+        }
+        if (ceresLevel > 0 || jupiterLevel > 0 || neptuneLevel > 0){
+            for (let i = 0; i < boonElements.length; i++) {
+                boonElements[i].style.display = '';
+            }
         }
     }
     //Found a colony
@@ -1030,26 +1165,36 @@ function selectOption(option){
         generateScenario(nextTextNodeId, optionId);
     }
 
-    console.log('Offering status:' + isOffering)
+
     if(option.id == 1 && isOffering == true){
         nextTextNodeId = option.nextText2;
+        for (let i = 0; i < boonElements.length; i++) {
+            boonElements[i].style.display = '';
+        }
+        updateBoons();
+        isOffering = false;
     }
     
     //Offering
+        //ceres
     else if (nextTextNodeId == 15){
-        demeterLevel = demeterLevel + 1;
+        ceresLevel = ceresLevel + 1;
+        updateBoons();
     }
+        //jupiter
     else if (nextTextNodeId == 16){
-        zeusLevel = zeusLevel + 1;
+        jupiterLevel = jupiterLevel + 1;
+        updateBoons();
     }
+        //neptune
     else if (nextTextNodeId == 17){
-        poseidonLevel = poseidonLevel + 1;
+        neptuneLevel = neptuneLevel + 1;
+        updateBoons();
     }
 
-    if(option.id == 1 && assignedScenarioResult == 'The offering is made.'){
+    if(option.id == 1 && (assignedScenarioResult == 'The offering is made.' || assignedScenarioResult == 'The altar is made.')){
         nextTextNodeId = option.nextText2;
     }
-    console.log("Next text node:" + nextTextNodeId);
     showTextNode(nextTextNodeId);
     state = Object.assign(state, option.setState);
 
@@ -1159,6 +1304,9 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     for (let i = 0; i < statusElements.length; i++) {
         statusElements[i].style.display = '';
     }
+    for (let i = 0; i < boonElements.length; i++) {
+        boonElements[i].style.display = '';
+    }
     for (let i = 0; i < landElements.length; i++) {
         landElements[i].style.display = '';
     }
@@ -1202,9 +1350,17 @@ var landQuotes = Array(
     '"The Trojans, longing so to touch the land, now disembark to gain the wished-for sands." \n \n - Virgil, The Aeneid',
 )
 
+//Prayer quotes
+var prayQuotes = Array(
+    '"Come near and pray: this altar shall yet save us all, or you shall die together with us." \n \n - Virgil, The Aeneid',
+    '"Cloanthus, stretching seaward both his hands, poured prayers and called upon the gods with vows." \n \n - Virgil, The Aeneid',
+    '"You gods who rule the kingdom of the seas, whose waters I now race upon: to keep the promise that I pledge, I shall with gladness offer a snow-white bull before your altars." \n \n - Virgil, The Aeneid',
+)
+
 var deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
 var landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
 var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
+var prayQuote = prayQuotes[Math.floor(Math.random()*prayQuotes.length)];
 
 //Text nodes
 const textNodes = [
@@ -1303,7 +1459,7 @@ const textNodes = [
     },
     {
         id: 9,
-        text: 'The captain inspects the land',
+        text: 'The captain scrutinizes the land.',
         quoteText: 'Variable land quote here',
         options: [
             {
@@ -1387,29 +1543,29 @@ const textNodes = [
     {
         //Gods offering
         id: 14,
-        text: 'An offering is prepared. The sailors wait expectantly for the captain to name the god who will be receiving their prayers and smoke. \n \n Demeter, to conjure more ubiquitous vegetation? \n Zeus, to gust the fleet to temperate lands? \n Poseidon, to guide the fleet to wider, safer harbors?',
+        text: 'The ceremony is prepared. The sailors wait expectantly for the captain to name the god who will be receiving their prayers. \n \n Ceres, to conjure more ubiquitous vegetation? \n Jupiter, to gust the fleet to temperate lands? \n Neptune, to guide the fleet to wider, safer harbors?',
         quoteText: '',
         options: [
             {
-                text:'Pray to the goddess of agriculture, Demeter',
+                text:'Pray to the goddess of agriculture, Ceres',
                 nextText: 15
             },
             {
-                text:'Pray to the king of Olympus and the winds, Zeus',
+                text:'Pray to the king of Olympus and the god of winds, Jupiter',
                 nextText: 16
             },
             {
-                text:'Pray to the god of the seas, Poseidon.',
+                text:'Pray to the god of the seas, Neptune.',
                 nextText: 17
             },
             
         ]
     },
     {
-        //Demeter
+        //ceres
         id: 15,
-        text: 'You dedicate the offering to the goddess Demeter. The smoke rises from the burnt offering into the heavens.',
-        quoteText: '',
+        text: 'You dedicate the ceremony to the goddess Ceres, praying for her to grant the fleet lush lands and fertile fields.',
+        quoteText: '"Then chosen young men, together with the altar priest, bring in - they rush in with eagerness - roast flesh of oxen; and they load the baskets with the gifts that Ceres grants to human labor." \n \n - Virgil, The Aeneid',
         options: [
             {
                 text:'Set sail',
@@ -1418,10 +1574,10 @@ const textNodes = [
         ]
     },
     {
-        //Zeus
+        //jupiter
         id: 16,
-        text: 'You dedicate the offering to the god Zeus. The smoke rises from the burnt offering into the heavens.',
-        quoteText: '',
+        text: 'You dedicate the ceremony to the god Jupiter, praying for him to gust the fleet to temperate and comfortable lands.',
+        quoteText: '"He prayed long - so they say - to Jupiter; he stood before the altars in the presence of gods, a suppliant with upraised hands." \n \n - Virgil, The Aeneid',
         options: [
             {
                 text:'Set sail',
@@ -1430,10 +1586,10 @@ const textNodes = [
         ]
     },
     {
-        //Poseidon
+        //neptune
         id: 17,
-        text: 'You dedicate the offering to the god Poseidon. The smoke rises from the burnt offering into the heavens.',
-        quoteText: '',
+        text: 'You dedicate the ceremony to the god Neptune, praying for him to guide the fleet to greater harbors.',
+        quoteText: '"So Neptune speaks and, quicker than his tongue, brings quiet to the swollen waters, sets the gathered clouds to flight, calls back the sun." \n \n - Virgil, The Aeneid',
         options: [
             {
                 text:'Set sail',
