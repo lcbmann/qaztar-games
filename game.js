@@ -1348,6 +1348,8 @@ var arrivalTexts = Array(
 var landQuotes = Array(
     '"Along this side and that there towers, vast, a line of cliffs, each ending in like crags." \n \n - Virgil, The Aeneid',
     '"The Trojans, longing so to touch the land, now disembark to gain the wished-for sands." \n \n - Virgil, The Aeneid',
+    '"And as soon as gracious daylight is given to him, this is his decision: to go out and explore this foreign country, to learn what shores the wind has brought him to." \n \n - Virgil, The Aeneid',
+    '"He hides his fleet inside the narrows of the wooded cove, beneath a hollow rock shut in by trees, with bristling shades around." \n \n - Virgil, The Aeneid'
 )
 
 //Prayer quotes
