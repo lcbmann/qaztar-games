@@ -72,6 +72,12 @@ var assignedOption1;
 var assignedOption2;
 var assignedScenarioResult;
 
+var attackedMerchant = false;
+var revengeTaken = false;
+var stolenFood = 0;
+var stolenWater = 0;
+var stolenMaterials = 0;
+
 var completedUniqueScenarios = Array();
 var scenarioId = 99;
 var scenarioCount = 0;
@@ -574,16 +580,19 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet sails on, passing between a narrow strait. A loud roaring is heard to the left - the monster Charybdis sucks vast waves into the abyss. A screeching is heard to the right - Scylla\'s mouths fly down from the cliffside. \n \n Will you go left to Charybdis\' vortex, or right to Scylla\'s cliff?',
             'The fleet slows to a stop, arriving in the allied Sicilian city of Egesta. The king Acestes offers the captain a choice of gift: food and water, or timber for ships? \n \n Will you take the food and water, or materials and ships?',
             'The fleet navigates along a rocky coastline, and a shout goes out: something has been spotted inland. It\'s too difficult to discern what the object is from the ships. \n \n Will you prepare a party to investigate or move on?',
+            'The fleet sails on, and a call goes out: another ship has been spotted on the horizon. Then another. And another. The entire horizon becomes dotted with ships fast approaching. The previously attacked merchants have not taken kindly to the fleet\'s piracy in their waters. \n \n Will you attempt to negotiate, or flee?',
         )
         var uniqueQuoteText = Array(
             '"Now Scylla holds the right; insatiable Charybdis keeps the left." \n \n "Three times [Charybdis] sucks the vast waves into her abyss, the deepest whirlpool within her vortex, then she hurls the waters high, lashing the stars with spray." \n \n "Scylla is confined to blind retreats, a cavern; and her mouths thrust out to drag ships toward the shoals." \n \n - Vergil, The Aeneid',
             '"They head for harbor; kind winds swell their sails; the fleet runs swift across the surge; at last, and glad, they reach familiar sands." \n \n - Virgil, The Aeneid',
-            ''
+            '',
+            '',
         )
         var uniqueOption1Text = Array(
             'Go to the left, to Charybdis',
             'Accept the food and water',
             'Sail onward',
+            'Attempt to negotiate',
 
         )
         
@@ -591,6 +600,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Go to the right, to Scylla',
             'Accept the materials and ships',
             'Launch an expedition to investigate the sighting',
+            'Flee',
         )
 
         var scenarioText = Array(
@@ -601,6 +611,8 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet comes to a halt at a small beach, and the sailors disembark. A few express a desire to perform rituals to improve their chances of finding an ideal homeland. \n \n Will you burn food to make an offering to the gods?',
             'The fleet comes to rest in a small inlet. The fleet\'s auger recommends the construction of an altar to improve the fleet\'s chances of finding an ideal homeland. \n \n Will you use materials to make an altar to the gods?',
             'The fleet sails on, and the sailors\' stomachs are rumbling. Unfortunately, it\'s discovered that some of the food may have spoiled. \n \n Will you discard the potentially spoiled rations, or eat them before they can completely turn?', 
+            'The fleet sails on, and a call goes out: another ship has been spotted on the horizon. Some of the bored sailors look to the captain expectantly, their hands reaching for their swords. \n \n Will you pursue the potential victim, or spare them?',
+
         )
         var quoteText = Array(
             '"A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n - Virgil, The Aeneid',
@@ -609,6 +621,8 @@ function generateScenario(nextTextNodeId, optionId)
             islandQuotes[Math.floor(Math.random()*islandQuotes.length)],
             '', // burn food
             '', // build altar
+            '',
+            '"All the crewmen fasten the sheets; at once, together, they let loose the sails, to port, to starboard; and as one, they shift and turn the high yardarms; kind winds drive on the fleet." \n \n - Virgil, The Aeneid',
 
         )
         var option1Text = Array(
@@ -619,6 +633,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Burn an offering to the gods',
             'Build an altar to the gods',
             'Discard the food',
+            'Pursue the ship',
         )
 
         var option2Text = Array(
@@ -629,16 +644,25 @@ function generateScenario(nextTextNodeId, optionId)
             'Make no offering',
             'Build no altar',
             'Eat it quickly',
+            'Spare the ship',
         )
         
         //Unique Scenario generator
-        if (scenarioCount > 2 && completedUniqueScenarios.length < 3){
+        if (scenarioCount > 2 && completedUniqueScenarios.length < 4){
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
-                do { 
-                    assignedScenario = uniqueScenarioText[Math.floor(Math.random()*uniqueScenarioText.length)];
-                    scenarioId = uniqueScenarioText.indexOf(assignedScenario);
-                } while (completedUniqueScenarios.includes(scenarioId));
+                if(attackedMerchant == false){
+                    do { 
+                        assignedScenario = uniqueScenarioText[Math.floor(Math.random()*uniqueScenarioText.length)];
+                        scenarioId = uniqueScenarioText.indexOf(assignedScenario);
+                    } while (completedUniqueScenarios.includes(scenarioId) || assignedScenario == uniqueScenarioText[3]);
+                }
+                else if (attackedMerchant == true){
+                    do { 
+                        assignedScenario = uniqueScenarioText[Math.floor(Math.random()*uniqueScenarioText.length)];
+                        scenarioId = uniqueScenarioText.indexOf(assignedScenario);
+                    } while (completedUniqueScenarios.includes(scenarioId));
+                }
 
                 assignedQuote = uniqueQuoteText[scenarioId];
                 assignedOption1 = uniqueOption1Text[scenarioId];
@@ -652,10 +676,14 @@ function generateScenario(nextTextNodeId, optionId)
                 
                 return;
 
-                }
+            }
         }
         
         assignedScenario = scenarioText[Math.floor(Math.random()*scenarioText.length)];
+
+
+
+        
 
         scenarioId = scenarioText.indexOf(assignedScenario);
 
@@ -678,7 +706,9 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet sails onward, ignoring the sighting.',
             'The party is sent inland to investigate the sighting. Unfortunately, they return empty handed, the sighting nothing but a fiction of weary minds.',
             'The party is sent inland to investigate the sighting. They return with supplies, a gift from the native village they\'d come across.',
-            'The party is sent inland to investigate the sighting. They return with more people than they\'d set out with, a group of travelers having agreed to join the fleet.'
+            'The party is sent inland to investigate the sighting. They return with more people than they\'d set out with, a group of travelers having agreed to join the fleet.',
+            'The signal of peace is raised, and the ships approach. Their leader demands the return of all stolen goods twice over. Without another option, an agreement is quickly reached.',
+            'The fleet flees. Some of the slower ships in the fleet are quickly overtaken, but some are able to escape.'
         );
 
         var scenarioResultText = Array(
@@ -697,9 +727,12 @@ function generateScenario(nextTextNodeId, optionId)
             'No offering is made.',
             'The altar is made.',
             'No altar is made.',
-            'The food is sent over the edge of the boat. The sailors watch it float away with begrudging acceptance.',
+            'The food is sent over the edge of the boat. Some of the sailors watch it float away with begrudging acceptance.',
             'The food is quickly eaten. Fortunately, no sailors report any sickness.',
             'The food is quickly devoured. Unfortunately, a number of the sailors fall ill from the spoiled food.',
+            'The ship is quickly run down by the superior Trojan fleet. The small merchant vessel resists mightily, but soon surrenders.',
+            'The ship is quickly run down by the superior Trojan fleet. However, the inhabitants appear prepared for attacks - they take a number of crewmen down before they can be subdued.',
+            'The ship slowly disappears into the horizon. The sailors, grumbling, return to their routines.'
         );
         
         //Unique scenarios
@@ -764,12 +797,34 @@ function generateScenario(nextTextNodeId, optionId)
                         }
                         else if (choice == 2){
                             assignedScenarioResult = uniqueScenarioResultText[7];
-                            sailorsChange = (Math.floor(Math.random() * 10 + 5));
-                            foodChange = -5;
-                            waterChange = -5;
+                            sailorsChange = (Math.floor(Math.random() * 12 + 5));
+                            foodChange = -3;
+                            waterChange = -3;
                             inspectFleet();
                         }
                     }
+                }
+            }
+
+            //Merchant revenge
+            else if(scenarioId == 3){
+                if(optionId == 1){
+                    assignedScenarioResult = uniqueScenarioResultText[8];
+                    foodChange = -stolenFood * 2;
+                    materialsChange = -stolenMaterials * 2;
+                    waterChange = -stolenWater * 2;
+                    revengeTaken = true;
+                    inspectFleet();
+                }
+                else if (optionId == 2){
+                    assignedScenarioResult = uniqueScenarioResultText[9];
+                    shipsChange = -(Math.floor(Math.random() * 3 + 1));
+                    foodChange = -(Math.floor(Math.random() * 10 + 1));
+                    waterChange = -(Math.floor(Math.random() * 10 + 1));
+                    materialsChange = -(Math.floor(Math.random() * 10 + 1));
+                    sailorsChange = -(Math.floor(Math.random() * 10 + 1));
+                    revengeTaken = true;
+                    inspectFleet();
                 }
             }
             
@@ -913,6 +968,38 @@ function generateScenario(nextTextNodeId, optionId)
                     sailorsChange = -(Math.floor(Math.random() * 5 + 1));
                     inspectFleet();
                 }
+            }
+        }
+
+        //Spotted merchant ship
+        if(scenarioId == 7){
+            if(optionId == 1){
+                if(revengeTaken == false){
+                    assignedScenarioResult = scenarioResultText[18];
+                    materialsChange = (Math.floor(Math.random() * 8 + 1));
+                    stolenMaterials = stolenMaterials + materialsChange;
+                    foodChange = (Math.floor(Math.random() * 8 + 1));
+                    stolenFood = stolenFood + foodChange;
+                    waterChange = (Math.floor(Math.random() * 8 + 1));
+                    stolenWater = stolenWater + waterChange;
+                    sailorsChange = -(Math.floor(Math.random() * 1 + 1))
+                    var choice = Math.floor(Math.random() * 4 + 1)
+                    if (choice == 2){
+                        attackedMerchant = true;
+                    }
+                    inspectFleet();
+                }
+                else if (revengeTaken == true){
+                    assignedScenarioResult = scenarioResultText[19];
+                    materialsChange = (Math.floor(Math.random() * 8 + 1));
+                    foodChange = (Math.floor(Math.random() * 8 + 1));
+                    waterChange = (Math.floor(Math.random() * 8 + 1));
+                    sailorsChange = -(Math.floor(Math.random() * 12 + 5))
+                    inspectFleet();
+                }
+            }
+            else if (optionId == 2){
+                assignedScenarioResult = scenarioResultText[20];
             }
         }
     }
@@ -1553,7 +1640,7 @@ const textNodes = [
                 nextText: 15
             },
             {
-                text:'Pray to the king of Olympus and the god of winds, Jupiter',
+                text:'Pray to the god of the skies, Jupiter',
                 nextText: 16
             },
             {
