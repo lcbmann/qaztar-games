@@ -6,11 +6,23 @@ const shipImageElement = document.getElementById('ascii-ship');
 
 const goodLand1ImageElement = document.getElementById('ascii-good-land1');
 const goodLand2ImageElement = document.getElementById('ascii-good-land2');
+const goodLand3ImageElement = document.getElementById('ascii-good-land3');
 const mediumLand1ImageElement = document.getElementById('ascii-medium-land1');
 const mediumLand2ImageElement = document.getElementById('ascii-medium-land2');
+const mediumLand3ImageElement = document.getElementById('ascii-medium-land3');
 const badLand1ImageElement = document.getElementById('ascii-bad-land1');
 const badLand2ImageElement = document.getElementById('ascii-bad-land2');
+const badLand3ImageElement = document.getElementById('ascii-bad-land3');
 var chosenLandElement;
+
+const scenarioImageElements = document.getElementsByClassName('scenario-images');
+const stormySeaImageElement = document.getElementById('ascii-stormy-sea');
+const egestaImageElement = document.getElementById('ascii-egesta');
+const distanceImageElement = document.getElementById('ascii-distance');
+const revengeImageElement = document.getElementById('ascii-revenge');
+const charscylImageElement = document.getElementById('ascii-charscyl');
+const merchantImageElement = document.getElementById('ascii-merchant');
+const islandImageElement = document.getElementById('ascii-island');
 
 
 const statusElements = document.getElementsByClassName('status');
@@ -95,9 +107,16 @@ let state = {};
     //Improve display look
     //Add more ascii images
         //Death
-        //Egesta
-        //Charybdis/Scylla
-        //Something in the distance
+        //Egesta (Done)
+        //Charybdis/Scylla (Done)
+        //Something in the distance (Done)
+        //Island (Done)
+        //Gods (Done)
+        //One more land for each vegetation type
+        //Storm (Done)
+        //Merchant Ship (done)
+        //Merchant revenge (done)
+        //Mutiny
 
 //Start the game
 function startGame(){
@@ -105,14 +124,22 @@ function startGame(){
 
     goodLand1ImageElement.style.display = 'none';
     goodLand2ImageElement.style.display = 'none';
+    goodLand3ImageElement.style.display = 'none';
     mediumLand1ImageElement.style.display = 'none';
     mediumLand2ImageElement.style.display = 'none';
+    mediumLand3ImageElement.style.display = 'none';
     badLand1ImageElement.style.display = 'none';
     badLand2ImageElement.style.display = 'none';
+    badLand3ImageElement.style.display = 'none';
 
     continueButtonElement.classList.remove("continue-button-ending");
     void continueButtonElement.offsetWidth;
     continueButtonElement.classList.add("continue-button");
+
+    for (let i = 0; i < scenarioImageElements.length; i++){
+        scenarioImageElements[i].style.display = 'none'
+    }
+
 
 
 
@@ -422,7 +449,7 @@ function generateLand(nextTextNodeId)
 
         //Set land image based on vegetation
         if(vegetationTier == 'None'){
-            var choice = Math.floor(Math.random() * 2 + 1)
+            var choice = Math.floor(Math.random() * 3 + 1)
             if (choice == 1){
                 badLand1ImageElement.style.display = '';
                 chosenLandElement = badLand1ImageElement;
@@ -431,10 +458,14 @@ function generateLand(nextTextNodeId)
                 badLand2ImageElement.style.display = '';
                 chosenLandElement = badLand2ImageElement;
             }
+            else if (choice == 3){
+                badLand3ImageElement.style.display = '';
+                chosenLandElement = badLand3ImageElement;
+            }
         }
 
         else if (vegetationTier == 'Sparse'){
-            var choice = Math.floor(Math.random() * 2 + 1)
+            var choice = Math.floor(Math.random() * 3 + 1)
             if (choice == 1){
                 mediumLand1ImageElement.style.display = '';
                 chosenLandElement = mediumLand1ImageElement;
@@ -443,10 +474,14 @@ function generateLand(nextTextNodeId)
                 mediumLand2ImageElement.style.display = '';
                 chosenLandElement = mediumLand2ImageElement;
             }
+            else if (choice == 3){
+                mediumLand3ImageElement.style.display = '';
+                chosenLandElement = mediumLand3ImageElement;
+            }
         }
 
         else if (vegetationTier == 'Plentiful'){
-            var choice = Math.floor(Math.random() * 2 + 1)
+            var choice = Math.floor(Math.random() * 3 + 1)
             if (choice == 1){
                 goodLand1ImageElement.style.display = '';
                 chosenLandElement = goodLand1ImageElement;
@@ -454,6 +489,10 @@ function generateLand(nextTextNodeId)
             else if (choice == 2){
                 goodLand2ImageElement.style.display = '';
                 chosenLandElement = goodLand2ImageElement;
+            }
+            else if (choice == 3){
+                goodLand3ImageElement.style.display = '';
+                chosenLandElement = goodLand3ImageElement;
             }
         }
     }
@@ -1044,12 +1083,7 @@ function Death(){
     showTextNode(5);
     dead = true;
     shipImageElement.style.display = '';
-    goodLand1ImageElement.style.display = 'none';
-    goodLand2ImageElement.style.display = 'none';
-    mediumLand1ImageElement.style.display = 'none';
-    mediumLand2ImageElement.style.display = 'none';
-    badLand1ImageElement.style.display = 'none';
-    badLand2ImageElement.style.display = 'none';
+    chosenLandElement.style.display = 'none';
 
     for (let i = 0; i < landElements.length; i++) {
         landElements[i].style.display = 'none';
@@ -1207,6 +1241,9 @@ function selectOption(option){
     for (let i = 0; i < boonElements.length; i++) {
         boonElements[i].style.display = 'none';
     }
+    for (let i = 0; i < scenarioImageElements.length; i++){
+        scenarioImageElements[i].style.display = 'none'
+    }
 
     nextTextNodeId = option.nextText;
 
@@ -1267,10 +1304,13 @@ function selectOption(option){
         shipImageElement.style.display = '';
         goodLand1ImageElement.style.display = 'none';
         goodLand2ImageElement.style.display = 'none';
+        goodLand3ImageElement.style.display = 'none';
         mediumLand1ImageElement.style.display = 'none';
         mediumLand2ImageElement.style.display = 'none';
+        mediumLand3ImageElement.style.display = 'none';
         badLand1ImageElement.style.display = 'none';
         badLand2ImageElement.style.display = 'none';
+        badLand3ImageElement.style.display = 'none';
 
     }
 
@@ -1278,6 +1318,7 @@ function selectOption(option){
     else if (nextTextNodeId == 9 || nextTextNodeId == 10) {
         generateLand(nextTextNodeId);
         shipImageElement.style.display = 'none';
+
         for (let i = 0; i < landElements.length; i++) {
             landElements[i].style.display = '';
         }
@@ -1285,6 +1326,9 @@ function selectOption(option){
             for (let i = 0; i < boonElements.length; i++) {
                 boonElements[i].style.display = '';
             }
+        }
+        for (let i = 0; i < scenarioImageElements.length; i++){
+            scenarioImageElements[i].style.display = 'none'
         }
     }
     //Found a colony
@@ -1294,23 +1338,66 @@ function selectOption(option){
         for (let i = 0; i < landElements.length; i++) {
             landElements[i].style.display = '';
         }
+        for (let i = 0; i < scenarioImageElements.length; i++){
+            scenarioImageElements[i].style.display = 'none'
+        }
         generateLand(nextTextNodeId);
     }
 
     //Scenario
     else if (nextTextNodeId == 12)
     {
+        generateScenario(nextTextNodeId, optionId);
         shipImageElement.style.display = '';
-        goodLand1ImageElement.style.display = 'none';
-        goodLand2ImageElement.style.display = 'none';
-        mediumLand1ImageElement.style.display = 'none';
-        mediumLand2ImageElement.style.display = 'none';
-        badLand1ImageElement.style.display = 'none';
-        badLand2ImageElement.style.display = 'none';
+        chosenLandElement.style.display = 'none';
         for (let i = 0; i < landElements.length; i++) {
             landElements[i].style.display = 'none';
         }
-        generateScenario(nextTextNodeId, optionId);
+        for (let i = 0; i < scenarioImageElements.length; i++){
+            scenarioImageElements[i].style.display = 'none'
+        }
+        //Unique Scenarios
+        if(uniqueScenarioSwitch == true){
+            //Charybdis
+            if(scenarioId == 0){
+                charscylImageElement.style.display = '';
+                shipImageElement.style.display = 'none';
+            }
+            //Egesta
+            else if (scenarioId == 1){
+                egestaImageElement.style.display = '';
+                shipImageElement.style.display = 'none';
+            }
+            //Something in distance
+            else if (scenarioId == 2){
+                distanceImageElement.style.display = '';
+                shipImageElement.style.display = 'none';
+            }
+            //Merchant revenge
+            else if (scenarioId == 3){
+                revengeImageElement.style.display = '';
+                shipImageElement.style.display = 'none';
+            }
+        }
+        //Stormy Sea
+        else if(scenarioId == 0){
+            stormySeaImageElement.style.display = '';
+            shipImageElement.style.display = 'none';
+        }
+
+        //Island collecting
+        else if(scenarioId == 3){
+            islandImageElement.style.display = '';
+            shipImageElement.style.display = 'none';
+        }
+
+        //Merchant ship
+        else if(scenarioId == 7){
+            merchantImageElement.style.display = '';
+            shipImageElement.style.display = 'none';
+        }
+        
+
     }
         
 
@@ -1554,12 +1641,6 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     }
     
     shipImageElement.style.display = 'none';
-    goodLand1ImageElement.style.display = 'none';
-    goodLand2ImageElement.style.display = 'none';
-    mediumLand1ImageElement.style.display = 'none';
-    mediumLand2ImageElement.style.display = 'none';
-    badLand1ImageElement.style.display = 'none';
-    badLand2ImageElement.style.display = 'none';
     chosenLandElement.style.display = '';
     chosenLandElement.classList.remove("ascii");
     void chosenLandElement.offsetWidth;

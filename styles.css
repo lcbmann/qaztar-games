@@ -1,6 +1,4 @@
-*, *::before, *::after {
 
-}
 
 body {
     padding: 0;
@@ -24,6 +22,7 @@ body {
 
 .quotes {
     width: 80%;
+    font-size: 1.2vw;
     max-width: 37%;
     text-align: right;
     color:antiquewhite;
@@ -45,11 +44,10 @@ body {
     position: absolute;
     top: 50%;
     left: 48%;
-    font-size: 0.5em;
+    font-size: 0.6vw;
     margin-right: -50%;
     transform: translate(-50%, -50%);
     font-weight: bolder;
-    font-size: 12px;
 }
 
 .ending-ascii {
@@ -57,8 +55,7 @@ body {
     padding: 1em;
     position: absolute;
     top: 50%;
-    left: 77.5%;
-    font-size: 0.5em;
+    left: 80%;
     margin-right: -50%;
     transform: translate(-50%, -50%);
     font-weight: bolder;
@@ -73,6 +70,7 @@ body {
     left: 10%;
     transform: translate(-50%, -50%);
     color:white;
+    font-size: 1.1vw;
 }
 
 .status-count {
@@ -90,18 +88,19 @@ body {
     position: absolute;
     width: 13%;
     top: 80%;
-    left: 77%;
+    left: 75%;
     transform: translate(-50%, -50%);
     color:white;
+    font-size: 1.1vw;
 }
 
 .land {
-    font-size: smaller;
+    font-size: 1.1vw;
     border-radius: 1em;
     padding: 1em;
     position: absolute;
     top: 80%;
-    left: 50%;
+    left: 44%;
     transform: translate(-50%, -50%);
     color:white;
 }
@@ -149,7 +148,7 @@ body {
     margin-left: 0px;
     padding:0%;
     color: rgb(147, 187, 138);
-    font-size:x-large;
+    font-size: 1.3vw;
     font-family: inherit;
     text-align:left;
 }
@@ -167,7 +166,7 @@ body {
 }
 
 .fade-in-buttons {
-    animation: fadeInButtons 4s;
+    animation: fadeInButtons 3s;
 }
 
 @keyframes fadeIn {
