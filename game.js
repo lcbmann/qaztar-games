@@ -110,6 +110,10 @@ function startGame(){
     badLand1ImageElement.style.display = 'none';
     badLand2ImageElement.style.display = 'none';
 
+    continueButtonElement.classList.remove("continue-button-ending");
+    void continueButtonElement.offsetWidth;
+    continueButtonElement.classList.add("continue-button");
+
 
 
     for (let i = 0; i < statusElements.length; i++) {
@@ -456,9 +460,9 @@ function generateLand(nextTextNodeId)
 
     //Scouted
     else if (nextTextNodeId == 10 && ships > 1){
-        var river = Array('Barren', 'Trickling', 'Flowing');
-        var natives = Array('Hostile', 'Indifferent', 'Generous');
-        var ruins = Array('Empty', 'Relics', 'Treasures');
+        var river = Array('Barren', 'Trickling', 'Trickling', 'Flowing');
+        var natives = Array('Hostile', 'Indifferent', 'Indifferent', 'Generous');
+        var ruins = Array('Empty', 'Relics', 'Relics', 'Treasures');
         
         riverTier = river[Math.floor(Math.random()*river.length)];
         nativesTier = natives[Math.floor(Math.random()*natives.length)];
@@ -471,9 +475,9 @@ function generateLand(nextTextNodeId)
     //Colony founded
     else if (nextTextNodeId == 11){
         if (riverTier == 'Unknown' && nativesTier == 'Unknown' && ruinsTier == 'Unknown'){
-            var river = Array('Barren', 'Trickling', 'Flowing');
-            var natives = Array('Hostile', 'Indifferent', 'Generous');
-            var ruins = Array('Empty', 'Relics', 'Treasures');
+            var river = Array('Barren', 'Trickling', 'Trickling', 'Flowing');
+            var natives = Array('Hostile', 'Indifferent', 'Indifferent', 'Generous');
+            var ruins = Array('Empty', 'Relics', 'Relics', 'Treasures');
             
             riverTier = river[Math.floor(Math.random()*river.length)];
             nativesTier = natives[Math.floor(Math.random()*natives.length)];
@@ -622,7 +626,7 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet comes to rest in a small inlet. The fleet\'s auger recommends the construction of an altar to improve the fleet\'s chances of finding an ideal homeland. \n \n Will you use materials to make an altar to the gods?',
             'The fleet sails on, and the sailors\' stomachs are rumbling. Unfortunately, it\'s discovered that some of the food may have spoiled. \n \n Will you discard the potentially spoiled rations, or eat them before they can completely turn?', 
             'The fleet sails on, and a call goes out: another ship has been spotted on the horizon. Some of the bored sailors look to the captain expectantly, their hands reaching for their swords. \n \n Will you pursue the potential victim, or spare them?',
-
+            'The fleet slows to a stop, anchoring in a small inlet. The sailors disembark from the remaining ships. \n \n Will you order the creation of three new ships to be constructed from the remaining material stores?',
         )
         var quoteText = Array(
             '"A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n - Virgil, The Aeneid',
@@ -633,6 +637,7 @@ function generateScenario(nextTextNodeId, optionId)
             '', // build altar
             '',
             '"All the crewmen fasten the sheets; at once, together, they let loose the sails, to port, to starboard; and as one, they shift and turn the high yardarms; kind winds drive on the fleet." \n \n - Virgil, The Aeneid',
+            '', // building ships
 
         )
         var option1Text = Array(
@@ -644,6 +649,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Build an altar to the gods',
             'Discard the food',
             'Pursue the ship',
+            'Construct three new ships',
         )
 
         var option2Text = Array(
@@ -655,6 +661,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Build no altar',
             'Eat it quickly',
             'Spare the ship',
+            'Continue with the existing ships and materials',
         )
         
         //Unique Scenario generator
@@ -745,7 +752,9 @@ function generateScenario(nextTextNodeId, optionId)
             'The food is quickly devoured. Unfortunately, a number of the sailors fall ill from the spoiled food.',
             'The ship is quickly run down by the superior Trojan fleet. The small merchant vessel resists mightily, but soon surrenders.',
             'The ship is quickly run down by the superior Trojan fleet. However, the inhabitants appear prepared for attacks - they take a number of crewmen down before they can be subdued.',
-            'The ship slowly disappears into the horizon. The sailors, grumbling, return to their routines.'
+            'The ship slowly disappears into the horizon. The sailors, grumbling, return to their routines.',
+            'The sailors set to work building three more ships for the fleet, pulling from the existing material stores.',
+            'No new ships are built.'
         );
         
         //Unique scenarios
@@ -1015,6 +1024,17 @@ function generateScenario(nextTextNodeId, optionId)
                 assignedScenarioResult = scenarioResultText[20];
             }
         }
+    if(scenarioId == 8){
+        if(optionId == 1){
+            assignedScenarioResult = scenarioResultText[21];
+            shipsChange = 3;
+            materialsChange = -15;
+            inspectFleet();
+        }
+        else if(optionId == 2){
+            assignedScenarioResult = scenarioResultText[22];
+        }
+    }
     }
 
 
@@ -1064,11 +1084,27 @@ function showTextNode(textNodeIndex){
         })
     }
 
+    
     //Colony
     else if (textNodeIndex == 11){
         while (continueButtonElement.firstChild) {
             continueButtonElement.removeChild(continueButtonElement.firstChild);
         }
+
+        textNode.options.forEach(option => {
+            if (showOption(option)) {
+                const button = document.createElement('button');
+                button.innerText = option.text;
+                button.classList.add('btn');
+                button.addEventListener('click', () => selectOption(option));
+                continueButtonElement.appendChild(button);
+            }
+        })
+
+        continueButtonElement.classList.remove("continue-button");
+        void continueButtonElement.offsetWidth;
+        continueButtonElement.classList.add("continue-button-ending");
+        quoteElement.innerText = assignedQuote;
     }
     else if (textNodeIndex == 12){
         textElement.innerText = assignedScenario;
@@ -1120,6 +1156,19 @@ function showTextNode(textNodeIndex){
     //Arrival
     else if (textNodeIndex == 8){
         textElement.innerText = arrivalText;
+        if (materials < 0 && ships > 2){
+            textElement.innerText = 'The fleet has begun to run dangerously low on materials for ship maintenance. As the ships dock at a new land, the captain orders the destruction of a few of them to replenish the stores.';
+            materialsChange = 15;
+            shipsChange = -1;
+            inspectFleet();
+        }
+        else if (materials < 0 && ships <= 1){
+            textElement.innerText = 'The fleet has begun to run dangerously low on materials for ship maintenance. As the ships dock at a new land, the captain orders the sailors to scavenge for materials.';
+            materialsChange = 15;
+            foodChange = -(Math.floor(Math.random() * 8 + 1));
+            waterChange = -(Math.floor(Math.random() * 8 + 1));
+            inspectFleet();
+        }
     }
     //Land
     else if (textNodeIndex == 9){
@@ -1222,6 +1271,7 @@ function selectOption(option){
         mediumLand2ImageElement.style.display = 'none';
         badLand1ImageElement.style.display = 'none';
         badLand2ImageElement.style.display = 'none';
+
     }
 
     //Inspect land and scout
@@ -1348,6 +1398,23 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     )
 
     var civilizationName = civilizationNames[Math.floor(Math.random()*civilizationNames.length)]
+
+    if(vegetationTier == 'Plentiful' && temperatureTier == "Comfortable" && harborTier == "Spacious" && riverTier == "Flowing"){
+        var idealCivilizationNames = Array(
+            "Elysium",
+            "Paradise",
+            "Heaven",
+            "The Celestial City",
+            "Valhalla",
+            "Zion",
+            "Avalon",
+            "Eden",
+            "Utopia",
+            "Rapture",
+        )
+        civilizationName = idealCivilizationNames[Math.floor(Math.random()*idealCivilizationNames.length)]
+    }
+
     var populationText = sailors + " crewmates had survived the journey across the sea. ";
     var foodText = "";
     var waterText = "";
@@ -1359,6 +1426,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     var constructionText = "";
     var harborText = "The tight harbor benefitted the new colony, but required a moderate amount of construction to be usable. ";
     var materialsText = "";
+    var civilizationTier = "";
 
     var ruinsText = "The ruins nearby were found to be empty. ";
 
@@ -1371,33 +1439,35 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     totalScore = 0;
 
     if (vegetationTier == 'None'){
-        food = food - 25;
+        food = food - 60;
         vegetationText = "The landscape was devoid of vegetation, and the colonists had to resort to labor-intensive activites to gather food. ";
+        populationScore = populationScore - 80;
     }
     else if (vegetationTier == 'Plentiful'){
-        food = food + 25;
+        food = food + 40;
         vegetationText = "The landscape was full of vegetation, and the colonists were easily able to collect extra food in the early days of their colony's construction. ";
     }
 
     if(riverTier == 'Barren'){
-        water = water - 25;
+        water = water - 40;
         riverText = "The nearest river was bone-dry, having long since dried up. The first colonists had to drink much of their remaining water stores just to survive. ";
+        populationScore = populationScore - 80;
     }
     else if (riverTier == 'Flowing'){
-        water = water + 25;
+        water = water + 30;
         riverText = "The nearby river was healthily flowing, providing the first colonists with ample fresh-water to add to their stores. ";
     }
 
     if(nativesTier == 'Hostile')
     {
-        population = population - 50;
+        population = population - 45;
         nativesText = "The natives proved hostile to the new colonists, and a number of conflicts broke out. Many of the early colonists were killed in these battles. ";
 
     }
     else if (nativesTier == 'Generous')
     {
-        food = food + 25;
-        water = water + 25;
+        food = food + 15;
+        water = water + 15;
         nativesText = "The natives proved generous to the new colonists, providing them with food and water to bolster their remaining stores. ";
     }
 
@@ -1407,68 +1477,64 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     }
   
     constructionScore = constructionScore + materials;
-    
 
     if(food < 33){
-        population = population - (50 - food);
+        population = population - (55 - food);
         foodText = "With little remaining food after the journey, some colonists were unable to survive on the prescribed rations until the first harvest, and starved. ";
     }
     else if (food < 67 && food >= 33){
         foodText = "With some food supplies remaining, the colonists were able to survive until the first harvest. ";
     }
     else if (food >= 67){
-        population = population + (food - 50);
+        population = population + (food - 45);
         foodText = "With plenty of remaining food in storage, the fledgling colony grew swiftly and healthily. ";
     }
 
     if(water < 33){
-        population = population - (50 - water);
+        population = population - (55 - water);
         waterText = "The lack of stored, clean water caused some colonists to perish before any additional water could be collected from the land. ";
     }
     else if (water < 67 && water >= 33){
         waterText = "The remaining water stores kept the first colonists alive in the months before efficient water collection could begin. ";
     }
     else if (water >= 67){
-        population = population + (water - 50);
-        waterText = "The abundance of stored water in the fleet's holds allowed the new colony to thrive in the days before water collection could be established. ";
+        population = population + (water - 45);
+        waterText = "The abundance of water in the fleet's holds allowed the new colony to thrive in the days before water collection could be established. ";
     }
 
 
     if(ruinsTier == 'Relics'){
-        ruinsScore = 50;
+        ruinsScore = 30;
         ruinsText = "The nearby ruins contained a few useful tools from a long-dead civilization, providing a small boost to the colony's early growth. ";
     }
     else if(ruinsTier == 'Treasures'){
-        ruinsScore = 100;
-        constructionScore = constructionScore + 10;
+        ruinsScore = 60;
+        constructionScore = constructionScore + 20;
         ruinsText = "The nearby ruins were filled with valuable resources and provided a stable framework to construct a new colony upon, greatly bolstering the colony's survivability. ";
     }
 
     if(harborTier == 'Impassable'){
-        constructionScore = constructionScore - 25;
+        constructionScore = constructionScore - 140;
         harborText = "The impassable harbor proved a difficult challenge to overcome, requiring the grueling construction of a network of canals. ";
     }
     else if(harborTier == 'Spacious'){
-        constructionScore = constructionScore + 25;
+        constructionScore = constructionScore + 65;
         harborText = "The spacious harbor provided the new colonists with easy access to the sea and trade, and required little extra construction. ";
     }
 
     populationScore = population * 2;
 
     if(temperatureTier == 'Extreme'){
-        temperatureScore = -120;
+        temperatureScore = -200;
         temperatureText = "The extreme temperatures stunted the colony's ability to grow and maintain a large population. ";
 
     }
     else if (temperatureTier == 'Comfortable'){
         temperatureScore = 120;
-        temperatureText = "The comfortable temperatures amplified the colony's appeal to passing travelers, enabling it to maintain a much larger population. ";
+        temperatureText = "The comfortable temperatures amplified the colony's appeal to passing travelers, allowing it to maintain a much larger population. ";
     }
     
-
-
     totalScore = populationScore + temperatureScore + constructionScore + ruinsScore;
-    
 
     //Display final screen
     scoreElement.innerText = totalScore;
@@ -1476,9 +1542,6 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     temperatureScoreElement.innerText = temperatureScore;
     constructionScoreElement.innerText = constructionScore;
     ruinsScoreElement.innerText = ruinsScore;
-
-    
-
 
     for (let i = 0; i < statusElements.length; i++) {
         statusElements[i].style.display = '';
@@ -1502,10 +1565,30 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     void chosenLandElement.offsetWidth;
     chosenLandElement.classList.add("ending-ascii");
 
-
     //Set end texts
     populationText = populationText + vegetationText + riverText + nativesText + foodText + waterText;
     constructionText = materialsText + harborText;
+    if(totalScore < 150){
+        civilizationTier = "Even at its peak, it was nothing but a small, struggling hamlet.";
+    }
+    else if(totalScore >= 150 && totalScore < 300){
+        civilizationTier = "At its height, it was a small yet bustling trade town.";
+    }
+    else if (totalScore >= 300 && totalScore < 500){
+        civilizationTier = "At its height, it was a healthy trading hub and cultural center.";
+    }
+    else if (totalScore >= 500 && totalScore < 700){
+        civilizationTier = "At its height, it was a booming trade city and a formidable regional power.";
+    }
+    else if (totalScore >= 700 && totalScore < 900){
+        civilizationTier = "At its height, it dominated its region militarily and culturally, and even expanded to settle across the seas.";
+    }
+    else if (totalScore >= 900 && totalScore < 1000){
+        civilizationTier = "At its height, it was one of the premier civilizations of the world, conquering vast lands and achieving technological wonders.";
+    }
+    else if (totalScore >= 1000){
+        civilizationTier = "At its height, it was the greatest civilization in the entire world, permenently reshaping the world and redirecting the flow of human history.";
+    }
 
     var endText = 
     "The fleet comes to a rest at its new home. The weary sailors are the first generation of a new civilization. " +
@@ -1518,18 +1601,18 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     constructionText + 
     "\n \n" +
     temperatureText +
-    "\n \n The civilization of " + civilizationName + " would go on to last " + totalScore + " years.";
+    "\n \n The civilization of " + civilizationName + " would go on to last " + totalScore + " years. " + civilizationTier;
     
 
     console.log(population);
-    if (population <= 0){
+    if (population <= 0 || totalScore <= 0){
         var endText = 
         "The fleet comes to a rest at its new home. The weary sailors are the first generation of a new civilization. " +
-        "\n \n Gazing out over their new land, their captain named their colony " + civilizationName + "."
+        "\n \n Gazing out over their new land, their captain named their colony " + civilizationName + "." +
         "\n \n" +
         populationText +
         "\n \n" + "With so many of their members lost, the colony was unable to survive. Within a few short years, it had vanished." +
-        "\n \n The civilization of " + civilizationName + " would last only " + Math.floor(Math.random() * 4 + 1) + " years.";
+        "\n \n The city of " + civilizationName + " would last only " + Math.floor(Math.random() * 4 + 1) + " years.";
     }
     textElement.innerText = endText;
 }
@@ -1715,6 +1798,8 @@ const textNodes = [
         quoteText: '',
         options: [
             {
+                text: 'Restart',
+                nextText: -1
             }
         ]
 

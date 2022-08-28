@@ -1,5 +1,5 @@
 *, *::before, *::after {
-    box-sizing: border-box;
+
 }
 
 body {
@@ -14,6 +14,7 @@ body {
 
 .descriptions {
     width: 80%;
+    font-size: 1.2vw;
     max-width: 63%;
     text-align:left;
     width: 100vw;
@@ -48,6 +49,7 @@ body {
     margin-right: -50%;
     transform: translate(-50%, -50%);
     font-weight: bolder;
+    font-size: 12px;
 }
 
 .ending-ascii {
@@ -60,6 +62,7 @@ body {
     margin-right: -50%;
     transform: translate(-50%, -50%);
     font-weight: bolder;
+    font-size: 0.5vw;
 }
 
 .status {
@@ -132,7 +135,11 @@ body {
 }
 
 .continue-button {
-    margin-top: 180px;
+    margin-top: 14%;
+}
+
+.continue-button-ending {
+    margin-top: 53%;
 }
 
 .btn {
@@ -160,7 +167,7 @@ body {
 }
 
 .fade-in-buttons {
-    animation: fadeInButtons 1s;
+    animation: fadeInButtons 4s;
 }
 
 @keyframes fadeIn {
