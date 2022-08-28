@@ -10,6 +10,7 @@ const mediumLand1ImageElement = document.getElementById('ascii-medium-land1');
 const mediumLand2ImageElement = document.getElementById('ascii-medium-land2');
 const badLand1ImageElement = document.getElementById('ascii-bad-land1');
 const badLand2ImageElement = document.getElementById('ascii-bad-land2');
+var chosenLandElement;
 
 
 const statusElements = document.getElementsByClassName('status');
@@ -79,6 +80,7 @@ var stolenWater = 0;
 var stolenMaterials = 0;
 
 var completedUniqueScenarios = Array();
+var completedUniqueScenariosLength = 0;
 var scenarioId = 99;
 var scenarioCount = 0;
 var uniqueScenarioSwitch = false;
@@ -132,6 +134,8 @@ function startGame(){
     food = 100;
     water = 100;
     materials = 100;
+    revengeTaken = false;
+    attackedMerchant = false;
 
     state = {}
     showTextNode(1);
@@ -417,9 +421,11 @@ function generateLand(nextTextNodeId)
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
                 badLand1ImageElement.style.display = '';
+                chosenLandElement = badLand1ImageElement;
             }
             else if (choice == 2){
                 badLand2ImageElement.style.display = '';
+                chosenLandElement = badLand2ImageElement;
             }
         }
 
@@ -427,9 +433,11 @@ function generateLand(nextTextNodeId)
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
                 mediumLand1ImageElement.style.display = '';
+                chosenLandElement = mediumLand1ImageElement;
             }
             else if (choice == 2){
                 mediumLand2ImageElement.style.display = '';
+                chosenLandElement = mediumLand2ImageElement;
             }
         }
 
@@ -437,9 +445,11 @@ function generateLand(nextTextNodeId)
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
                 goodLand1ImageElement.style.display = '';
+                chosenLandElement = goodLand1ImageElement;
             }
             else if (choice == 2){
                 goodLand2ImageElement.style.display = '';
+                chosenLandElement = goodLand2ImageElement;
             }
         }
     }
@@ -648,7 +658,14 @@ function generateScenario(nextTextNodeId, optionId)
         )
         
         //Unique Scenario generator
-        if (scenarioCount > 2 && completedUniqueScenarios.length < 4){
+        if(completedUniqueScenarios.length == 3 && attackedMerchant == true && revengeTaken == false){
+            completedUniqueScenariosLength = 2;
+        }
+        else {
+            completedUniqueScenariosLength = completedUniqueScenarios.length;
+        }
+
+        if (scenarioCount > 2 && completedUniqueScenariosLength < 3){
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
                 if(attackedMerchant == false){
@@ -680,10 +697,6 @@ function generateScenario(nextTextNodeId, optionId)
         }
         
         assignedScenario = scenarioText[Math.floor(Math.random()*scenarioText.length)];
-
-
-
-        
 
         scenarioId = scenarioText.indexOf(assignedScenario);
 
@@ -819,10 +832,10 @@ function generateScenario(nextTextNodeId, optionId)
                 else if (optionId == 2){
                     assignedScenarioResult = uniqueScenarioResultText[9];
                     shipsChange = -(Math.floor(Math.random() * 3 + 1));
-                    foodChange = -(Math.floor(Math.random() * 10 + 1));
-                    waterChange = -(Math.floor(Math.random() * 10 + 1));
-                    materialsChange = -(Math.floor(Math.random() * 10 + 1));
-                    sailorsChange = -(Math.floor(Math.random() * 10 + 1));
+                    foodChange = -(Math.floor(Math.random() * 15 + 5));
+                    waterChange = -(Math.floor(Math.random() * 15 + 5));
+                    materialsChange = -(Math.floor(Math.random() * 15 + 5));
+                    sailorsChange = -(Math.floor(Math.random() * 15 + 5));
                     revengeTaken = true;
                     inspectFleet();
                 }
@@ -1032,7 +1045,7 @@ function showTextNode(textNodeIndex){
 
     
 
-    if(textNodeIndex != 12 && textNodeIndex != 13){
+    if(textNodeIndex != 11 && textNodeIndex != 12 && textNodeIndex != 13){
         textElement.innerText = textNode.text;
         quoteElement.innerText = textNode.quoteText;
 
@@ -1049,8 +1062,12 @@ function showTextNode(textNodeIndex){
                 continueButtonElement.appendChild(button);
             }
         })
-        if(textNodeIndex == 11){
-            textElement.innerText = "The fleet comes to a rest at its new home. The weary sailors are the first generation of a new civilization.\n \n This new civilization would go on to last " + totalScore + " years.";
+    }
+
+    //Colony
+    else if (textNodeIndex == 11){
+        while (continueButtonElement.firstChild) {
+            continueButtonElement.removeChild(continueButtonElement.firstChild);
         }
     }
     else if (textNodeIndex == 12){
@@ -1291,9 +1308,59 @@ function selectOption(option){
 
 //End Game
 function endGame(sailors, ships, food, water, materials, vegetationTier, temperatureTier, harborTier, riverTier, nativesTier, ruinsTier){
-    for (let i = 0; i < allScoreElements.length; i++) {
-        allScoreElements[i].style.display = '';
-    }
+
+
+    civilizationNames = Array(
+        "Sekos",
+        "Odnita",
+        "Netrexo",
+        "Cloarfar",
+        "Eru",
+        "Alba Longa",
+        "Rome",
+        "Midas",
+        "Arcadia",
+        "Agand",
+        "Numenor",
+        "Qanel",
+        "Ahru",
+        "Niral",
+        "Iadne",
+        "Teleth",
+        "Sopax",
+        "Bomhara",
+        "Janih",
+        "Bemir",
+        "Ocqu",
+        "Alhui",
+        "Potaq",
+        "Boweth",
+        "Acmath",
+        "Lasi",
+        "Piti",
+        "Alethkar",
+        "Patji",
+        "Vanu",
+        "Hutton",
+        "Falkreath",
+        "Novigrad",
+        "Ilum",
+    )
+
+    var civilizationName = civilizationNames[Math.floor(Math.random()*civilizationNames.length)]
+    var populationText = sailors + " crewmates had survived the journey across the sea. ";
+    var foodText = "";
+    var waterText = "";
+    var nativesText = "The indifferent natives paid no attention to the new colonists, proving neither hostile nor helpful. ";
+    var vegetationText = "The landscape contained sparse vegetation, which provided the colonists with a small amount of food. ";
+    var riverText = "The trickling river nearby supplied the colonists with a small amount of fresh-water to drink in the early days of the colony. ";
+
+    var temperatureText = "The fluctuating temperatures neither helped nor hindered the colony's growth. ";
+    var constructionText = "";
+    var harborText = "The tight harbor benefitted the new colony, but required a moderate amount of construction to be usable. ";
+    var materialsText = "";
+
+    var ruinsText = "The ruins nearby were found to be empty. ";
 
     var population = sailors;
     var temperatureScore = 0;
@@ -1305,72 +1372,97 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
 
     if (vegetationTier == 'None'){
         food = food - 25;
+        vegetationText = "The landscape was devoid of vegetation, and the colonists had to resort to labor-intensive activites to gather food. ";
     }
     else if (vegetationTier == 'Plentiful'){
         food = food + 25;
+        vegetationText = "The landscape was full of vegetation, and the colonists were easily able to collect extra food in the early days of their colony's construction. ";
     }
 
     if(riverTier == 'Barren'){
         water = water - 25;
+        riverText = "The nearest river was bone-dry, having long since dried up. The first colonists had to drink much of their remaining water stores just to survive. ";
     }
-    else if (riverTier = 'Flowing'){
+    else if (riverTier == 'Flowing'){
         water = water + 25;
+        riverText = "The nearby river was healthily flowing, providing the first colonists with ample fresh-water to add to their stores. ";
     }
 
     if(nativesTier == 'Hostile')
     {
         population = population - 50;
+        nativesText = "The natives proved hostile to the new colonists, and a number of conflicts broke out. Many of the early colonists were killed in these battles. ";
+
     }
     else if (nativesTier == 'Generous')
     {
         food = food + 25;
         water = water + 25;
+        nativesText = "The natives proved generous to the new colonists, providing them with food and water to bolster their remaining stores. ";
     }
 
     materials = materials + (ships * 5);
+    if (ships > 1){
+        materialsText = "The new colonists broke down their remaining ships, using the planks to aid in the construction of their new civilization. ";
+    }
+  
     constructionScore = constructionScore + materials;
     
 
-    if(food < 50){
+    if(food < 33){
         population = population - (50 - food);
+        foodText = "With little remaining food after the journey, some colonists were unable to survive on the prescribed rations until the first harvest, and starved. ";
     }
-    else if (food > 50){
+    else if (food < 67 && food >= 33){
+        foodText = "With some food supplies remaining, the colonists were able to survive until the first harvest. ";
+    }
+    else if (food >= 67){
         population = population + (food - 50);
+        foodText = "With plenty of remaining food in storage, the fledgling colony grew swiftly and healthily. ";
     }
 
-    if(water < 50){
+    if(water < 33){
         population = population - (50 - water);
+        waterText = "The lack of stored, clean water caused some colonists to perish before any additional water could be collected from the land. ";
     }
-    else if (water > 50){
+    else if (water < 67 && water >= 33){
+        waterText = "The remaining water stores kept the first colonists alive in the months before efficient water collection could begin. ";
+    }
+    else if (water >= 67){
         population = population + (water - 50);
+        waterText = "The abundance of stored water in the fleet's holds allowed the new colony to thrive in the days before water collection could be established. ";
     }
 
 
     if(ruinsTier == 'Relics'){
         ruinsScore = 50;
+        ruinsText = "The nearby ruins contained a few useful tools from a long-dead civilization, providing a small boost to the colony's early growth. ";
     }
     else if(ruinsTier == 'Treasures'){
         ruinsScore = 100;
         constructionScore = constructionScore + 10;
+        ruinsText = "The nearby ruins were filled with valuable resources and provided a stable framework to construct a new colony upon, greatly bolstering the colony's survivability. ";
     }
 
     if(harborTier == 'Impassable'){
         constructionScore = constructionScore - 25;
+        harborText = "The impassable harbor proved a difficult challenge to overcome, requiring the grueling construction of a network of canals. ";
     }
     else if(harborTier == 'Spacious'){
         constructionScore = constructionScore + 25;
+        harborText = "The spacious harbor provided the new colonists with easy access to the sea and trade, and required little extra construction. ";
     }
 
     populationScore = population * 2;
-    if(populationScore < 0){
-        selectOption(5);
-    }
 
     if(temperatureTier == 'Extreme'){
         temperatureScore = -120;
+        temperatureText = "The extreme temperatures stunted the colony's ability to grow and maintain a large population. ";
+
     }
     else if (temperatureTier == 'Comfortable'){
         temperatureScore = 120;
+        temperatureText = "The comfortable temperatures amplified the colony's appeal to passing travelers, enabling it to maintain a much larger population. ";
     }
     
 
@@ -1405,6 +1497,41 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     mediumLand2ImageElement.style.display = 'none';
     badLand1ImageElement.style.display = 'none';
     badLand2ImageElement.style.display = 'none';
+    chosenLandElement.style.display = '';
+    chosenLandElement.classList.remove("ascii");
+    void chosenLandElement.offsetWidth;
+    chosenLandElement.classList.add("ending-ascii");
+
+
+    //Set end texts
+    populationText = populationText + vegetationText + riverText + nativesText + foodText + waterText;
+    constructionText = materialsText + harborText;
+
+    var endText = 
+    "The fleet comes to a rest at its new home. The weary sailors are the first generation of a new civilization. " +
+    "\n \n Gazing out over their new land, their captain named their colony " + civilizationName + "." + 
+    "\n \n" +
+    populationText +
+    "\n \n" +
+    ruinsText +
+    "\n \n" +
+    constructionText + 
+    "\n \n" +
+    temperatureText +
+    "\n \n The civilization of " + civilizationName + " would go on to last " + totalScore + " years.";
+    
+
+    console.log(population);
+    if (population <= 0){
+        var endText = 
+        "The fleet comes to a rest at its new home. The weary sailors are the first generation of a new civilization. " +
+        "\n \n Gazing out over their new land, their captain named their colony " + civilizationName + "."
+        "\n \n" +
+        populationText +
+        "\n \n" + "With so many of their members lost, the colony was unable to survive. Within a few short years, it had vanished." +
+        "\n \n The civilization of " + civilizationName + " would last only " + Math.floor(Math.random() * 4 + 1) + " years.";
+    }
+    textElement.innerText = endText;
 }
 
 
@@ -1572,10 +1699,6 @@ const textNodes = [
         quoteText: '',
         options: [
             {
-                text: 'Restart',
-                nextText: -1
-            },
-            {
                 text: 'Found a colony.',
                 nextText: 11
             },
@@ -1592,8 +1715,6 @@ const textNodes = [
         quoteText: '',
         options: [
             {
-                text:'Restart',
-                nextText: -1
             }
         ]
 

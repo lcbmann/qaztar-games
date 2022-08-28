@@ -14,7 +14,7 @@ body {
 
 .descriptions {
     width: 80%;
-    max-width: 80%;
+    max-width: 63%;
     text-align:left;
     width: 100vw;
     height: 100vh;
@@ -23,7 +23,7 @@ body {
 
 .quotes {
     width: 80%;
-    max-width: 30%;
+    max-width: 37%;
     text-align: right;
     color:antiquewhite;
     font-style:italic;
@@ -39,12 +39,23 @@ body {
 }
 
 .ascii {
-
     border-radius: 1em;
     padding: 1em;
     position: absolute;
     top: 50%;
     left: 48%;
+    font-size: 0.5em;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    font-weight: bolder;
+}
+
+.ending-ascii {
+    border-radius: 1em;
+    padding: 1em;
+    position: absolute;
+    top: 50%;
+    left: 77.5%;
     font-size: 0.5em;
     margin-right: -50%;
     transform: translate(-50%, -50%);
@@ -149,7 +160,7 @@ body {
 }
 
 .fade-in-buttons {
-    animation: fadeInButtons 5s;
+    animation: fadeInButtons 1s;
 }
 
 @keyframes fadeIn {
