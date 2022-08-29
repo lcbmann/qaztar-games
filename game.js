@@ -25,7 +25,7 @@ const charscylImageElement = document.getElementById('ascii-charscyl');
 const merchantImageElement = document.getElementById('ascii-merchant');
 const islandImageElement = document.getElementById('ascii-island');
 const volcanoImageElement = document.getElementById('ascii-volcano');
-const cyclopsImageElement = document.getElementById('ascii-cylops');
+const cyclopsImageElement = document.getElementById('ascii-cyclops');
 
 
 const statusElements = document.getElementsByClassName('status');
@@ -136,7 +136,7 @@ function startGame(){
     badLand3ImageElement.style.display = 'none';
 
     completedUniqueScenariosLength = completedUniqueScenarios.length;
-    
+
     continueButtonElement.classList.remove("continue-button-ending");
     void continueButtonElement.offsetWidth;
     continueButtonElement.classList.add("continue-button");
@@ -726,7 +726,7 @@ function generateScenario(nextTextNodeId, optionId)
         }
 
         if (scenarioCount > 2 && completedUniqueScenariosLength < 5){
-            var choice = Math.floor(Math.random() * 2 + 1)
+            var choice = Math.floor(Math.random() * 2 + 1);
             if (choice == 1){
                 if(attackedMerchant == false){
                     do { 
@@ -931,13 +931,13 @@ function generateScenario(nextTextNodeId, optionId)
             }
 
             //Cyclops
-            else if (scenarioId == 5){
+            else if(scenarioId == 5){
                 if(optionId == 1){
                     assignedScenarioResult = uniqueScenarioResultText[13];
                     sailorsChange = 1;
                     inspectFleet();
                 }
-                else if(optionId == 1){
+                else if(optionId == 2){
                     var choice = Math.floor(Math.random() * 3 + 1)
                     if (choice == 1 || choice == 2){
                         assignedScenarioResult = uniqueScenarioResultText[14];
@@ -951,6 +951,7 @@ function generateScenario(nextTextNodeId, optionId)
                     }
                 }
             }
+
             uniqueScenarioSwitch = false;
             return;
         }
@@ -1125,17 +1126,19 @@ function generateScenario(nextTextNodeId, optionId)
                 assignedScenarioResult = scenarioResultText[20];
             }
         }
-    if(scenarioId == 8){
-        if(optionId == 1){
-            assignedScenarioResult = scenarioResultText[21];
-            shipsChange = 3;
-            materialsChange = -15;
-            inspectFleet();
+
+        //Build Ships
+        if(scenarioId == 8){
+            if(optionId == 1){
+                assignedScenarioResult = scenarioResultText[21];
+                shipsChange = 3;
+                materialsChange = -15;
+                inspectFleet();
+            }
+            else if(optionId == 2){
+                assignedScenarioResult = scenarioResultText[22];
+            }
         }
-        else if(optionId == 2){
-            assignedScenarioResult = scenarioResultText[22];
-        }
-    }
     }
 
 
@@ -1723,22 +1726,28 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         civilizationTier = "Even at its peak, it was nothing but a small, struggling hamlet.";
     }
     else if(totalScore >= 150 && totalScore < 300){
-        civilizationTier = "At its height, it was a small yet bustling trade town.";
+        civilizationTier = "At its height, it was a healthy but societally isolated village.";
     }
     else if (totalScore >= 300 && totalScore < 500){
+        civilizationTier = "At its height, it was a small yet bustling trade town.";
+    }
+    else if (totalScore >= 500 && totalScore < 600){
         civilizationTier = "At its height, it was a healthy trading hub and cultural center.";
     }
-    else if (totalScore >= 500 && totalScore < 700){
+    else if (totalScore >= 600 && totalScore < 700){
         civilizationTier = "At its height, it was a booming trade city and a formidable regional power.";
     }
-    else if (totalScore >= 700 && totalScore < 900){
-        civilizationTier = "At its height, it dominated its region militarily and culturally, and even expanded to settle across the seas.";
+    else if (totalScore >= 700 && totalScore < 800){
+        civilizationTier = "At its height, it was a premier regional military and cultural power, with influence that expanded for miles.";
+    }
+    else if (totalScore >= 800 && totalScore < 900){
+        civilizationTier = "At its height, it dominated its landmass militarily and culturally, and even expanded to settle across the seas.";
     }
     else if (totalScore >= 900 && totalScore < 1000){
-        civilizationTier = "At its height, it was one of the premier civilizations of the world, conquering vast lands and achieving technological wonders.";
+        civilizationTier = "At its height, it was one of the premier civilizations of the world, conquering vast foreign lands and achieving technological wonders.";
     }
     else if (totalScore >= 1000){
-        civilizationTier = "At its height, it was the greatest civilization in the entire world, permenently reshaping the world and redirecting the flow of human history.";
+        civilizationTier = "At its height, it was the greatest civilization of its time, permenently reshaping the world and redirecting the flow of human history.";
     }
 
     var endText = 
