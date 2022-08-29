@@ -135,6 +135,8 @@ function startGame(){
     badLand2ImageElement.style.display = 'none';
     badLand3ImageElement.style.display = 'none';
 
+    completedUniqueScenariosLength = completedUniqueScenarios.length;
+    
     continueButtonElement.classList.remove("continue-button-ending");
     void continueButtonElement.offsetWidth;
     continueButtonElement.classList.add("continue-button");
@@ -710,13 +712,13 @@ function generateScenario(nextTextNodeId, optionId)
             'Send them to chop trees for materials and ships',
             'Make no offering',
             'Build no altar',
-            'Eat it quickly',
+            'Eat them quickly',
             'Spare the ship',
             'Continue with the existing ships and materials',
         )
         
         //Unique Scenario generator
-        if(completedUniqueScenarios.length == 3 && attackedMerchant == true && revengeTaken == false){
+        if(completedUniqueScenarios.length == 5 && attackedMerchant == true && revengeTaken == false){
             completedUniqueScenariosLength = 2;
         }
         else {
