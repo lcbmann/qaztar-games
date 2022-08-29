@@ -15,6 +15,7 @@ const badLand2ImageElement = document.getElementById('ascii-bad-land2');
 const badLand3ImageElement = document.getElementById('ascii-bad-land3');
 var chosenLandElement;
 
+
 const scenarioImageElements = document.getElementsByClassName('scenario-images');
 const stormySeaImageElement = document.getElementById('ascii-stormy-sea');
 const egestaImageElement = document.getElementById('ascii-egesta');
@@ -23,6 +24,8 @@ const revengeImageElement = document.getElementById('ascii-revenge');
 const charscylImageElement = document.getElementById('ascii-charscyl');
 const merchantImageElement = document.getElementById('ascii-merchant');
 const islandImageElement = document.getElementById('ascii-island');
+const volcanoImageElement = document.getElementById('ascii-volcano');
+const cyclopsImageElement = document.getElementById('ascii-cylops');
 
 
 const statusElements = document.getElementsByClassName('status');
@@ -383,6 +386,7 @@ function updateBoons(){
 function generateLand(nextTextNodeId)
 {
 
+    
     //Subtract food and water
     foodChange = -Math.floor(Math.random() * 3 + 1);
 
@@ -634,18 +638,24 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet slows to a stop, arriving in the allied Sicilian city of Egesta. The king Acestes offers the captain a choice of gift: food and water, or timber for ships? \n \n Will you take the food and water, or materials and ships?',
             'The fleet navigates along a rocky coastline, and a shout goes out: something has been spotted inland. It\'s too difficult to discern what the object is from the ships. \n \n Will you prepare a party to investigate or move on?',
             'The fleet sails on, and a call goes out: another ship has been spotted on the horizon. Then another. And another. The entire horizon becomes dotted with ships fast approaching. The previously attacked merchants have not taken kindly to the fleet\'s piracy in their waters. \n \n Will you attempt to negotiate, or flee?',
+            'The fleet drops anchor on a coastline, a tall volcano rising in the distance. Just as the sailors spot a herd of deer to hunt, a small tremor moves through the ground, and the nearby volcano belches a plume of black smoke. \n \n Will you stay to hunt the deer, or leave immediately?',
+            'The fleet arrives on a beach surrounded by thick forests. As they set up camp, an unknown man stumbles out from the tree-line. Obviously exhausted, the man explains that he and some of his fellow travelers were captives of a cyclops, and that he alone was able to escape. He implores you to lay a trap for the cyclops to free his kinsmen. \n \n Will you use some food to lure and attack the cyclops, or leave his kinsmen behind?'
         )
         var uniqueQuoteText = Array(
             '"Now Scylla holds the right; insatiable Charybdis keeps the left." \n \n "Three times [Charybdis] sucks the vast waves into her abyss, the deepest whirlpool within her vortex, then she hurls the waters high, lashing the stars with spray." \n \n "Scylla is confined to blind retreats, a cavern; and her mouths thrust out to drag ships toward the shoals." \n \n - Vergil, The Aeneid',
             '"They head for harbor; kind winds swell their sails; the fleet runs swift across the surge; at last, and glad, they reach familiar sands." \n \n - Virgil, The Aeneid',
             '',
             '',
+            '"The harbor is wide and free from winds; but Etna is thundering nearby with dread upheavals. At times it belches into upper air dark clouds with tar-black whirlwinds, blazing lava, while lifting balls of flame that lick the stars." \n \n "The tale is told that, charred by lightning bolts, the body of Enceladus lies pressed beneath this mass." \n \n - Virgil, The Aeneid',
+            '"Aurora had banned damp shadows from the sky, when suddenly a tattered stranger, gaunt with final hunger, staggers from the woods and stretches pleading hands toward shore." \n \n - Virgil, The Aeneid',
         )
         var uniqueOption1Text = Array(
             'Go to the left, to Charybdis',
             'Accept the food and water',
             'Sail onward',
             'Attempt to negotiate',
+            'Return to the ships and set sail',
+            'Return to the ships and set sail',
 
         )
         
@@ -654,6 +664,8 @@ function generateScenario(nextTextNodeId, optionId)
             'Accept the materials and ships',
             'Launch an expedition to investigate the sighting',
             'Flee',
+            'Stay and hunt the deer',
+            'Lay a food trap for the cyclops',
         )
 
         var scenarioText = Array(
@@ -662,7 +674,7 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet sails on, and night falls. One of the most trustworthy lieutenants reports that a mutiny is brewing among the crew, and points out a group of culprits. \n \n Will you have the suspected culprits thrown overboard?',
             'The fleet slows to a stop, anchoring off the coast of a small island. The sailors make camp on the white sand shore. \n \n Will you send them to gather food and water, or to chop down trees for materials and shipbuilding?',
             'The fleet comes to a halt at a small beach, and the sailors disembark. A few express a desire to perform rituals to improve their chances of finding an ideal homeland. \n \n Will you burn food to make an offering to the gods?',
-            'The fleet comes to rest in a small inlet. The fleet\'s auger recommends the construction of an altar to improve the fleet\'s chances of finding an ideal homeland. \n \n Will you use materials to make an altar to the gods?',
+            'The fleet comes to rest in a small inlet. The fleet\'s augur recommends the construction of an altar to improve the fleet\'s chances of finding an ideal homeland. \n \n Will you use materials to make an altar to the gods?',
             'The fleet sails on, and the sailors\' stomachs are rumbling. Unfortunately, it\'s discovered that some of the food may have spoiled. \n \n Will you discard the potentially spoiled rations, or eat them before they can completely turn?', 
             'The fleet sails on, and a call goes out: another ship has been spotted on the horizon. Some of the bored sailors look to the captain expectantly, their hands reaching for their swords. \n \n Will you pursue the potential victim, or spare them?',
             'The fleet slows to a stop, anchoring in a small inlet. The sailors disembark from the remaining ships. \n \n Will you order the creation of three new ships to be constructed from the remaining material stores?',
@@ -711,7 +723,7 @@ function generateScenario(nextTextNodeId, optionId)
             completedUniqueScenariosLength = completedUniqueScenarios.length;
         }
 
-        if (scenarioCount > 2 && completedUniqueScenariosLength < 3){
+        if (scenarioCount > 2 && completedUniqueScenariosLength < 5){
             var choice = Math.floor(Math.random() * 2 + 1)
             if (choice == 1){
                 if(attackedMerchant == false){
@@ -767,7 +779,13 @@ function generateScenario(nextTextNodeId, optionId)
             'The party is sent inland to investigate the sighting. They return with supplies, a gift from the native village they\'d come across.',
             'The party is sent inland to investigate the sighting. They return with more people than they\'d set out with, a group of travelers having agreed to join the fleet.',
             'The signal of peace is raised, and the ships approach. Their leader demands the return of all stolen goods twice over. Without another option, an agreement is quickly reached.',
-            'The fleet flees. Some of the slower ships in the fleet are quickly overtaken, but some are able to escape.'
+            'The fleet flees. Some of the slower ships in the fleet are quickly overtaken, but some are able to escape.',
+            'The sailors return to their ships and hastily return to sea. Deep rumbles echo from the ground behind them.',
+            'The sailors hastily hunt the deer. Fortunately, the looming volcano remains dormant.',
+            'The sailors hastily hunt the deer. Unfortunately, as the last deer is killed, the volcano furiously erupts; flaming boulders careen down the mountainside, killing a few of the panicked sailors.',
+            'The sailors return to their ships despite the pleas of the stranger. Although he is unhappy with the decision, he still joins the Trojans as they set sail.',
+            'The sailors lay a food trap for the cyclops, near to his cave. Within a few hours, he stumbles out of his cave, smells the food, and falls straight into the trap. The Trojans quickly release the prisoners, who happily join the crew.',
+            'The sailors lay a food trap for the cyclops, near to his cave. The cyclops, while large, recognizes the trap before he falls for it. Now alerted to the Trojans presence, he returns to his cave. The Trojans depart soon after, taking the single escapee with them.',
         );
 
         var scenarioResultText = Array(
@@ -889,6 +907,48 @@ function generateScenario(nextTextNodeId, optionId)
                 }
             }
             
+            //Volcano
+            else if(scenarioId == 4){
+                if(optionId == 1){
+                    assignedScenarioResult = uniqueScenarioResultText[10];
+                }
+                else if (optionId == 2){
+                    var choice = Math.floor(Math.random() * 2 + 1)
+                    if (choice == 1){
+                        assignedScenarioResult = uniqueScenarioResultText[11];
+                        foodChange = (Math.floor(Math.random() * 10 + 5));
+                        inspectFleet();
+                    }
+                    else if (choice == 2){
+                        assignedScenarioResult = uniqueScenarioResultText[12];
+                        foodChange = (Math.floor(Math.random() * 5 + 3));
+                        sailorsChange = -(Math.floor(Math.random() * 7 + 3));
+                        inspectFleet();
+                    }
+                }
+            }
+
+            //Cyclops
+            else if (scenarioId == 5){
+                if(optionId == 1){
+                    assignedScenarioResult = uniqueScenarioResultText[13];
+                    sailorsChange = 1;
+                    inspectFleet();
+                }
+                else if(optionId == 1){
+                    var choice = Math.floor(Math.random() * 3 + 1)
+                    if (choice == 1 || choice == 2){
+                        assignedScenarioResult = uniqueScenarioResultText[14];
+                        sailorsChange = (Math.floor(Math.random() * 7 + 5));
+                        inspectFleet();
+                    }
+                    else if(choice == 3){
+                        assignedScenarioResult = uniqueScenarioResultText[15];
+                        sailorsChange = 1;
+                        foodChange = -(Math.floor(Math.random() * 8 + 5));
+                    }
+                }
+            }
             uniqueScenarioSwitch = false;
             return;
         }
@@ -1205,7 +1265,7 @@ function showTextNode(textNodeIndex){
         }
     }
     //Land
-    else if (textNodeIndex == 9){
+    else if (textNodeIndex == 9 || textNodeIndex == 11){
         quoteElement.innerText = landQuote;
     }
     //Praying alter
@@ -1231,8 +1291,6 @@ function showOption(option) {
 
 //Select option
 function selectOption(option){
-
-
     sailorChangeElement.style.display = 'none';
     shipChangeElement.style.display = 'none';
     foodChangeElement.style.display = 'none';
@@ -1246,8 +1304,6 @@ function selectOption(option){
     }
 
     nextTextNodeId = option.nextText;
-
-    
 
     const optionId = option.id;
 
@@ -1269,10 +1325,9 @@ function selectOption(option){
     void element2.offsetWidth;
     element2.classList.add("fade-in-quote");
 
-
-
-    
     if (nextTextNodeId <= 0) {
+        chosenLandElement.classList.remove("ending-ascii");
+        chosenLandElement.classList.add("ascii");
         return startGame();
     }
 
@@ -1376,6 +1431,18 @@ function selectOption(option){
             //Merchant revenge
             else if (scenarioId == 3){
                 revengeImageElement.style.display = '';
+                shipImageElement.style.display = 'none';
+            }
+
+            //Volcano
+            else if (scenarioId == 4){
+                volcanoImageElement.style.display = '';
+                shipImageElement.style.display = 'none';
+            }
+
+            //Cyclops
+            else if (scenarioId == 5){
+                cyclopsImageElement.style.display = '';
                 shipImageElement.style.display = 'none';
             }
         }
@@ -1528,7 +1595,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     if (vegetationTier == 'None'){
         food = food - 60;
         vegetationText = "The landscape was devoid of vegetation, and the colonists had to resort to labor-intensive activites to gather food. ";
-        populationScore = populationScore - 80;
+        totalScore = totalScore - 80;
     }
     else if (vegetationTier == 'Plentiful'){
         food = food + 40;
@@ -1573,7 +1640,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         foodText = "With some food supplies remaining, the colonists were able to survive until the first harvest. ";
     }
     else if (food >= 67){
-        population = population + (food - 45);
+        population = population + (food - 40);
         foodText = "With plenty of remaining food in storage, the fledgling colony grew swiftly and healthily. ";
     }
 
@@ -1585,7 +1652,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         waterText = "The remaining water stores kept the first colonists alive in the months before efficient water collection could begin. ";
     }
     else if (water >= 67){
-        population = population + (water - 45);
+        population = population + (water - 40);
         waterText = "The abundance of water in the fleet's holds allowed the new colony to thrive in the days before water collection could be established. ";
     }
 
@@ -1605,11 +1672,11 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         harborText = "The impassable harbor proved a difficult challenge to overcome, requiring the grueling construction of a network of canals. ";
     }
     else if(harborTier == 'Spacious'){
-        constructionScore = constructionScore + 65;
+        constructionScore = constructionScore + 85;
         harborText = "The spacious harbor provided the new colonists with easy access to the sea and trade, and required little extra construction. ";
     }
 
-    populationScore = population * 2;
+    populationScore = population;
 
     if(temperatureTier == 'Extreme'){
         temperatureScore = -200;
@@ -1617,11 +1684,12 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
 
     }
     else if (temperatureTier == 'Comfortable'){
-        temperatureScore = 120;
+        temperatureScore = 140;
         temperatureText = "The comfortable temperatures amplified the colony's appeal to passing travelers, allowing it to maintain a much larger population. ";
     }
     
-    totalScore = populationScore + temperatureScore + constructionScore + ruinsScore;
+    totalScore = (populationScore * 1.8) + temperatureScore + (1.1 * constructionScore) + ruinsScore;
+    totalScore = totalScore | 0;
 
     //Display final screen
     scoreElement.innerText = totalScore;
@@ -1696,6 +1764,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         "\n \n The city of " + civilizationName + " would last only " + Math.floor(Math.random() * 4 + 1) + " years.";
     }
     textElement.innerText = endText;
+    quoteElement.innerText = landQuote;
 }
 
 
@@ -1975,4 +2044,4 @@ const textNodes = [
     }
 ]
 
-startGame()
+startGame();
