@@ -15,7 +15,6 @@ const badLand2ImageElement = document.getElementById('ascii-bad-land2');
 const badLand3ImageElement = document.getElementById('ascii-bad-land3');
 var chosenLandElement;
 
-
 const scenarioImageElements = document.getElementsByClassName('scenario-images');
 const stormySeaImageElement = document.getElementById('ascii-stormy-sea');
 const egestaImageElement = document.getElementById('ascii-egesta');
@@ -27,7 +26,6 @@ const islandImageElement = document.getElementById('ascii-island');
 const volcanoImageElement = document.getElementById('ascii-volcano');
 const cyclopsImageElement = document.getElementById('ascii-cyclops');
 const olympusImageElement = document.getElementById('ascii-olympus');
-
 
 const statusElements = document.getElementsByClassName('status');
 
@@ -43,7 +41,6 @@ const foodChangeElement = document.getElementById('food-change');
 const waterChangeElement = document.getElementById('water-change');
 const materialsChangeElement = document.getElementById('materials-change');
 
-
 const landElements = document.getElementsByClassName('land');
 const vegetationTierElement = document.getElementById('vegetation-tier');
 const temperatureTierElement = document.getElementById('temperature-tier');
@@ -51,7 +48,6 @@ const harborTierElement = document.getElementById('harbor-tier');
 const riverTierElement = document.getElementById('river-tier');
 const nativesTierElement = document.getElementById('natives-tier');
 const ruinsTierElement = document.getElementById('ruins-tier');
-
 
 const allScoreElements = document.getElementsByClassName('score');
 const scoreElement = document.getElementById('score');
@@ -70,13 +66,11 @@ var jupiterLevel = 0;
 var neptuneLevel = 0;
 var isOffering = false;
 
-
 var sailors = 100;
 var ships = 10;
 var food = 100;
 var water = 100;
 var materials = 100;
-
 var sailorsChange = 0;
 var shipsChange = 0;
 var foodChange = 0;
@@ -103,17 +97,9 @@ var scenarioId = 99;
 var scenarioCount = 0;
 var uniqueScenarioSwitch = false;
 
-
 var dead = false;
 
 let state = {};
-
-//TODO:
-    //Complete colony screen 
-    //Improve display look
-    //Add more ascii images
-        //Death
-        //Mutiny
 
 //Start the game
 function startGame(){
@@ -138,9 +124,6 @@ function startGame(){
     for (let i = 0; i < scenarioImageElements.length; i++){
         scenarioImageElements[i].style.display = 'none'
     }
-
-
-
 
     for (let i = 0; i < statusElements.length; i++) {
         statusElements[i].style.display = 'none';
@@ -179,8 +162,6 @@ function startGame(){
     scenarioCount = 0;
     completedUniqueScenariosLength = 0;
 
-
-
     revengeTaken = false;
     attackedMerchant = false;
 
@@ -203,7 +184,6 @@ function startGame(){
 //Inspect fleet
 function inspectFleet()
 {
-
     //Hide changes
     sailorChangeElement.style.display = 'none';
     shipChangeElement.style.display = 'none';
@@ -398,8 +378,6 @@ function updateBoons(){
 //Generate new land
 function generateLand(nextTextNodeId)
 {
-
-    
     //Subtract food and water
     foodChange = -Math.floor(Math.random() * 3 + 1);
 
@@ -407,13 +385,10 @@ function generateLand(nextTextNodeId)
 
     inspectFleet();
 
-
     //Randomize quotes
     deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
     landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
     arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
-
-
 
     //Base stats set
     if(nextTextNodeId != 10 && nextTextNodeId != 11){
@@ -744,7 +719,6 @@ function generateScenario(nextTextNodeId, optionId)
         else {
             completedUniqueScenariosLength = completedUniqueScenarios.length;
         }
-
         if (scenarioCount > 2 && completedUniqueScenariosLength < 5){
             var choice = Math.floor(Math.random() * 2 + 1);
             if (choice == 1){
@@ -772,7 +746,6 @@ function generateScenario(nextTextNodeId, optionId)
                 completedUniqueScenarios.push(scenarioId);
                 
                 return;
-
             }
         }
         do {
@@ -786,8 +759,6 @@ function generateScenario(nextTextNodeId, optionId)
 
         completedScenarios.length = 0;
         completedScenarios.push(scenarioId);
-
-
     }
     //Scenario result
     else if(nextTextNodeId == 13){
@@ -1209,8 +1180,6 @@ function generateScenario(nextTextNodeId, optionId)
             }
         }
     }
-
-
 }
 
 function Death(){
@@ -1221,8 +1190,7 @@ function Death(){
 
     for (let i = 0; i < landElements.length; i++) {
         landElements[i].style.display = 'none';
-    }
-    
+    } 
 }
 
 
@@ -1230,8 +1198,6 @@ function Death(){
 function showTextNode(textNodeIndex){
 
     const textNode = textNodes.find(textNode => textNode.id === textNodeIndex);
-
-    
 
     if(textNodeIndex != 11 && textNodeIndex != 12 && textNodeIndex != 13){
         textElement.innerText = textNode.text;
@@ -1252,7 +1218,6 @@ function showTextNode(textNodeIndex){
         })
     }
 
-    
     //Colony
     else if (textNodeIndex == 11){
         while (continueButtonElement.firstChild) {
@@ -1549,8 +1514,8 @@ function selectOption(option){
         
 
     }
-        
 
+    //Scenario result    
     else if (nextTextNodeId == 13)
     {
         generateScenario(nextTextNodeId, optionId);
@@ -1588,8 +1553,6 @@ function selectOption(option){
     }
     showTextNode(nextTextNodeId);
     state = Object.assign(state, option.setState);
-
-    
 }
 
 
@@ -1879,8 +1842,6 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     textElement.innerText = endText;
     quoteElement.innerText = endGameQuote;
 }
-
-
 
 //Death quotes
 var deathQuotes = Array(
