@@ -13,7 +13,7 @@ body {
 .descriptions {
     width: 80%;
     font-size: 2.3vh;
-    max-width: 60%;
+    max-width: 70%;
     text-align:left;
     width: 100vw;
     height: 100vh;
@@ -64,8 +64,9 @@ body {
 
 .quotes {
     width: 80%;
-    font-size: 2.3vh;
-    max-width: 37%;
+    font-size: 2.1vh;
+    margin-left: 6vh;
+    max-width: 25%;
     text-align: right;
     color:antiquewhite;
     font-style:italic;
@@ -85,10 +86,10 @@ body {
     padding: 1em;
     position: absolute;
     top: 25%;
-    left: 32%;
+    left: 31%;
     font-size: 1.3vh;
     margin-right: -50%;
-    width:500px;
+    width:50%;
     font-weight: bolder;
 }
 
@@ -111,7 +112,7 @@ body {
     top: 72%;
     left: 5%;
     color:white;
-    font-size: 2.2vh;
+    font-size: 2.1vh;
 }
 
 .status-count {
@@ -128,9 +129,8 @@ body {
     padding: 1em;
     position: absolute;
     width: 13%;
-    top: 80%;
-    left: 75%;
-    transform: translate(-50%, -50%);
+    top: 73%;
+    left: 68%;
     color:white;
     font-size: 2.1vh;
 }
