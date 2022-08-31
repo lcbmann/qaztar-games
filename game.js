@@ -619,7 +619,7 @@ function generateScenario(nextTextNodeId, optionId)
         var islandQuotes = Array(
             '"They stretch their salt-soaked limbs along the beach. Achates was the first to strike a spark from flint and catch the fire up with leaves." \n \n - Virgil, The Aeneid',
             '"Achates spread dry fuel about, and then he waved the tinder into flame. Tired of their trials, the Trojan crewmen carry out the tools and the sea-drenched corn of Ceres." \n \n - Virgil, The Aeneid',
-            '"Aeneas climbs a crag to seek a prospect far and wide... there is no ship in sight. All he can see are three stags wandering along the shore, with whole herds following behind, a long line grazing through the valley." \n \n - Virgil, The Aeneid',
+            '"He climbs a crag to seek a prospect far and wide... there is no ship in sight. All he can see are three stags wandering along the shore, with whole herds following behind, a long line grazing through the valley." \n \n - Virgil, The Aeneid',
             '"There is a cove within a long, retiring bay; and there an island\'s jutting harbor where every breaker off the high sea shatters and parts into the shoreline\'s winding shelters." \n \n - Virgil, The Aeneid',
         )
         var uniqueScenarioText = Array(
