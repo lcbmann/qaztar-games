@@ -89,7 +89,7 @@ body {
     left: 31%;
     font-size: 1.3vh;
     margin-right: -50%;
-    width:50%;
+    width:5%;
     font-weight: bolder;
 }
 
@@ -106,7 +106,7 @@ body {
 }
 
 .status {
-    padding: 1em;
+
     position: absolute;
     width: 10%;
     top: 72%;
@@ -126,11 +126,10 @@ body {
 }
 
 .boon {
-    padding: 1em;
     position: absolute;
-    width: 13%;
-    top: 73%;
-    left: 68%;
+    width: 10%;
+    top: 75%;
+    left: 73%;
     color:white;
     font-size: 2.1vh;
 }
@@ -138,10 +137,10 @@ body {
 .land {
     font-size: 2.1vh;
     border-radius: 1em;
-    padding: 1em;
     position: absolute;
     top: 70%;
-    left: 38.5%;
+    left: 38.4%;
+    margin-right: -50%;
     color:white;
 }
 

@@ -643,7 +643,7 @@ function generateScenario(nextTextNodeId, optionId)
 
         var islandQuotes = Array(
             '"They stretch their salt-soaked limbs along the beach. Achates was the first to strike a spark from flint and catch the fire up with leaves." \n \n - Virgil, The Aeneid',
-            '"Achates spread Extreme fuel about, and then he waved the tinder into flame. Tired of their trials, the Trojan crewmen carry out the tools and the sea-drenched corn of Ceres." \n \n - Virgil, The Aeneid',
+            '"Achates spread dry fuel about, and then he waved the tinder into flame. Tired of their trials, the Trojan crewmen carry out the tools and the sea-drenched corn of Ceres." \n \n - Virgil, The Aeneid',
             '"Aeneas climbs a crag to seek a prospect far and wide... there is no ship in sight. All he can see are three stags wandering along the shore, with whole herds following behind, a long line grazing through the valley." \n \n - Virgil, The Aeneid',
             '"There is a cove within a long, retiring bay; and there an island\'s jutting harbor where every breaker off the high sea shatters and parts into the shoreline\'s winding shelters." \n \n - Virgil, The Aeneid',
         )
@@ -1973,7 +1973,7 @@ const textNodes = [
     },
     {
         id: 4,
-        text: 'But one by one, they turned to the sea. Their captain\'s gaze wandered out to the horizon, and only one goal appeared in mind: to found the greatest civilization the world had ever known.',
+        text: 'But one by one, they turned to the sea. Their captain\'s gaze wandered out to the horizon, and only one goal appeared in his mind: to found the greatest civilization the world had ever known.',
         quoteText: '"Weeping, I must give up the shores, the harbors that were my home, the plain that once was Troy." \n \n "An exile, I go out across the waters together with my comrades and my son..." \n \n "We are driven by divine commands, and signs to sail in search of fields of exile in distant and deserted lands." \n \n - Virgil, The Aeneid',
         options: [
             {
