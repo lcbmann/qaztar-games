@@ -26,6 +26,7 @@ const merchantImageElement = document.getElementById('ascii-merchant');
 const islandImageElement = document.getElementById('ascii-island');
 const volcanoImageElement = document.getElementById('ascii-volcano');
 const cyclopsImageElement = document.getElementById('ascii-cyclops');
+const olympusImageElement = document.getElementById('ascii-olympus');
 
 
 const statusElements = document.getElementsByClassName('status');
@@ -96,6 +97,8 @@ var stolenMaterials = 0;
 
 var completedUniqueScenarios = Array();
 var completedUniqueScenariosLength = 0;
+
+var completedScenarios = Array();
 var scenarioId = 99;
 var scenarioCount = 0;
 var uniqueScenarioSwitch = false;
@@ -110,15 +113,6 @@ let state = {};
     //Improve display look
     //Add more ascii images
         //Death
-        //Egesta (Done)
-        //Charybdis/Scylla (Done)
-        //Something in the distance (Done)
-        //Island (Done)
-        //Gods (Done)
-        //One more land for each vegetation type
-        //Storm (Done)
-        //Merchant Ship (done)
-        //Merchant revenge (done)
         //Mutiny
 
 //Start the game
@@ -403,6 +397,7 @@ function generateLand(nextTextNodeId)
     arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
 
+
     //Base stats set
     if(nextTextNodeId != 10 && nextTextNodeId != 11){
         
@@ -680,17 +675,21 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet sails on, and the sailors\' stomachs are rumbling. Unfortunately, it\'s discovered that some of the food may have spoiled. \n \n Will you discard the potentially spoiled rations, or eat them before they can completely turn?', 
             'The fleet sails on, and a call goes out: another ship has been spotted on the horizon. Some of the bored sailors look to the captain expectantly, their hands reaching for their swords. \n \n Will you pursue the potential victim, or spare them?',
             'The fleet slows to a stop, anchoring in a small inlet. The sailors disembark from the remaining ships. \n \n Will you order the creation of three new ships to be constructed from the remaining material stores?',
+            'The fleet slows to a stop, and treks up a cliffside to a small temple. Within lies a basin, empty. Some of the sailors believe that refilling the basin would improve favor with the gods, increasing their chances of finding an ideal land to settle. \n \n Will you refill the basin with fresh water for the gods?',
+            'The fleet clashes with the waves as a great stormfront rocks the ships. One of the ships begins to come apart, its planks creaking and growning as they split. \n \n Will you send sailors to try to repair the ship, or will you order its evacuation?',
         )
         var quoteText = Array(
-            '"A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n - Virgil, The Aeneid',
-            '', // ship falling apart
+            '"A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n "Then, suddenly, the cloud banks snatch away the sky and daylight from the Trojan\'s eyes. Black night hangs on the waters, heavens thunder, and frequent lightning glitters in the air; everything intends quick death to men." \n \n - Virgil, The Aeneid',
+            '"', // ship falling apart
             '', // mutiny
             islandQuotes[Math.floor(Math.random()*islandQuotes.length)],
             '', // burn food
             '', // build altar
-            '',
+            '"The grass was parched. Sick grain denied us food." \n \n - Virgil, The Aeneid', //spoiled food
             '"All the crewmen fasten the sheets; at once, together, they let loose the sails, to port, to starboard; and as one, they shift and turn the high yardarms; kind winds drive on the fleet." \n \n - Virgil, The Aeneid',
-            '', // building ships
+            '"Then let us build out of Italian oak twice-ten ships for the Trojans - even more, if they can fill them.', // building ships
+            '', // fill basin
+            '"The seas are heaved to heaven. The oars are cracked; the prow sheers off; the waves attack broadside; against his hull the swell now shatters in a heap, mountainous, steep. Some sailors hang upon a wave crest; others stare out at the gaping waters, land that lies below the waves, surge that seethes with sand." \n \n - Virgil, The Aeneid',
 
         )
         var option1Text = Array(
@@ -703,6 +702,8 @@ function generateScenario(nextTextNodeId, optionId)
             'Discard the food',
             'Pursue the ship',
             'Construct three new ships',
+            'Refill the temple basin',
+            'Attempt to save the ship',
         )
 
         var option2Text = Array(
@@ -715,6 +716,8 @@ function generateScenario(nextTextNodeId, optionId)
             'Eat them quickly',
             'Spare the ship',
             'Continue with the existing ships and materials',
+            'Leave the basin empty and depart',
+            'Order the evacuation',
         )
         
         //Unique Scenario generator
@@ -755,16 +758,17 @@ function generateScenario(nextTextNodeId, optionId)
 
             }
         }
-        
-        assignedScenario = scenarioText[Math.floor(Math.random()*scenarioText.length)];
-
-        scenarioId = scenarioText.indexOf(assignedScenario);
-
+        do {
+            assignedScenario = scenarioText[Math.floor(Math.random()*scenarioText.length)];
+            scenarioId = scenarioText.indexOf(assignedScenario);
+        } while (completedScenarios.includes(scenarioId));
         assignedQuote = quoteText[scenarioId];
         assignedOption1 = option1Text[scenarioId];
         assignedOption2 = option2Text[scenarioId];
-
         scenarioCount = scenarioCount + 1;
+
+        completedScenarios.length = 0;
+        completedScenarios.push(scenarioId);
 
 
     }
@@ -813,7 +817,12 @@ function generateScenario(nextTextNodeId, optionId)
             'The ship is quickly run down by the superior Trojan fleet. However, the inhabitants appear prepared for attacks - they take a number of crewmen down before they can be subdued.',
             'The ship slowly disappears into the horizon. The sailors, grumbling, return to their routines.',
             'The sailors set to work building three more ships for the fleet, pulling from the existing material stores.',
-            'No new ships are built.'
+            'No new ships are built.',
+            'The basin is filled',
+            'The basin is left empty',
+            'The sailors scramble to follow the shouted order, rushing to the broken ship. Fortunately, they are able to save it, sealing the gaps in its shuddering hull.',
+            'The sailors scramble to follow the shouted order. Unfortunately, just as the first are arriving on the ship, it capsizes, and vanishes beneath the swell.',
+            'The sailors pass on the shouted evacuation order, barely heard over the crashing waves and howling winds. The sailors grab as much of the cargo as they can before leaving, though some is left behind, and the ship soon vanishes beneath the surface.',
         );
         
         //Unique scenarios
@@ -948,6 +957,7 @@ function generateScenario(nextTextNodeId, optionId)
                         assignedScenarioResult = uniqueScenarioResultText[15];
                         sailorsChange = 1;
                         foodChange = -(Math.floor(Math.random() * 8 + 5));
+                        inspectFleet();
                     }
                 }
             }
@@ -1139,6 +1149,48 @@ function generateScenario(nextTextNodeId, optionId)
                 assignedScenarioResult = scenarioResultText[22];
             }
         }
+
+        //Basin
+        if(scenarioId == 9){
+            if(optionId == 1){
+                assignedScenarioResult = scenarioResultText[23];
+                isOffering = true;
+                waterChange = -(Math.floor(Math.random() * 15 + 1))
+                inspectFleet();
+            }
+            else if (optionId == 2){
+                assignedScenarioResult = scenarioResultText[24];
+            }
+        }
+
+        //Storm 2
+        if(scenarioId == 10){
+            if(optionId == 1){
+                var choice = Math.floor(Math.random() * 2 + 1)
+                if(choice == 1){
+                    assignedScenarioResult = scenarioResultText[25]
+                    inspectFleet();
+                }
+                else if (choice == 2){
+                    assignedScenarioResult = scenarioResultText[26]
+                    sailorsChange = -(Math.floor(Math.random() * 3 + 1));
+                    foodChange = -(Math.floor(Math.random() * 2 + 1));
+                    waterChange = -(Math.floor(Math.random() * 2 + 1));
+                    materialsChange = -(Math.floor(Math.random() * 2 + 1));
+                    shipsChange = -1;
+                    inspectFleet();
+                }
+
+            }
+            else if (optionId == 2){
+                assignedScenarioResult = scenarioResultText[27];
+                foodChange = -1;
+                waterChange = -1;
+                materialsChange = -1;
+                shipsChange = -1;
+                inspectFleet();
+            }
+        }
     }
 
 
@@ -1268,10 +1320,15 @@ function showTextNode(textNodeIndex){
             waterChange = -(Math.floor(Math.random() * 8 + 1));
             inspectFleet();
         }
+
     }
     //Land
-    else if (textNodeIndex == 9 || textNodeIndex == 11){
+    else if (textNodeIndex == 9){
         quoteElement.innerText = landQuote;
+    }
+    //Colony
+    else if (textNodeIndex == 11){
+        quoteElement.innerText = endGameQuote;
     }
     //Praying alter
     else if (textNodeIndex == 14){
@@ -1452,7 +1509,7 @@ function selectOption(option){
             }
         }
         //Stormy Sea
-        else if(scenarioId == 0){
+        else if(scenarioId == 0 || scenarioId == 10){
             stormySeaImageElement.style.display = '';
             shipImageElement.style.display = 'none';
         }
@@ -1463,6 +1520,10 @@ function selectOption(option){
             shipImageElement.style.display = 'none';
         }
 
+        else if (scenarioId == 4 || scenarioId == 5 || scenarioId == 9){
+            olympusImageElement.style.display = '';
+            shipImageElement.style.display = 'none';
+        }
         //Merchant ship
         else if(scenarioId == 7){
             merchantImageElement.style.display = '';
@@ -1518,7 +1579,7 @@ function selectOption(option){
 //End Game
 function endGame(sailors, ships, food, water, materials, vegetationTier, temperatureTier, harborTier, riverTier, nativesTier, ruinsTier){
 
-
+    endGameQuote = endGameQuotes[Math.floor(Math.random()*endGameQuotes.length)];
     civilizationNames = Array(
         "Sekos",
         "Odnita",
@@ -1554,6 +1615,14 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         "Falkreath",
         "Novigrad",
         "Ilum",
+        "Ceah",
+        "Arcdale",
+        "Kluygate",
+        "Encesa",
+        "Adrenaburg",
+        "Pholis",
+        "Arkron",
+        "Hodon"
     )
 
     var civilizationName = civilizationNames[Math.floor(Math.random()*civilizationNames.length)]
@@ -1663,12 +1732,12 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
 
 
     if(ruinsTier == 'Relics'){
-        ruinsScore = 30;
+        ruinsScore = 50;
         ruinsText = "The nearby ruins contained a few useful tools from a long-dead civilization, providing a small boost to the colony's early growth. ";
     }
     else if(ruinsTier == 'Treasures'){
-        ruinsScore = 60;
-        constructionScore = constructionScore + 20;
+        ruinsScore = 90;
+        constructionScore = constructionScore + 30;
         ruinsText = "The nearby ruins were filled with valuable resources and provided a stable framework to construct a new colony upon, greatly bolstering the colony's survivability. ";
     }
 
@@ -1775,7 +1844,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         "\n \n The city of " + civilizationName + " would last only " + Math.floor(Math.random() * 4 + 1) + " years.";
     }
     textElement.innerText = endText;
-    quoteElement.innerText = landQuote;
+    quoteElement.innerText = endGameQuote;
 }
 
 
@@ -1817,10 +1886,18 @@ var prayQuotes = Array(
     '"You gods who rule the kingdom of the seas, whose waters I now race upon: to keep the promise that I pledge, I shall with gladness offer a snow-white bull before your altars." \n \n - Virgil, The Aeneid',
 )
 
+//End game quotes
+var endGameQuotes = Array(
+    '"His empire\'s boundary shall be the Ocean; the only border to his fame, the stars." \n \n - Virgil, The Aeneid',
+    '"I set no limits to their fortunes and no time; I give them empire without end." \n \n - Virgil, The Aeneid',
+    '"We followed you, your men, from burning Troy and crossed the swollen waters in your care together with your ships; and we shall raise your children to the stars and build an empire out of their city." \n \n - Virgil, The Aeneid',
+)
+
 var deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
 var landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
 var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 var prayQuote = prayQuotes[Math.floor(Math.random()*prayQuotes.length)];
+var endGameQuote = endGameQuotes[Math.floor(Math.random()*endGameQuotes.length)];
 
 //Text nodes
 const textNodes = [
@@ -1875,7 +1952,7 @@ const textNodes = [
     {
         //Death
         id: 5,
-        text: 'The journey of the exiles ends here, its final crewmates perishing at sea.',
+        text: 'The journey of the exiles ends here. As the captain sees his dream of a new civilization die with his fleet, he wonders: "Where did it all go wrong?".',
         quoteText: 'Variable death quote here',
         options: [
             {

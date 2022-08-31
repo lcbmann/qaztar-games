@@ -13,11 +13,53 @@ body {
 .descriptions {
     width: 80%;
     font-size: 2.3vh;
-    max-width: 63%;
+    max-width: 60%;
     text-align:left;
     width: 100vw;
     height: 100vh;
     color:white;
+}
+
+.title {
+    position: absolute;
+    left: 50%;
+    top:58%;
+    font-size: 8vh;
+    text-align:center;
+    color:white;
+    width:500px;
+    height:500px;
+    margin:0 auto;
+    margin-left:-250px;
+    margin-top:-250px;
+}
+
+.title-text{
+    position: absolute;
+    left: 50%;
+    font-size: 2vh;
+    text-align:center;
+    color:white;
+    width:600px;
+    height:500px;
+    margin:0 auto;
+    margin-left:-300px;
+    margin-top:-250px;
+}
+
+
+.play-button{
+    position: absolute;
+    left: 50%;
+    top: 90%;
+    font-size: 3vh;
+    text-align:center;
+    color:white;
+    width:500px;
+    height:500px;
+    margin:0 auto;
+    margin-left:-250px;
+    margin-top:-250px;
 }
 
 .quotes {
@@ -42,11 +84,11 @@ body {
     border-radius: 1em;
     padding: 1em;
     position: absolute;
-    top: 50%;
-    left: 48%;
+    top: 25%;
+    left: 32%;
     font-size: 1.3vh;
     margin-right: -50%;
-    transform: translate(-50%, -50%);
+    width:500px;
     font-weight: bolder;
 }
 
@@ -66,9 +108,8 @@ body {
     padding: 1em;
     position: absolute;
     width: 10%;
-    top: 80%;
-    left: 10%;
-    transform: translate(-50%, -50%);
+    top: 72%;
+    left: 5%;
     color:white;
     font-size: 2.2vh;
 }
@@ -99,9 +140,8 @@ body {
     border-radius: 1em;
     padding: 1em;
     position: absolute;
-    top: 80%;
-    left: 44%;
-    transform: translate(-50%, -50%);
+    top: 70%;
+    left: 38.5%;
     color:white;
 }
 
@@ -166,7 +206,7 @@ body {
 }
 
 .fade-in-buttons {
-    animation: fadeInButtons 3s;
+    animation: fadeInButtons 4s;
 }
 
 @keyframes fadeIn {
