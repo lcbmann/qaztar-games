@@ -1660,6 +1660,18 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         civilizationName = idealCivilizationNames[Math.floor(Math.random()*idealCivilizationNames.length)]
     }
 
+    else if (ceresLevel == 3 && jupiterLevel == 3 && neptuneLevel == 3){
+        var godsCivilizationNames = Array(
+            "Olympus",
+            "The Blessed Land",
+            "The Hollowed Lands",
+            "The Holy Land",
+            "Sanctity",
+            "Exalted"
+        )
+        civilizationName = godsCivilizationNames[Math.floor(Math.random()*godsCivilizationNames.length)];
+    }
+
     var populationText = sailors + " crewmates had survived the journey across the sea. ";
     var foodText = "";
     var waterText = "";
