@@ -164,6 +164,23 @@ function startGame(){
     food = 100;
     water = 100;
     materials = 100;
+
+    ceresLevel = 0;
+    jupiterLevel = 0;
+    neptuneLevel = 0;
+    isOffering = false;
+
+    totalScore = 0;
+    stolenFood = 0;
+    stolenWater = 0;
+    stolenMaterials = 0;
+
+    scenarioId = 99;
+    scenarioCount = 0;
+    completedUniqueScenariosLength = 0;
+
+
+
     revengeTaken = false;
     attackedMerchant = false;
 
@@ -1650,7 +1667,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     var vegetationText = "The landscape contained sparse vegetation, which provided the colonists with a small amount of food. ";
     var riverText = "The trickling river nearby supplied the colonists with a small amount of fresh-water to drink in the early days of the colony. ";
 
-    var temperatureText = "The fluctuating temperatures neither helped nor hindered the colony's growth. ";
+    var temperatureText = "";
     var constructionText = "";
     var harborText = "The tight harbor benefitted the new colony, but required a moderate amount of construction to be usable. ";
     var materialsText = "";
@@ -1694,8 +1711,8 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     }
     else if (nativesTier == 'Generous')
     {
-        food = food + 15;
-        water = water + 15;
+        food = food + 25;
+        water = water + 25;
         nativesText = "The natives proved generous to the new colonists, providing them with food and water to bolster their remaining stores. ";
     }
 
@@ -1753,9 +1770,13 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
     populationScore = population;
 
     if(temperatureTier == 'Extreme'){
-        temperatureScore = -200;
+        temperatureScore = -180;
         temperatureText = "The extreme temperatures stunted the colony's ability to grow and maintain a large population. ";
 
+    }
+    else if (temperatureTier == 'Fluctuating'){
+        temperatureScore = 40;
+        temperatureText = "The fluctuating temperatures neither helped nor hindered the colony's growth. ";
     }
     else if (temperatureTier == 'Comfortable'){
         temperatureScore = 140;
@@ -1940,7 +1961,7 @@ const textNodes = [
     },
     {
         id: 4,
-        text: 'But one by one, they turned to the sea.',
+        text: 'But one by one, they turned to the sea. Their captain gazed to the horizon with one goal in mind: to found the greatest civilization in the world.',
         quoteText: '"Weeping, I must give up the shores, the harbors that were my home, the plain that once was Troy." \n \n "An exile, I go out across the waters together with my comrades and my son..." \n \n "We are driven by divine commands, and signs to sail in search of fields of exile in distant and deserted lands." \n \n - Virgil, The Aeneid',
         options: [
             {
