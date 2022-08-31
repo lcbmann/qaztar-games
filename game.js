@@ -1934,12 +1934,12 @@ const textNodes = [
     },
     {
         id: 4,
-        text: 'But one by one, they turned to the sea. \n \n Their captain\'s gaze wandered out to the horizon, and only one goal appeared in his mind: to discover the ideal land on which to found the greatest civilization the world had ever known.',
-        quoteText: '"Weeping, I must give up the shores, the harbors that were my home, the plain that once was Troy." \n \n "An exile, I go out across the waters together with my comrades and my son..." \n \n "We are driven by divine commands, and signs to sail in search of fields of exile in distant and deserted lands." \n \n - Virgil, The Aeneid',
+        text: 'But one by one, they turned to the sea.',
+        quoteText: '"Weeping, I must give up the shores, the harbors that were my home, the plain that once was Troy." \n \n "An exile, I go out across the waters together with my comrades and my son..." \n \n - Virgil, The Aeneid',
         options: [
             {
-                text: 'Set off into the sea.',
-                nextText: 6
+                text: 'Continue',
+                nextText: 18
             }
         ]
     },
@@ -2121,6 +2121,18 @@ const textNodes = [
             {
                 text:'Set sail',
                 nextText: 8
+            }
+        ]
+    },
+    {
+        //Extra intro node
+        id: 18,
+        text: 'Their captain\'s gaze wandered out to the horizon, and only one goal appeared in his mind: to discover the ideal land on which to found the greatest civilization the world had ever known.',
+        quoteText: '"We are driven by divine commands, and signs to sail in search of fields of exile in distant and deserted lands." \n \n - Virgil, The Aeneid',
+        options: [
+            {
+                text: 'Set off into the sea.',
+                nextText: 6
             }
         ]
     }
