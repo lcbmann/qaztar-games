@@ -106,7 +106,6 @@ body {
 }
 
 .status {
-
     position: absolute;
     width: 10%;
     top: 72%;
@@ -145,7 +144,6 @@ body {
 }
 
 .score {
-
     border-radius: 1em;
     padding: 1em;
     position: absolute;

@@ -671,7 +671,7 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet clashes with the waves as a great stormfront rocks the ships. One of the ships begins to come apart, its planks creaking and growning as they split. \n \n Will you send sailors to try to repair the ship, or will you order its evacuation?',
         )
         var quoteText = Array(
-            '"A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n "Then, suddenly, the cloud banks snatch away the sky and daylight from the Trojan\'s eyes. Black night hangs on the waters, heavens thunder, and frequent lightning glitters in the air; everything intends quick death to men." \n \n - Virgil, The Aeneid',
+            '"Then, suddenly, the cloud banks snatch away the sky and daylight from the Trojan\'s eyes. Black night hangs on the waters, heavens thunder, and frequent lightning glitters in the air; everything intends quick death to men." \n \n "A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n - Virgil, The Aeneid',
             '"', // ship falling apart
             '', // mutiny
             islandQuotes[Math.floor(Math.random()*islandQuotes.length)],
