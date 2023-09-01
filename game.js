@@ -1,3 +1,5 @@
+//Version 1
+
 const textElement = document.getElementById('text');
 const quoteElement = document.getElementById('quote');
 const continueButtonElement = document.getElementById('continue-button');
