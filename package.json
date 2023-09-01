@@ -5,7 +5,7 @@
   "type": "module",
   "main": "game.js",
   "scripts": {
-    "dev": "node game.js"
+    "dev": "game.js"
   },
   "keywords": [],
   "author": "",
