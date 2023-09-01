@@ -1,3 +1,14 @@
+import { config } from "dotenv"
+config()
+
+import { Configuration, OpenAIApi } from "openai"
+
+
+const configuration = new Configuration({
+    apiKey: process.env.API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
 const textElement = document.getElementById('text');
 const quoteElement = document.getElementById('quote');
 const continueButtonElement = document.getElementById('continue-button');
@@ -1863,6 +1874,7 @@ var arrivalTexts = Array(
     'The fleet passes around a bend, revealing a new land ahead. The evening sunbeams shatter across the cresting waves.',
     'The fleet glides along a shoreline of white sand, cliffs framing a beach ahead. Gusts of wind billow in the sails.',
     'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.'
+    
 )
 
 //Inspect land quotes
@@ -1887,9 +1899,29 @@ var endGameQuotes = Array(
     '"We followed you, your men, from burning Troy and crossed the swollen waters in your care together with your ships; and we shall raise your children to the stars and build an empire out of their city." \n \n - Virgil, The Aeneid',
 )
 
+var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
+
+var arrivalText = await openai.createCompletion({
+    model: "text-davinci-003",
+    prompt: generatePrompt(),
+    temperature: 0.6,
+});
+
+function generatePrompt() {
+    return `Suggest a short arrival text message for a fleet pulling into new land from the sea. 
+    Examples: 
+    'The fleet pulls into a small cape, the sun low in the evening sky. Tiny waves lap against the side of the boat.', 
+    'The fleet passes around a bend, revealing a new land ahead. The evening sunbeams shatter across the cresting waves.', 
+    'The fleet glides along a shoreline of white sand, cliffs framing a beach ahead. Gusts of wind billow in the sails.', 
+    'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.'
+    `;
+}
+
+
+
+
 var deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
 var landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
-var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 var prayQuote = prayQuotes[Math.floor(Math.random()*prayQuotes.length)];
 var endGameQuote = endGameQuotes[Math.floor(Math.random()*endGameQuotes.length)];
 
@@ -1898,7 +1930,7 @@ const textNodes = [
     {
         id: 1,
         text: 'And when he knew the king was dead, he fled.',
-        quoteText: '"I go down and, guided by a god, move on among the foes and fires; weapons turn aside, the flames retire where I make my way." \n \n - Virgil, The Aeneid',
+        quoteText: '"I go down and, guided by a god, move on among the foes and fires; weapons turn aside, the flames retire where I mke my way." \n \n - Virgil, The Aeneid',
         options: [
             {
                 text: 'Continue',
