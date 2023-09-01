@@ -1892,6 +1892,9 @@ var endGameQuotes = Array(
 
 //var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
+
+
+
 var arrivalText = "Not set properly";
 
 
