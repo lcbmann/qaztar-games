@@ -1,5 +1,3 @@
-import { } from './generate.js';
-
 const textElement = document.getElementById('text');
 const quoteElement = document.getElementById('quote');
 const continueButtonElement = document.getElementById('continue-button');
