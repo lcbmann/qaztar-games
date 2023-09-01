@@ -1,12 +1,9 @@
-import { config } from "dotenv"
-config()
+import { Configuration, OpenAIApi } from "openai";
 
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-     apiKey: process.env.API_KEY // This is also the default, can be omitted
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
 });
-
+const openai = new OpenAIApi(configuration);
 
 
 const textElement = document.getElementById('text');
@@ -1901,21 +1898,22 @@ var endGameQuotes = Array(
 
 //var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
-var arrivalText = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: generatePrompt(),
-    temperature: 0.6,
-});
+var arrivalText
 
-function generatePrompt() {
-    return `Suggest a short arrival text message for a fleet pulling into new land from the sea. 
+openai
+.createCompletion({
+    model: "gpt-3.5-turbo",
+    messages: [{ role: "user", content: `Suggest a short arrival text message for a fleet pulling into new land from the sea. 
     Examples: 
     'The fleet pulls into a small cape, the sun low in the evening sky. Tiny waves lap against the side of the boat.', 
     'The fleet passes around a bend, revealing a new land ahead. The evening sunbeams shatter across the cresting waves.', 
     'The fleet glides along a shoreline of white sand, cliffs framing a beach ahead. Gusts of wind billow in the sails.', 
     'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.'
-    `;
-}
+    `}]
+    .then(res => {
+       arrivalText = res.data.choices[0].message.content 
+    })
+})
 
 
 
