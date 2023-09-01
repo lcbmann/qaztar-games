@@ -16,5 +16,7 @@ async function generateArrivalText() {
         'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.'
         `}]
     })
-    return (completion.choices[0].message.content);
+    console.log(completion.choices[0].message.content);
 }
+
+generateArrivalText();
