@@ -19,4 +19,4 @@ async function generateArrivalText() {
     console.log(completion.choices[0].message.content);
 }
 
-export function generateArrivalText();
+module.exports = {generateArrivalText};

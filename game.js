@@ -1,6 +1,6 @@
-//Version 4
+//Version 5
 
-import { } from './generate.js'
+const { } = require('./generate')
 
 const textElement = document.getElementById('text');
 const quoteElement = document.getElementById('quote');
