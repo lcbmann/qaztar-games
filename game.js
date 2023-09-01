@@ -1,11 +1,3 @@
-import { Configuration, OpenAIApi } from "openai";
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-
-
 const textElement = document.getElementById('text');
 const quoteElement = document.getElementById('quote');
 const continueButtonElement = document.getElementById('continue-button');
@@ -1898,7 +1890,7 @@ var endGameQuotes = Array(
 
 //var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
-var arrivalText
+var arrivalText = "Not set properly"
 
 openai
 .createCompletion({
