@@ -1899,7 +1899,7 @@ var endGameQuotes = Array(
     '"We followed you, your men, from burning Troy and crossed the swollen waters in your care together with your ships; and we shall raise your children to the stars and build an empire out of their city." \n \n - Virgil, The Aeneid',
 )
 
-var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
+//var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
 var arrivalText = await openai.createCompletion({
     model: "text-davinci-003",
@@ -1929,7 +1929,7 @@ var endGameQuote = endGameQuotes[Math.floor(Math.random()*endGameQuotes.length)]
 const textNodes = [
     {
         id: 1,
-        text: 'And when he knew the king was dead, he fled.',
+        text: arrivalText,
         quoteText: '"I go down and, guided by a god, move on among the foes and fires; weapons turn aside, the flames retire where I mke my way." \n \n - Virgil, The Aeneid',
         options: [
             {
