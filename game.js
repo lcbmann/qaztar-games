@@ -1,4 +1,4 @@
-import generateArrivalText from './generate.js';
+import { } from './generate.js';
 
 const textElement = document.getElementById('text');
 const quoteElement = document.getElementById('quote');
