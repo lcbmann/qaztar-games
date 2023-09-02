@@ -1,6 +1,8 @@
-import OpenAI from "openai";
+import OpenAI from "./node_modules/openai/index.mjs";
 
-const openai = new OpenAI();
+const openai = new OpenAI({
+    apiKey: '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'
+});
 
 async function generateArrivalText() {
     const completion = await openai.chat.completions.create({
