@@ -1,9 +1,11 @@
-//Version 10
+//Version 11
 
-import { generateArrivalText } from './generate.mjs';
+//import { generateArrivalText } from './generate.mjs';
 import { sayHello } from './test.mjs';
 
 sayHello();
+
+//var arrivalText = await generateArrivalText();
 
 
 const textElement = document.getElementById('text');
@@ -106,8 +108,6 @@ var scenarioCount = 0;
 var uniqueScenarioSwitch = false;
 
 var dead = false;
-
-var arrivalText = await generateArrivalText();
 
 let state = {};
 
