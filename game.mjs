@@ -1,11 +1,11 @@
-//Version 11
+//Version 12
 
-//import { generateArrivalText } from './generate.mjs';
+import { generateArrivalText } from './generate.mjs';
 import { sayHello } from './test.mjs';
 
 sayHello();
 
-//var arrivalText = await generateArrivalText();
+var arrivalText = await generateArrivalText();
 
 
 const textElement = document.getElementById('text');

@@ -2,7 +2,7 @@
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-    apiKey: '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'
+    apiKey: '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'
 });
 
 async function generateArrivalText() {
