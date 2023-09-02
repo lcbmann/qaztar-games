@@ -1,6 +1,10 @@
-//Version 7
+//Version 8
 
-import { } from './generate.js'
+import { generateArrivalText } from './generate.mjs';
+import { sayHello } from './test.mjs';
+
+sayHello();
+
 
 const textElement = document.getElementById('text');
 const quoteElement = document.getElementById('quote');
@@ -103,6 +107,8 @@ var uniqueScenarioSwitch = false;
 
 var dead = false;
 
+var arrivalText = await generateArrivalText();
+
 let state = {};
 
 //Start the game
@@ -188,6 +194,7 @@ function startGame(){
 //Inspect fleet
 function inspectFleet()
 {
+    arrivalText = generateArrivalText();
     //Hide changes
     sailorChangeElement.style.display = 'none';
     shipChangeElement.style.display = 'none';
@@ -1895,13 +1902,6 @@ var endGameQuotes = Array(
 //var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
 
-
-
-var arrivalText = "Not set properly";
-
-
-
-var arrivalText = generateArrivalText();
 
 
 

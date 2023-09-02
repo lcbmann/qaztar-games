@@ -6,10 +6,13 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "main":"node game.mjs",
-    "dev": "node generate.js"
+    "main": "node game.mjs",
+    "dev": "node generate.mjs"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "openai": "^4.4.0"
+  }
 }
