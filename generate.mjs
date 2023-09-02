@@ -1,7 +1,8 @@
-import OpenAI from "./node_modules/openai/index.mjs";
+//import OpenAI from "./node_modules/openai/index.mjs";
+import OpenAI from 'openai'
 
 const openai = new OpenAI({
-    apiKey: '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'
+    apiKey: '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'
 });
 
 async function generateArrivalText() {

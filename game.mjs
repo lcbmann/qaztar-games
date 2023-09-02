@@ -2,7 +2,6 @@
 
 import { generateArrivalText } from './generate.mjs';
 import { sayHello } from './test.mjs';
-import OpenAI from "./node_modules/openai";
 
 sayHello();
 
