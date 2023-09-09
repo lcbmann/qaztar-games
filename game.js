@@ -1895,6 +1895,7 @@ var endGameQuotes = Array(
 
 function generateArrivalText(){
     arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
+    return arrivalText;
 }
 
 var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
