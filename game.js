@@ -1893,6 +1893,10 @@ var endGameQuotes = Array(
 )
 
 
+function generateArrivalText(){
+    arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
+}
+
 var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 var deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
 var landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
