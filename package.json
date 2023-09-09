@@ -2,11 +2,9 @@
   "name": "lcbmann.github.io",
   "version": "1.0.0",
   "description": "Aeneas is a text-based game based on the story of The Aeneid by Virgil. You play as Aeneas, the captain of the remnant Trojan fleet, and you must make difficult decisions about what to do during difficult scenarios. Eventually, you must decide the land on which the final colony will be built. The better the land and the better you've managed your fleet's resources, the better your civilization will turn out.",
-  "main": "game.mjs",
-  "type": "module",
+  "main": "game.js",
   "scripts": {
-    "test": "node testimport.mjs",
-    "dev": "node generate.mjs"
+    "dev": "node game.js"
   },
   "keywords": [],
   "author": "",
