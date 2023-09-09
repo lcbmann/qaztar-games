@@ -1,7 +1,7 @@
 // server.mjs
 import express from 'express';
 import { readFile } from 'fs/promises'; // Import the built-in 'fs' module for file operations
-
+import OpenAI from './node_modules/openai/index.mjs'
 const app = express();
 const port = 8080;
 

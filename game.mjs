@@ -1,11 +1,4 @@
-//Version 12
-
-import { generateArrivalText } from './generate.mjs';
-import { sayHello } from './test.mjs';
-
-sayHello();
-
-var arrivalText = await generateArrivalText();
+//Version Revert
 
 
 const textElement = document.getElementById('text');
@@ -1899,14 +1892,8 @@ var endGameQuotes = Array(
     '"We followed you, your men, from burning Troy and crossed the swollen waters in your care together with your ships; and we shall raise your children to the stars and build an empire out of their city." \n \n - Virgil, The Aeneid',
 )
 
-//var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 
-
-
-
-
-
-
+var arrivalText = arrivalTexts[Math.floor(Math.random()*arrivalTexts.length)];
 var deathQuote = deathQuotes[Math.floor(Math.random()*deathQuotes.length)];
 var landQuote = landQuotes[Math.floor(Math.random()*landQuotes.length)];
 var prayQuote = prayQuotes[Math.floor(Math.random()*prayQuotes.length)];
@@ -1916,7 +1903,7 @@ var endGameQuote = endGameQuotes[Math.floor(Math.random()*endGameQuotes.length)]
 const textNodes = [
     {
         id: 1,
-        text: arrivalText,
+        text: '"And when he knew the king was dead, he fled."',
         quoteText: '"I go down and, guided by a god, move on among the foes and fires; weapons turn aside, the flames retire where I mke my way." \n \n - Virgil, The Aeneid',
         options: [
             {

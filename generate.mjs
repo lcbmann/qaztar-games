@@ -1,8 +1,8 @@
-//import OpenAI from "./node_modules/openai/index.mjs";
+console.log("Opening generate.mjs")
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-    apiKey: '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'
+    apiKey: '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'
 });
 
 async function generateArrivalText() {
@@ -19,5 +19,6 @@ async function generateArrivalText() {
     console.log(completion.choices[0].message.content);
 }
 
-export { generateArrivalText };
 generateArrivalText()
+
+export {generateArrivalText}
