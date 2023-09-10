@@ -1322,7 +1322,7 @@ function showTextNode(textNodeIndex){
     }
     //Can't scout
     else if (textNodeIndex == 10 && ships <= 1){
-        textElement.innerText = 'With only one ship remaining, scouting is impossible.';
+        textElement.innerText = 'With only one ship remaining, more scouting is impossible.';
     }
 
     //Refade buttons
@@ -1674,7 +1674,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
 
     if(riverTier == 'Barren'){
         water = water - 40;
-        riverText = "The nearest river was bone-dry, having long since dried up. The first colonists had to drink much of their remaining water stores just to survive. ";
+        riverText = "The nearest river was bone-dry, having long since evaporated under the hot sun. The first colonists had to drink much of their remaining water stores just to survive. ";
         populationScore = populationScore - 80;
     }
     else if (riverTier == 'Flowing'){
