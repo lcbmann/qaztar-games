@@ -1866,8 +1866,11 @@ var arrivalTexts = Array(
     'The fleet pulls into a small cape, the sun low in the evening sky. Tiny waves lap against the side of the boat.',
     'The fleet passes around a bend, revealing a new land ahead. The evening sunbeams shatter across the cresting waves.',
     'The fleet glides along a shoreline of white sand, cliffs framing a beach ahead. Gusts of wind billow in the sails.',
-    'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.'
-    
+    'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.',
+    'As the ships reach the hidden cove, the first rays of dawn paint the sky in a fiery spectacle. Gulls swoop and cry overhead, welcoming the fleet to a secluded paradise',
+    'Emerging from the mist, the fleet discovers an island paradise nestled amidst azure waters. The scent of tropical flowers fills the air, enticing the sailors to explore this new, enchanting realm',
+    'Sailing into a tranquil bay, the fleet is greeted by a symphony of colors as the setting sun casts a golden glow on the tranquil waters. Palm trees sway gently in the breeze, whispering tales of the island\'s secrets.',
+    'At the mouth of a majestic river, the fleet is greeted by a lush jungle canopy teeming with life. Monkeys chatter excitedly in the treetops, curious about the newcomers to their verdant domain.'    
 )
 
 //Inspect land quotes
