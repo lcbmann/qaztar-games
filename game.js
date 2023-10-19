@@ -862,14 +862,14 @@ function generateScenario(nextTextNodeId, optionId)
                     assignedScenarioResult = uniqueScenarioResultText[4];
                 }
                 else if (optionId == 2){
-                    var choice = Math.floor(Math.random() * 2 + 1)
+                    var choice = Math.floor(Math.random() * 3 + 1)
                     if (choice == 1){
                         assignedScenarioResult = uniqueScenarioResultText[5];
                         foodChange = -10;
                         waterChange = -10;
                         inspectFleet();
                     }
-                    else if (choice == 2){
+                    else if (choice == 2 || choice == 3){
                         var choice = Math.floor(Math.random() * 2 + 1)
                         if (choice == 1){
                             assignedScenarioResult = uniqueScenarioResultText[6];
@@ -1867,10 +1867,10 @@ var arrivalTexts = Array(
     'The fleet passes around a bend, revealing a new land ahead. The evening sunbeams shatter across the cresting waves.',
     'The fleet glides along a shoreline of white sand, cliffs framing a beach ahead. Gusts of wind billow in the sails.',
     'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.',
-    'As the ships reach the hidden cove, the first rays of dawn paint the sky in a fiery spectacle. Gulls swoop and cry overhead, welcoming the fleet to a secluded paradise',
-    'Emerging from the mist, the fleet discovers an island paradise nestled amidst azure waters. The scent of tropical flowers fills the air, enticing the sailors to explore this new, enchanting realm',
-    'Sailing into a tranquil bay, the fleet is greeted by a symphony of colors as the setting sun casts a golden glow on the tranquil waters. Palm trees sway gently in the breeze, whispering tales of the island\'s secrets.',
-    'At the mouth of a majestic river, the fleet is greeted by a lush jungle canopy teeming with life. Monkeys chatter excitedly in the treetops, curious about the newcomers to their verdant domain.'    
+    'As the ships reach the hidden cove, the first rays of dawn paint the sky in a fiery spectacle. Gulls swoop and cry overhead, welcoming the fleet to a secluded land.',
+    'Emerging from the mist, the fleet discovers an island paradise nestled amidst azure waters. The scent of tropical flowers fills the air, enticing the sailors to explore this new, enchanting realm.',
+    'Sailing into a tranquil bay, the fleet is greeted by a symphony of colors as the setting sun casts a golden glow on the tranquil waters. Palm trees sway gently in the breeze, whispering tales of the land\'s secrets.',
+    'At the mouth of a hidden river, the fleet is greeted by the lands inhabitants. Monkeys chatter excitedly in the treetops, curious about the newcomers to their undiscovered domain.'    
 )
 
 //Inspect land quotes
