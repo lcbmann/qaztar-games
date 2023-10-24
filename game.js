@@ -29,6 +29,7 @@ const islandImageElement = document.getElementById('ascii-island');
 const volcanoImageElement = document.getElementById('ascii-volcano');
 const cyclopsImageElement = document.getElementById('ascii-cyclops');
 const olympusImageElement = document.getElementById('ascii-olympus');
+const circeImageElement = document.getElementById('ascii-circe');
 
 const statusElements = document.getElementsByClassName('status');
 
@@ -1514,6 +1515,12 @@ function selectOption(option){
                 cyclopsImageElement.style.display = '';
                 shipImageElement.style.display = 'none';
             }
+            
+            //Circe
+            else if (scenarioId == 6){
+                circeImageElement.style.display = '';
+                shipImageElement.style.display = 'none';
+            }
         }
         //Stormy Sea
         else if(scenarioId == 0 || scenarioId == 10){
@@ -1536,6 +1543,7 @@ function selectOption(option){
             merchantImageElement.style.display = '';
             shipImageElement.style.display = 'none';
         }
+
         
 
     }
