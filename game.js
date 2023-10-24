@@ -632,7 +632,8 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet navigates along a rocky coastline, and a shout goes out: something has been spotted inland. It\'s too difficult to discern what the object is from the ships. \n \n Will you prepare a party to investigate or move on?',
             'The fleet sails on, and a call goes out: another ship has been spotted on the horizon. Then another. And another. The entire horizon becomes dotted with ships fast approaching. The previously attacked merchants have not taken kindly to the fleet\'s piracy in their waters. \n \n Will you attempt to negotiate, or flee?',
             'The fleet drops anchor on a coastline, a tall volcano rising in the distance. Just as the sailors spot a herd of deer to hunt, a small tremor moves through the ground, and the nearby volcano belches a plume of black smoke. \n \n Will you stay to hunt the deer, or leave immediately?',
-            'The fleet arrives on a beach surrounded by thick forests. As they set up camp, an unknown man stumbles out from the tree-line. Obviously exhausted, the man explains that he and some of his fellow travelers were captives of a cyclops, and that he alone was able to escape. He implores you to lay a trap for the cyclops to free his kinsmen. \n \n Will you use some food to lure and attack the cyclops, or leave his kinsmen behind?'
+            'The fleet arrives on a beach surrounded by thick forests. As they set up camp, an unknown man stumbles out from the tree-line. Obviously exhausted, the man explains that he and some of his fellow travelers were captives of a cyclops, and that he alone was able to escape. He implores you to lay a trap for the cyclops to free his kinsmen. \n \n Will you use some food to lure and attack the cyclops, or leave his kinsmen behind?',
+            'The fleet arrives at the island, shrouded in an eerie mist. A dense forest looms ahead, its ancient trees whispering in an unknown tongue. A seductive sorceress emerges, offering aid, but her eyes betray a hidden cost. The sailors stand divided, drawn in by her promises, yet wary of the dark energies pulsating from the island\'s heart. \n \n Will you accept the sorceress\' gifts, or sail away as quickly as possible?'
         )
         var uniqueQuoteText = Array(
             '"Now Scylla holds the right; insatiable Charybdis keeps the left." \n \n "Three times [Charybdis] sucks the vast waves into her abyss, the deepest whirlpool within her vortex, then she hurls the waters high, lashing the stars with spray." \n \n "Scylla is confined to blind retreats, a cavern; and her mouths thrust out to drag ships toward the shoals." \n \n - Vergil, The Aeneid',
@@ -641,6 +642,7 @@ function generateScenario(nextTextNodeId, optionId)
             '',
             '"The harbor is wide and free from winds; but Etna is thundering nearby with dread upheavals. At times it belches into upper air dark clouds with tar-black whirlwinds, blazing lava, while lifting balls of flame that lick the stars." \n \n "The tale is told that, charred by lightning bolts, the body of Enceladus lies pressed beneath this mass." \n \n - Virgil, The Aeneid',
             '"Aurora had banned damp shadows from the sky, when suddenly a tattered stranger, gaunt with final hunger, staggers from the woods and stretches pleading hands toward shore." \n \n - Virgil, The Aeneid',
+            '"And Aeneas, aware of all, did not shift his flaming gaze from her till he sprang forth and fled from there, fearing the passions both just and unjust of Circe."\n \n - Virgil, The Aeneid'
         )
         var uniqueOption1Text = Array(
             'Go to the left, to Charybdis',
@@ -649,7 +651,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Attempt to negotiate',
             'Return to the ships and set sail',
             'Return to the ships and set sail',
-
+            'Set sail immediately',
         )
         
         var uniqueOption2Text = Array(
@@ -659,6 +661,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Flee',
             'Stay and hunt the deer',
             'Lay a food trap for the cyclops',
+            'Accept the gift of the sorceress',
         )
 
         var scenarioText = Array(
@@ -784,6 +787,8 @@ function generateScenario(nextTextNodeId, optionId)
             'The sailors return to their ships despite the pleas of the stranger. Although he is unhappy with the decision, he still joins the Trojans as they set sail.',
             'The sailors lay a food trap for the cyclops, near to his cave. Within a few hours, he stumbles out of his cave, smells the food, and falls straight into the trap. The Trojans quickly release the prisoners, who happily join the crew.',
             'The sailors lay a food trap for the cyclops, near to his cave. The cyclops, while large, recognizes the trap before he falls for it. Now alerted to the Trojans presence, he returns to his cave. The Trojans depart soon after, taking the single escapee with them.',
+            'The sailors quickly make way, and the small island slowly fades from view in the distance. A cloaked figure watches them leave with glowing eyes. That night, the sailors hear her whispered curses in their dreams.',
+            'The sailors hesitantly make shore on the island, and accept the gifts and shelter of the sorceress. Yet some begin to report that some of their fellows have gone missing. At midnight, the sailors steal away, taking the gifts with them.',
         );
 
         var scenarioResultText = Array(
@@ -951,6 +956,22 @@ function generateScenario(nextTextNodeId, optionId)
                         foodChange = -(Math.floor(Math.random() * 8 + 5));
                         inspectFleet();
                     }
+                }
+            }
+
+
+            //Circe
+            else if(scenarioId == 6){
+                if(optionId == 1){
+                    assignedScenarioResult = uniqueScenarioResultText[16];
+                    inspectFleet();
+                }
+                else if (optionId == 2){
+                    assignedScenarioResult = uniqueScenarioResultText[17];
+                    sailorsChange = -(Math.floor(Math.random() * 4 + 2));
+                    foodChange = (Math.floor(Math.random() * 5 + 3));
+                    waterChange = (Math.floor(Math.random() * 5 + 3));
+                    inspectFleet();
                 }
             }
 
@@ -1654,7 +1675,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
 
     var ruinsText = "The ruins nearby were found to be empty. ";
 
-    var population = sailors;
+    var population = sailors * 1.1;
     var temperatureScore = 0;
     var ruinsScore = 0;
     var constructionScore = 0;
