@@ -384,9 +384,9 @@ function updateBoons(){
 function generateLand(nextTextNodeId)
 {
     //Subtract food and water
-    foodChange = -Math.floor(Math.random() * 3 + 1);
+    foodChange = -Math.floor(Math.random() * 2 + 1);
 
-    waterChange = -Math.floor(Math.random() * 3 + 1);
+    waterChange = -Math.floor(Math.random() * 2 + 1);
 
     inspectFleet();
 
@@ -789,7 +789,7 @@ function generateScenario(nextTextNodeId, optionId)
             'The sailors lay a food trap for the cyclops, near to his cave. Within a few hours, he stumbles out of his cave, smells the food, and falls straight into the trap. The Trojans quickly release the prisoners, who happily join the crew.',
             'The sailors lay a food trap for the cyclops, near to his cave. The cyclops, while large, recognizes the trap before he falls for it. Now alerted to the Trojans presence, he returns to his cave. The Trojans depart soon after, taking the single escapee with them.',
             'The sailors quickly make way, and the small island slowly fades from view in the distance. A cloaked figure watches them leave with glowing eyes. That night, the sailors hear her whispered curses in their dreams.',
-            'The sailors hesitantly make shore on the island, and accept the gifts and shelter of the sorceress. Yet some begin to report that some of their fellows have gone missing. At midnight, the sailors steal away, taking the gifts with them.',
+            'The sailors hesitantly make shore on the island, and accept the gifts and shelter of the sorceress. Yet many begin to report that some of their fellows have gone missing. At midnight, the sailors steal away, taking the gifts with them.',
         );
 
         var scenarioResultText = Array(
