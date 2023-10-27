@@ -15,17 +15,19 @@ body {
     font-size: 2.3vh;
     max-width: 30%;
     text-align:left;
-    width: 100vw;
-    height: 100vh;
+    width: 30vw;
+    height: 30vh;
     color:white;
 }
 
 .playarea {
+    position:absolute;
     width: 50%;
     font-size: 2.3vh;
+    max-width: 50%;
     text-align:center;
-    width: 100vw;
-    height: 100vh;
+    width: 50vw;
+    height: 50vh;
     color:white;
 }
 
