@@ -1640,6 +1640,11 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
 
     var civilizationName = civilizationNames[Math.floor(Math.random()*civilizationNames.length)]
 
+    if(vegetationTier == 'Plentiful' && temperatureTier == "Comfortable" && harborTier == "Spacious" && riverTier == "Flowing" && nativesTier == "Generous" && ruinsTier == "Treasures"){
+        civilizationName = "Dankland"
+    }
+    
+    //Ideal Civilization
     if(vegetationTier == 'Plentiful' && temperatureTier == "Comfortable" && harborTier == "Spacious" && riverTier == "Flowing"){
         var idealCivilizationNames = Array(
             "Elysium",
@@ -1656,6 +1661,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         civilizationName = idealCivilizationNames[Math.floor(Math.random()*idealCivilizationNames.length)]
     }
 
+    //Blessed Civilization
     else if (ceresLevel == 3 && jupiterLevel == 3 && neptuneLevel == 3){
         var godsCivilizationNames = Array(
             "Olympus",
