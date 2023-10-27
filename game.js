@@ -816,8 +816,8 @@ function generateScenario(nextTextNodeId, optionId)
             'The ship slowly disappears into the horizon. The sailors, grumbling, return to their routines.',
             'The sailors set to work building three more ships for the fleet, pulling from the existing material stores.',
             'No new ships are built.',
-            'The basin is filled',
-            'The basin is left empty',
+            'The basin is filled.',
+            'The basin is left empty.',
             'The sailors scramble to follow the shouted order, rushing to the broken ship. Fortunately, they are able to save it, sealing the gaps in its shuddering hull.',
             'The sailors scramble to follow the shouted order. Unfortunately, just as the first are arriving on the ship, it capsizes, and vanishes beneath the swell.',
             'The sailors pass on the shouted evacuation order, barely heard over the crashing waves and howling winds. The sailors grab as much of the cargo as they can before leaving, though some is left behind, and the ship soon vanishes beneath the surface.',
@@ -1008,10 +1008,10 @@ function generateScenario(nextTextNodeId, optionId)
                 if (choice == 1){
                     assignedScenarioResult = scenarioResultText[3];
                     shipsChange = -1;
-                    foodChange = -10;
-                    waterChange = -10;
-                    sailorsChange -10;
-                    materialsChange = -10;
+                    foodChange = -(Math.floor(Math.random() * 10 + 1));
+                    waterChange = -(Math.floor(Math.random() * 10 + 1));
+                    materialsChange = -(Math.floor(Math.random() * 10 + 1));
+                    sailorsChange = -(Math.floor(Math.random() * 10 + 1));
                     inspectFleet();
                 }
                 if (choice == 2){
@@ -1060,13 +1060,13 @@ function generateScenario(nextTextNodeId, optionId)
         if(scenarioId == 3){
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[9];
-                foodChange = (Math.floor(Math.random() * 15 + 1));
-                waterChange = (Math.floor(Math.random() * 15 + 1));
+                foodChange = (Math.floor(Math.random() * 12 + 3));
+                waterChange = (Math.floor(Math.random() * 12 + 3));
                 inspectFleet();
             }
             else if (optionId == 2){
                 assignedScenarioResult = scenarioResultText[10];
-                materialsChange = (Math.floor(Math.random() * 15 + 1));
+                materialsChange = (Math.floor(Math.random() * 12 + 3));
                 shipsChange = (Math.floor(Math.random() * 3 + 1));
                 inspectFleet();
             }
@@ -1077,7 +1077,7 @@ function generateScenario(nextTextNodeId, optionId)
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[11];
                 isOffering = true;
-                foodChange = -(Math.floor(Math.random() * 15 + 1))
+                foodChange = -(Math.floor(Math.random() * 10 + 1))
                 inspectFleet();
             }
             else if (optionId == 2){
@@ -1090,7 +1090,7 @@ function generateScenario(nextTextNodeId, optionId)
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[13];
                 isOffering = true;
-                materialsChange = -(Math.floor(Math.random() * 15 + 1))
+                materialsChange = -(Math.floor(Math.random() * 10 + 1))
                 inspectFleet();
             }
             else if (optionId == 2){
@@ -1169,7 +1169,7 @@ function generateScenario(nextTextNodeId, optionId)
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[23];
                 isOffering = true;
-                waterChange = -(Math.floor(Math.random() * 15 + 1))
+                waterChange = -(Math.floor(Math.random() * 10 + 1))
                 inspectFleet();
             }
             else if (optionId == 2){
