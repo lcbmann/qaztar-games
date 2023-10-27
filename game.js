@@ -857,7 +857,7 @@ function generateScenario(nextTextNodeId, optionId)
                 else if(optionId == 2){
                     assignedScenarioResult = uniqueScenarioResultText[3];
                     materialsChange = 30;
-                    shipsChange = 5;
+                    shipsChange = 6;
                     inspectFleet();
                 }
             }
