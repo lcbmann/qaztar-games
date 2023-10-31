@@ -637,7 +637,7 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet arrives at an island, shrouded in an eerie purple mist. A large, ancient tree whispers in an unknown tongue. A seductive sorceress emerges, offering aid, but her glowing eyes betray a hidden cost. The sailors stand divided, drawn in by her promises, yet wary of the dark energies pulsating from the island\'s heart. \n \n Will you accept the sorceress\' gifts, or sail away as quickly as possible?'
         )
         var uniqueQuoteText = Array(
-            '"Now Scylla holds the right; insatiable Charybdis keeps the left." \n \n "Three times [Charybdis] sucks the vast waves into her abyss, the deepest whirlpool within her vortex, then she hurls the waters high, lashing the stars with spray." \n \n "Scylla is confined to blind retreats, a cavern; and her mouths thrust out to drag ships toward the shoals." \n \n - Vergil, The Aeneid',
+            '"Now Scylla holds the right; insatiable Charybdis keeps the left." \n \n "Three times [Charybdis] sucks the vast waves into her abyss, the deepest whirlpool within her vortex, then she hurls the waters high, lashing the stars with spray." \n \n "Scylla is confined to blind retreats, a cavern; and her mouths thrust out to drag ships toward the shoals." \n \n - Virgil, The Aeneid',
             '"They head for harbor; kind winds swell their sails; the fleet runs swift across the surge; at last, and glad, they reach familiar sands." \n \n - Virgil, The Aeneid',
             '',
             '',
@@ -879,8 +879,8 @@ function generateScenario(nextTextNodeId, optionId)
                         var choice = Math.floor(Math.random() * 2 + 1)
                         if (choice == 1){
                             assignedScenarioResult = uniqueScenarioResultText[6];
-                            foodChange = 15;
-                            waterChange = 15;
+                            foodChange = 20;
+                            waterChange = 20;
                             inspectFleet();
                         }
                         else if (choice == 2){
