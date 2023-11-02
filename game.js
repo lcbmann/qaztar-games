@@ -1947,7 +1947,7 @@ const textNodes = [
     {
         id: 1,
         text: 'And when he knew the king was dead, he fled.',
-        quoteText: '"I go down and, guided by a god, move on among the foes and fires; weapons turn aside, the flames retire where I mke my way." \n \n - Virgil, The Aeneid',
+        quoteText: '"I go down and, guided by a god, move on among the foes and fires; weapons turn aside, the flames retire where I make my way." \n \n - Virgil, The Aeneid',
         options: [
             {
                 text: 'Continue',
