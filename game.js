@@ -30,6 +30,7 @@ const volcanoImageElement = document.getElementById('ascii-volcano');
 const cyclopsImageElement = document.getElementById('ascii-cyclops');
 const olympusImageElement = document.getElementById('ascii-olympus');
 const circeImageElement = document.getElementById('ascii-circe');
+const townImageElement = document.getElementById('ascii-town');
 
 const statusElements = document.getElementsByClassName('status');
 
@@ -677,6 +678,7 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet slows to a stop, anchoring in a small inlet. The sailors disembark from the remaining ships. \n \n Will you order the creation of three new ships to be constructed from the remaining material stores?',
             'The fleet slows to a stop, and treks up a cliffside to a small temple. Within lies a basin, empty. Some of the sailors believe that refilling the basin would improve favor with the gods, increasing their chances of finding an ideal land to settle. \n \n Will you refill the basin with fresh water for the gods?',
             'The fleet clashes with the waves as a great stormfront rocks the ships. One of the ships begins to come apart, its planks creaking and growning as they split. \n \n Will you send sailors to try to repair the ship, or will you order its evacuation?',
+            'The fleet docks at a friendly coastal trading town, and the crew pools together their remaining gold. \n \n Should they go looking to hire new crewmates or to buy supplies?'
         )
         var quoteText = Array(
             '"Then, suddenly, the cloud banks snatch away the sky and daylight from the Trojan\'s eyes. Black night hangs on the waters, heavens thunder, and frequent lightning glitters in the air; everything intends quick death to men." \n \n "A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n - Virgil, The Aeneid',
@@ -690,7 +692,7 @@ function generateScenario(nextTextNodeId, optionId)
             '"Then let us build out of Italian oak twice-ten ships for the Trojans - even more, if they can fill them.', // building ships
             '', // fill basin
             '"The seas are heaved to heaven. The oars are cracked; the prow sheers off; the waves attack broadside; against his hull the swell now shatters in a heap, mountainous, steep. Some sailors hang upon a wave crest; others stare out at the gaping waters, land that lies below the waves, surge that seethes with sand." \n \n - Virgil, The Aeneid',
-
+            '', // trading town
         )
         var option1Text = Array(
             'Send the sailors',
@@ -704,6 +706,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Construct three new ships',
             'Refill the temple basin',
             'Attempt to save the ship',
+            'Look for new sailors to hire',
         )
 
         var option2Text = Array(
@@ -718,6 +721,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Continue with the existing ships and materials',
             'Leave the basin empty and depart',
             'Order the evacuation',
+            'Look for food, water, and materials to stock up on',
         )
         
         //Unique Scenario generator
@@ -821,6 +825,8 @@ function generateScenario(nextTextNodeId, optionId)
             'The sailors scramble to follow the shouted order, rushing to the broken ship. Fortunately, they are able to save it, sealing the gaps in its shuddering hull.',
             'The sailors scramble to follow the shouted order. Unfortunately, just as the first are arriving on the ship, it capsizes, and vanishes beneath the swell.',
             'The sailors pass on the shouted evacuation order, barely heard over the crashing waves and howling winds. The sailors grab as much of the cargo as they can before leaving, though some is left behind, and the ship soon vanishes beneath the surface.',
+            'The sailors set off into the town, searching for new crewmates to join their journey. A few are successful with refugees from Troy and other lost souls looking for a purpose.',
+            'The sailors set off into the town, searching for supplies to supplement their journey. They return with some rations, fresh water, and building materials.'
         );
         
         //Unique scenarios
@@ -1205,6 +1211,23 @@ function generateScenario(nextTextNodeId, optionId)
                 inspectFleet();
             }
         }
+
+        //Merchant town
+        if(scenarioId == 11){
+            if(optionId == 1){
+                assignedScenarioResult = scenarioResultText[27];
+                sailorsChange = (Math.floor(Math.random() * 5 + 4))
+                inspectFleet();
+            }
+            else if (optionId == 2){
+                assignedScenarioResult = scenarioResultText[28];
+                foodChange = (Math.floor(Math.random() * 2 + 2));
+                waterChange = (Math.floor(Math.random() * 2 + 2));
+                materialsChange = (Math.floor(Math.random() * 2 + 2));
+                inspectFleet();
+            }
+
+        }
     }
 }
 
@@ -1534,6 +1557,7 @@ function selectOption(option){
             shipImageElement.style.display = 'none';
         }
 
+        //Prayer
         else if (scenarioId == 4 || scenarioId == 5 || scenarioId == 9){
             olympusImageElement.style.display = '';
             shipImageElement.style.display = 'none';
@@ -1541,6 +1565,11 @@ function selectOption(option){
         //Merchant ship
         else if(scenarioId == 7){
             merchantImageElement.style.display = '';
+            shipImageElement.style.display = 'none';
+        }
+        //Merchant town
+        else if (scenarioId == 11){
+            townImageElement.style.display = '';
             shipImageElement.style.display = 'none';
         }
 
@@ -1913,7 +1942,9 @@ var landQuotes = Array(
     '"Along this side and that there towers, vast, a line of cliffs, each ending in like crags." \n \n - Virgil, The Aeneid',
     '"The Trojans, longing so to touch the land, now disembark to gain the wished-for sands." \n \n - Virgil, The Aeneid',
     '"And as soon as gracious daylight is given to him, this is his decision: to go out and explore this foreign country, to learn what shores the wind has brought him to." \n \n - Virgil, The Aeneid',
-    '"He hides his fleet inside the narrows of the wooded cove, beneath a hollow rock shut in by trees, with bristling shades around." \n \n - Virgil, The Aeneid'
+    '"He hides his fleet inside the narrows of the wooded cove, beneath a hollow rock shut in by trees, with bristling shades around." \n \n - Virgil, The Aeneid',
+    '"Aeneas, once he has landed, quickly scales the coast, surveying all the place, to see if any sign of life or culture is apparent, or any path that will direct him to the unknown settlers of this land." \n \n - Virgil, The Aeneid',
+    '"With hardy courage and undaunted heart, he cheers the exiled spirits of his band, reviving now their hopes, now urging them to toil." \n \n - Virgil, The Aeneid'
 )
 
 //Prayer quotes
