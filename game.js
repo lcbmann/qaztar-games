@@ -1215,12 +1215,12 @@ function generateScenario(nextTextNodeId, optionId)
         //Merchant town
         if(scenarioId == 11){
             if(optionId == 1){
-                assignedScenarioResult = scenarioResultText[27];
+                assignedScenarioResult = scenarioResultText[28];
                 sailorsChange = (Math.floor(Math.random() * 5 + 4))
                 inspectFleet();
             }
             else if (optionId == 2){
-                assignedScenarioResult = scenarioResultText[28];
+                assignedScenarioResult = scenarioResultText[29];
                 foodChange = (Math.floor(Math.random() * 2 + 2));
                 waterChange = (Math.floor(Math.random() * 2 + 2));
                 materialsChange = (Math.floor(Math.random() * 2 + 2));
