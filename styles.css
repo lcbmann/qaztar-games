@@ -1,10 +1,12 @@
+
+
 body {
-    padding: 2%;
+    padding: 0;
     margin: 0;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: x-large;
+    padding: 3% 4.5%;
+    vertical-align:top;
+    font-size:x-large;
     background-color: black;
 }
 
@@ -12,87 +14,152 @@ body {
     width: 80%;
     font-size: 2.3vh;
     max-width: 70%;
-    text-align: left;
-    color: white;
+    text-align:left;
+    width: 100vw;
+    height: 100vh;
+    color:white;
 }
 
 .title {
-    position: relative; /* Change to relative positioning */
-    text-align: center;
-    color: white;
+    position: absolute;
+    left: 50%;
+    top:58%;
+    font-size: 8vh;
+    text-align:center;
+    color:white;
+    width:500px;
+    height:500px;
+    margin:0 auto;
+    margin-left:-250px;
+    margin-top:-250px;
 }
 
-.title-text {
-    position: relative;
-    text-align: center;
-    color: white;
-    width: 80%; /* Adjust width */
-    max-width: 100%; /* Allow text to wrap on smaller screens */
+.title-text{
+    position: absolute;
+    left: 50%;
+    font-size: 2vh;
+    text-align:center;
+    color:white;
+    width:50vw;
+    height:500px;
+    margin:0 auto;
+    margin-left:-25vw;
+    margin-top:-250px;
 }
 
-.play-button {
-    position: relative;
-    text-align: center;
-    color: white;
+
+.play-button{
+    position: absolute;
+    left: 50%;
+    top: 90%;
+    font-size: 3vh;
+    text-align:center;
+    color:white;
+    width:500px;
+    height:500px;
+    margin:0 auto;
+    margin-left:-250px;
+    margin-top:-250px;
 }
 
 .quotes {
     width: 80%;
     font-size: 2.1vh;
     margin-left: 6vh;
-    max-width: 100%; /* Adjust max-width */
+    max-width: 25%;
     text-align: right;
-    color: antiquewhite;
-    font-style: italic;
+    color:antiquewhite;
+    font-style:italic;
 }
 
 .container {
-    position: relative;
+    position:absolute;
     width: 80%;
-    max-width: 100%; /* Adjust max-width */
-    text-align: left;
-    color: white;
+    max-width: 80%;
+    text-align: left; 
+    vertical-align: bottom;
+    color:white;
 }
 
 .ascii {
     border-radius: 1em;
     padding: 1em;
-    position: relative;
-    top: auto; /* Remove top and left properties */
-    left: auto;
+    position: absolute;
+    top: 25%;
+    left: 31%;
     font-size: 1.3vh;
-    width: 100%; /* Adjust width */
-    margin-right: auto; /* Adjust margin */
+    margin-right: -50%;
+    width:38%;
     font-weight: bolder;
 }
 
 .ending-ascii {
     border-radius: 0.5em;
     padding: 0.5em;
-    position: relative;
-    top: auto;
-    left: auto;
-    margin-right: auto;
-    transform: none; /* Remove transform property */
+    position: absolute;
+    top: 50%;
+    left: 83%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
     font-weight: bolder;
     font-size: 0.5vw;
 }
 
-.status,
-.status-count,
-.status-change,
-.boon,
-.land,
-.score,
-.score-title,
+.status {
+    position: absolute;
+    width: 10%;
+    top: 72%;
+    left: 5%;
+    color:white;
+    font-size: 2.1vh;
+}
+
+.status-count {
+    position: absolute;
+    left: 160%;
+}
+
+.status-change {
+    position: absolute;
+    left: 180%;
+}
+
+.boon {
+    position: absolute;
+    width: 10%;
+    top: 75%;
+    left: 73%;
+    color:white;
+    font-size: 2.1vh;
+}
+
+.land {
+    font-size: 2.1vh;
+    border-radius: 1em;
+    position: absolute;
+    top: 70%;
+    left: 38.4%;
+    margin-right: -50%;
+    color:white;
+}
+
+.score {
+    border-radius: 1em;
+    padding: 1em;
+    position: absolute;
+    top: 40%;
+    left: 80%;
+    transform: translate(-50%, -50%);
+}
+
+.score-title {
+    font-weight:bold;
+    color:white;
+}
+
 .score-count {
-    position: relative; /* Change to relative positioning */
-    width: auto; /* Adjust width */
-    top: auto;
-    left: auto;
-    margin-right: auto;
-    transform: none;
-    text-align: left; /* Adjust text alignment */
+    font-style:italic;
+    color:green;
 }
 
 .btn-grid {
@@ -100,47 +167,28 @@ body {
     grid-template-columns: repeat(2, auto);
     gap: 10px;
     margin-top: 20px;
-    color: white;
+    color:white;
+}
+
+.continue-button {
+    margin-top: 20vh;
+}
+
+.continue-button-ending {
+    margin-top: 85vh;
 }
 
 .btn {
-    background-color: black;
+    background-color:black;
     display: block;
-    margin-top: 5px; /* Adjust margin */
-    padding: 0%;
+    margin-top: 55px;
+    margin-left: 0px;
+    padding:0%;
     color: rgb(147, 187, 138);
     font-size: 2.4vh;
     font-family: inherit;
-    text-align: left;
+    text-align:left;
 }
-
-/* The rest of your CSS remains unchanged */
-
-/* Add media queries as needed for smaller screens */
-@media screen and (max-width: 768px) {
-    .descriptions,
-    .title,
-    .title-text,
-    .play-button,
-    .quotes,
-    .container,
-    .ascii,
-    .ending-ascii,
-    .status,
-    .status-count,
-    .status-change,
-    .boon,
-    .land,
-    .score,
-    .score-title,
-    .score-count,
-    .btn,
-    .btn-grid {
-        width: 100%;
-        max-width: 100%;
-    }
-}
-
 
 .btn:hover{
     color:green;
