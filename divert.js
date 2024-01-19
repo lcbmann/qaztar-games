@@ -27,7 +27,6 @@ function startDivertGame(){
 
     increaseEngineButton.onclick = function() {
         increase(enginePower, 1);
-        alert("engine power increased");
     };
 
     increaseWeaponButton.onclick = function() {
@@ -64,16 +63,17 @@ function increase(increasingMeter, amount){
         maxPower = 100;
     }
 
-    if(increasingMeter < maxPower && (increasingMeter + amount) < maxPower){
+    if((increasingMeter + amount) < maxPower){
         increasingMeter = increasingMeter + amount;
         updateMeter(increasingMeter);
     }
 }
 
 function decrease(decreasingMeter, amount){
-    if(decreasingMeter > 0 && (decreasingMeter - amount) > 0){
+    if(decreasingMeter - amount > 0){
         decreasingMeter = decreasingMeter - amount;
         updateMeter(decreasingMeter);
+        console.log(decreasingMeter + "is decreased by " + amount)
     }
 }
 
@@ -84,6 +84,7 @@ function updateMeter(meter){
     }
     else if(meter == enginePower){
         updatingElement = enginePowerElement;
+        console.log("element set to engine");
     }
     else if(meter == weaponPower){
         updatingElement = weaponPowerElement;
@@ -106,6 +107,7 @@ function updateMeter(meter){
     else if (meter < updatingElement.textContent.length){
         while(meter < updatingElement.textContent.length){
             updatingElement.textContent = updatingElement.textContent.slice(0, -1);
+            console.log("text should be changed");
         }
     }
 
