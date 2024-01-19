@@ -101,13 +101,13 @@ function updateMeter(meter){
         updatingElement = hullHealthElement;
     }
 
-    if(meter > updatingElement.textContent.length){
-        while(meter > updatingElement.textContent.length){
+    if(meter > (updatingElement.textContent.length - 1)){
+        while(meter > (updatingElement.textContent.length - 1)){
             updatingElement.textContent = updatingElement.textContent + "▓";
         }
     }
-    else if (meter < updatingElement.textContent.length){
-        while(meter < updatingElement.textContent.length){
+    else if (meter < (updatingElement.textContent.length - 1)){
+        while(meter < (updatingElement.textContent.length - 1)){
             updatingElement.textContent = updatingElement.textContent.slice(0, -1);
         }
     }
