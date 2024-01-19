@@ -7,7 +7,6 @@ var hullHealth = 100;
 
 const availablePowerElement = document.getElementById('availablePowerID');
 const enginePowerElement = document.getElementById('enginePowerID');
-console.log("enginePowerElement: " + enginePowerElement.textContent);
 const weaponPowerElement = document.getElementById('weaponPowerID');
 const shieldPowerElement = document.getElementById('shieldPowerID');
 const shieldHealthElement = document.getElementById('shieldHealthID');
@@ -43,8 +42,10 @@ decreaseWeaponButton.onclick = function() {
 decreaseShieldButton.onclick = function() {
     decrease(shieldPower, 1);
 };
+
+
 function startDivertGame(){
-    
+    console.log("enginePowerElement: " + enginePowerElement.textContent);
 }
 
 
