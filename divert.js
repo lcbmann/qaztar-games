@@ -39,7 +39,6 @@ function startDivertGame(){
 
     decreaseEngineButton.onclick = function() {
         decrease(enginePower, 1);
-        console.log("decrease enginePower function called")
     };
 
     decreaseWeaponButton.onclick = function() {
@@ -71,11 +70,9 @@ function increase(increasingMeter, amount){
 }
 
 function decrease(decreasingMeter, amount){
-    console.log("decreasing function accessed. decreasing meter is " + decreasingMeter + " and amount is " + amount )
     if(decreasingMeter - amount > 0){
         decreasingMeter = decreasingMeter - amount;
         updateMeter(decreasingMeter);
-        console.log(decreasingMeter + "is decreased by " + amount)
     }
 }
 
@@ -86,7 +83,6 @@ function updateMeter(meter){
     }
     else if(meter == enginePower){
         updatingElement = enginePowerElement;
-        console.log("element set to engine");
     }
     else if(meter == weaponPower){
         updatingElement = weaponPowerElement;
@@ -109,7 +105,6 @@ function updateMeter(meter){
     else if (meter < updatingElement.textContent.length){
         while(meter < updatingElement.textContent.length){
             updatingElement.textContent = updatingElement.textContent.slice(0, -1);
-            console.log("text should be changed");
         }
     }
 
