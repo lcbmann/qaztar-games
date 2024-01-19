@@ -39,6 +39,7 @@ function startDivertGame(){
 
     decreaseEngineButton.onclick = function() {
         decrease(enginePower, 1);
+        console.log("decrease enginePower function called")
     };
 
     decreaseWeaponButton.onclick = function() {
