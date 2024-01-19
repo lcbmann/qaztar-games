@@ -1,8 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // Your code inside this function will run when the DOM is fully loaded
-    startDivertGame();
-});
-
 function startDivertGame(){
     var availablePower = 50;
     var enginePower = 0;
@@ -78,6 +73,7 @@ function decrease(decreasingMeter, amount){
 
 function updateMeter(meter){
     var updatingElement;
+    console.log("engine power element length: " + enginePowerElement.textContent.length);
     if(meter == availablePower){
         updatingElement = availablePowerElement;
     }
@@ -110,3 +106,4 @@ function updateMeter(meter){
 
 }
     
+startDivertGame();
