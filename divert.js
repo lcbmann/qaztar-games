@@ -1,3 +1,8 @@
+document.addEventListener("DOMContentLoaded", function () {
+    // Your code inside this function will run when the DOM is fully loaded
+    startDivertGame();
+});
+
 function startDivertGame(){
     var availablePower = 50;
     var enginePower = 0;
@@ -20,13 +25,29 @@ function startDivertGame(){
     const decreaseWeaponButton = document.getElementById('decreaseWeapon');
     const decreaseShieldButton = document.getElementById('decreaseShield');
 
-    increaseEngineButton.onclick = increase(enginePower, 1);
-    increaseWeaponButton.onclick = increase(weaponPower, 1);
-    increaseShieldButton.onclick = increase(shieldPower, 1);
+    increaseEngineButton.onclick = function() {
+        increase(enginePower, 1);
+    };
 
-    decreaseEngineButton.onclick = decrease(enginePower, 1);
-    decreaseWeaponButton.onclick = decrease(weaponPower, 1);
-    decreaseShieldButton.onclick = decrease(shieldPower, 1);
+    increaseWeaponButton.onclick = function() {
+        increase(weaponPower, 1);
+    };
+
+    increaseShieldButton.onclick = function() {
+        increase(shieldPower, 1);
+    };
+
+    decreaseEngineButton.onclick = function() {
+        decrease(enginePower, 1);
+    };
+
+    decreaseWeaponButton.onclick = function() {
+        decrease(weaponPower, 1);
+    };
+
+    decreaseShieldButton.onclick = function() {
+        decrease(shieldPower, 1);
+    };
 }
 
 
