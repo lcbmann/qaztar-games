@@ -71,6 +71,7 @@ function increase(increasingMeter, amount){
 }
 
 function decrease(decreasingMeter, amount){
+    console.log("decreasing function accessed. decreasing meter is " + decreasingMeter + " and amount is " + amount )
     if(decreasingMeter - amount > 0){
         decreasingMeter = decreasingMeter - amount;
         updateMeter(decreasingMeter);
