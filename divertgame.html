@@ -16,15 +16,14 @@
     <title>Divert</title>
 </head>
 <body>
-    <div style="display: flex; justify-content: space-between;">
+    <div class="container">
         <!-- Text Descriptions -->
         <div class="descriptions">
             <div id="text" class="fade-in-text" style="text-align:left">Text Description</div>
         </div>
         <!-- Play Area -->
-        <div class="playarea" style="display: flex; justify-content: center; align-items: center;">
-            
-            <div id="text" class="fade-in-text" style="text-align:center"><pre>
+        <div class="playarea">
+            <div id="text" class="fade-in-text"><pre>
               _
              //\
             //  \\
@@ -35,22 +34,31 @@
             /\____/\
             </pre></div>
         </div>
-        <!-- Power Meters -->
-        <div class="meters" style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div id="text" style="text-align:right"><b>Power Allocation</b></div>
-            <div id="text" style="text-align:right">Available: ▓▓▓▓▓▓▓▓▓▓</div>
-            <div id="text" style="text-align:right; color:orange">Engines: ▓▓▓▓▓▓▓▓▓▓</div>
-            <div id="text" style="text-align:right; color: red">Weapons: ▓▓▓▓▓▓▓▓▓▓</div>
-            <div id="text" style="text-align:right; color: lightskyblue">Shields: ▓▓▓▓▓▓▓▓▓▓</div>
-        </div>
-        <!-- Buttons -->
-        <div class="container fade-in-buttons">
-            <div id="continue-button" class="continue-button" style="text-align:left">
-                <button class="btn">Allocate to Engines</button>
-                <button class="btn">Allocate to Weapons</button>
-                <button class="btn">Allocate to Shields</button>
+        <div class="controls">
+            <b>Power Meters</b>
+            <div class="control-group">
+                <div class="meter" id="availablePower">Available Power: ▓▓▓▓▓▓▓▓▓▓</div>
             </div>
+            <div class="control-group">
+                    <button class="btn" id="increaseEngine">+</button>
+                    <div class="meter" id="enginePower" style="color: orange">&nbsp;&nbsp;Engines: ▓▓▓▓▓▓▓▓▓▓</div>
+                    <button class="btn" id="decreaseEngine">-</button>
+            </div>
+            <div class="control-group">
+                    <button class="btn" id="increaseWeapon">+</button>
+                    <div class="meter" id="weaponPower" style="color: lightcoral">Weapons: ▓▓▓▓▓▓▓▓▓▓</div>
+                    <button class="btn" id="decreaseWeapon">-</button>
+            </div>
+            <div class="control-group">
+                    <button class="btn" id="increaseShield">+</button>
+                    <div class="meter" id="shieldPower" style="color: lightskyblue">&nbsp;&nbsp;Shields: ▓▓▓▓▓▓▓▓▓▓</div>
+                    <button class="btn" id="decreaseShield">-</button>
+            </div>
+            <b>Status</b>
+            <div class="meter" id="shieldHealth">Shield Health: ▓▓▓▓▓▓▓▓▓▓</div>
+            <div class="meter" id="hullHealth">Hull Health: ▓▓▓▓▓▓▓▓▓▓</div>
         </div>
+
     </div>
 
 </body>

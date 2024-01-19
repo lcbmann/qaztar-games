@@ -1,246 +1,50 @@
-
-
 body {
-    padding: 0;
-    margin: 0;
     display: flex;
+    justify-content: space-between;
     padding: 3% 4.5%;
-    vertical-align:top;
-    font-size:x-large;
     background-color: black;
+    color: white;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
 }
 
 .descriptions {
     width: 30%;
-    font-size: 2.3vh;
-    max-width: 30%;
-    text-align:left;
-    width: 30vw;
-    height: 30vh;
-    color:white;
-}
-
-.meters {
-    width: 30%;
-    font-size: 2.3vh;
-    max-width: 30%;
-    text-align:right;
-    width: 30vw;
-    height: 30vh;
-    color:white;
+    text-align: left;
 }
 
 .playarea {
-    position:absolute;
-    width: 50%;
-    font-size: 2.3vh;
-    max-width: 50%;
-    text-align:center;
-    width: 50vw;
-    height: 50vh;
-    color:white;
+    width: 40%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.title {
-    position: absolute;
-    left: 50%;
-    top:58%;
-    font-size: 8vh;
-    text-align:center;
-    color:white;
-    width:500px;
-    height:500px;
-    margin:0 auto;
-    margin-left:-250px;
-    margin-top:-250px;
+.controls {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
-.title-text{
-    position: absolute;
-    left: 50%;
-    font-size: 2vh;
-    text-align:center;
-    color:white;
-    width:50vw;
-    height:500px;
-    margin:0 auto;
-    margin-left:-25vw;
-    margin-top:-250px;
-}
-
-
-.play-button{
-    position: absolute;
-    left: 50%;
-    top: 90%;
-    font-size: 3vh;
-    text-align:center;
-    color:white;
-    width:500px;
-    height:500px;
-    margin:0 auto;
-    margin-left:-250px;
-    margin-top:-250px;
-}
-
-.quotes {
-    width: 80%;
-    font-size: 2.1vh;
-    margin-left: 6vh;
-    max-width: 25%;
-    text-align: right;
-    color:antiquewhite;
-    font-style:italic;
-}
-
-.container {
-    position:absolute;
-    width: 80%;
-    max-width: 80%;
-    text-align: left; 
-    vertical-align: bottom;
-    color:white;
-}
-
-.ascii {
-    border-radius: 1em;
-    padding: 1em;
-    position: absolute;
-    top: 25%;
-    left: 31%;
-    font-size: 1.3vh;
-    margin-right: -50%;
-    width:38%;
-    font-weight: bolder;
-}
-
-.ending-ascii {
-    border-radius: 1em;
-    padding: 1em;
-    position: absolute;
-    top: 50%;
-    left: 80%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-    font-weight: bolder;
-    font-size: 0.5vw;
-}
-
-.status {
-    position: absolute;
-    width: 10%;
-    top: 72%;
-    left: 5%;
-    color:white;
-    font-size: 2.1vh;
-}
-
-.status-count {
-    position: absolute;
-    left: 160%;
-}
-
-.status-change {
-    position: absolute;
-    left: 180%;
-}
-
-.boon {
-    position: absolute;
-    width: 10%;
-    top: 75%;
-    left: 73%;
-    color:white;
-    font-size: 2.1vh;
-}
-
-.land {
-    font-size: 2.1vh;
-    border-radius: 1em;
-    position: absolute;
-    top: 70%;
-    left: 38.4%;
-    margin-right: -50%;
-    color:white;
-}
-
-.score {
-    border-radius: 1em;
-    padding: 1em;
-    position: absolute;
-    top: 40%;
-    left: 80%;
-    transform: translate(-50%, -50%);
-}
-
-.score-title {
-    font-weight:bold;
-    color:white;
-}
-
-.score-count {
-    font-style:italic;
-    color:green;
-}
-
-.btn-grid {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    gap: 10px;
-    margin-top: 20px;
-    color:white;
-}
-
-.continue-button {
-    margin-top: 20vh;
-}
-
-.continue-button-ending {
-    margin-top: 85vh;
+.control-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .btn {
-    background-color:black;
-    display: block;
-    margin-top: 55px;
-    margin-left: 0px;
-    padding:0%;
-    color: rgb(147, 187, 138);
-    font-size: 2.4vh;
-    font-family: inherit;
-    text-align:left;
+    /* Your button styles */
+    margin-right: 10px;
+    margin-left: 10x;
 }
 
-.btn:hover{
-    color:green;
-}
-
-.fade-in-text {
-    animation: fadeIn 3s;
-}
-
-.fade-in-quote {
-    animation: fadeInQuote 8s;
-}
-
-.fade-in-buttons {
-    animation: fadeInButtons 4s;
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0; }
-    20% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@keyframes fadeInQuote {
-    0% { opacity: 0; }
-    40% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@keyframes fadeInButtons{
-    0% { opacity: 0; }
-    40% { opacity: 0; }
-    100% { opacity: 1; }
+.meter {
+    /* Your meter styles */
 }
