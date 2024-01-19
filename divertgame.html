@@ -16,22 +16,40 @@
     <title>Divert</title>
 </head>
 <body>
-    <div>
+    <div style="display: flex; justify-content: space-between;">
+        <!-- Text Descriptions -->
         <div class="descriptions">
             <div id="text" class="fade-in-text" style="text-align:left">Text Description</div>
         </div>
-        <div class="playarea">
-            <div id="text" class="fade-in-text" style="text-align:center">Character</div>
+        <!-- Play Area -->
+        <div class="playarea" style="display: flex; justify-content: center; align-items: center;">
+            
+            <div id="text" class="fade-in-text" style="text-align:center"><pre>
+              _
+             //\
+            //  \\
+            //____\\
+            |  0   |
+            |      |
+            \      /
+            /\____/\
+            </pre></div>
         </div>
+        <!-- Power Meters -->
+        <div class="meters" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div id="text" style="text-align:right"><b>Power Allocation</b></div>
+            <div id="text" style="text-align:right">Available: ▓▓▓▓▓▓▓▓▓▓</div>
+            <div id="text" style="text-align:right; color:orange">Engines: ▓▓▓▓▓▓▓▓▓▓</div>
+            <div id="text" style="text-align:right; color: red">Weapons: ▓▓▓▓▓▓▓▓▓▓</div>
+            <div id="text" style="text-align:right; color: lightskyblue">Shields: ▓▓▓▓▓▓▓▓▓▓</div>
+        </div>
+        <!-- Buttons -->
         <div class="container fade-in-buttons">
             <div id="continue-button" class="continue-button" style="text-align:left">
-                <button class="btn">Option 1</button>
+                <button class="btn">Allocate to Engines</button>
+                <button class="btn">Allocate to Weapons</button>
+                <button class="btn">Allocate to Shields</button>
             </div>
-        </div>
-        <div class="meters">
-            <div id="text" style="text-align:right">▓▓▓▓▓▓▓▓▓▓</div>
-            <div id="text" style="text-align:right">▓▓▓▓▓▓▓▓▓▓</div>
-            <div id="text" style="text-align:right">▓▓▓▓▓▓▓▓▓▓</div>
         </div>
     </div>
 

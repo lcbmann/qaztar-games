@@ -20,6 +20,16 @@ body {
     color:white;
 }
 
+.meters {
+    width: 30%;
+    font-size: 2.3vh;
+    max-width: 30%;
+    text-align:right;
+    width: 30vw;
+    height: 30vh;
+    color:white;
+}
+
 .playarea {
     position:absolute;
     width: 50%;
