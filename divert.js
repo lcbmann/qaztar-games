@@ -6,12 +6,12 @@ function startDivertGame(){
     var shieldHealth = 100;
     var hullHealth = 100;
 
-    const availablePowerElement = document.getElementById('availablePower');
-    const enginePowerElement = document.getElementById('enginePower');
-    const weaponPowerElement = document.getElementById('weaponPower');
-    const shieldPowerElement = document.getElementById('shieldPower');
-    const shieldHealthElement = document.getElementById('shieldHealth');
-    const hullHealthElement = document.getElementById('hullHealth')
+    const availablePowerElement = document.getElementById('availablePowerID');
+    const enginePowerElement = document.getElementById('enginePowerID');
+    const weaponPowerElement = document.getElementById('weaponPowerID');
+    const shieldPowerElement = document.getElementById('shieldPowerID');
+    const shieldHealthElement = document.getElementById('shieldHealthID');
+    const hullHealthElement = document.getElementById('hullHealthID')
 
     const increaseEngineButton = document.getElementById('increaseEngine');
     const increaseWeaponButton = document.getElementById('increaseWeapon');
@@ -53,7 +53,7 @@ function increase(increasingMeter, amount){
     if(increasingMeter == availablePower){
         maxPower = 50;
     }
-    else if(increasingMeter == (enginePower || weaponPower || shieldPower)){
+    else if(increasingMeter == enginePower || increasingMeter == weaponPower || increasingMeter == shieldPower){
         maxPower = 10;
     }
     else if(increasingMeter == (shieldHealth || hullHealth)){
