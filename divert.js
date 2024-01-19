@@ -7,6 +7,7 @@ var hullHealth = 100;
 
 const availablePowerElement = document.getElementById('availablePowerID');
 const enginePowerElement = document.getElementById('enginePowerID');
+console.log("enginePowerElement: " + enginePowerElement.textContent);
 const weaponPowerElement = document.getElementById('weaponPowerID');
 const shieldPowerElement = document.getElementById('shieldPowerID');
 const shieldHealthElement = document.getElementById('shieldHealthID');
@@ -101,13 +102,13 @@ function updateMeter(meter){
         updatingElement = hullHealthElement;
     }
 
-    if(meter > (updatingElement.textContent.length - 1)){
-        while(meter > (updatingElement.textContent.length - 1)){
+    if(meter > updatingElement.textContent.length){
+        while(meter > updatingElement.textContent.length){
             updatingElement.textContent = updatingElement.textContent + "▓";
         }
     }
-    else if (meter < (updatingElement.textContent.length - 1)){
-        while(meter < (updatingElement.textContent.length - 1)){
+    else if (meter < updatingElement.textContent.length){
+        while(meter < updatingElement.textContent.length){
             updatingElement.textContent = updatingElement.textContent.slice(0, -1);
         }
     }
