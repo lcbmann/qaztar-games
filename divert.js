@@ -27,6 +27,7 @@ function startDivertGame(){
 
     increaseEngineButton.onclick = function() {
         increase(enginePower, 1);
+        alert("engine power increased");
     };
 
     increaseWeaponButton.onclick = function() {
