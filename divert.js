@@ -1,48 +1,49 @@
+var availablePower = 50;
+var enginePower = 0;
+var weaponPower = 0;
+var shieldPower = 0;
+var shieldHealth = 100;
+var hullHealth = 100;
+
+const availablePowerElement = document.getElementById('availablePowerID');
+const enginePowerElement = document.getElementById('enginePowerID');
+const weaponPowerElement = document.getElementById('weaponPowerID');
+const shieldPowerElement = document.getElementById('shieldPowerID');
+const shieldHealthElement = document.getElementById('shieldHealthID');
+const hullHealthElement = document.getElementById('hullHealthID')
+
+const increaseEngineButton = document.getElementById('increaseEngine');
+const increaseWeaponButton = document.getElementById('increaseWeapon');
+const increaseShieldButton = document.getElementById('increaseShield');
+const decreaseEngineButton = document.getElementById('decreaseEngine');
+const decreaseWeaponButton = document.getElementById('decreaseWeapon');
+const decreaseShieldButton = document.getElementById('decreaseShield');
+
+increaseEngineButton.onclick = function() {
+    increase(enginePower, 1);
+};
+
+increaseWeaponButton.onclick = function() {
+    increase(weaponPower, 1);
+};
+
+increaseShieldButton.onclick = function() {
+    increase(shieldPower, 1);
+};
+
+decreaseEngineButton.onclick = function() {
+    decrease(enginePower, 1);
+};
+
+decreaseWeaponButton.onclick = function() {
+    decrease(weaponPower, 1);
+};
+
+decreaseShieldButton.onclick = function() {
+    decrease(shieldPower, 1);
+};
 function startDivertGame(){
-    var availablePower = 50;
-    var enginePower = 0;
-    var weaponPower = 0;
-    var shieldPower = 0;
-    var shieldHealth = 100;
-    var hullHealth = 100;
-
-    const availablePowerElement = document.getElementById('availablePowerID');
-    const enginePowerElement = document.getElementById('enginePowerID');
-    const weaponPowerElement = document.getElementById('weaponPowerID');
-    const shieldPowerElement = document.getElementById('shieldPowerID');
-    const shieldHealthElement = document.getElementById('shieldHealthID');
-    const hullHealthElement = document.getElementById('hullHealthID')
-
-    const increaseEngineButton = document.getElementById('increaseEngine');
-    const increaseWeaponButton = document.getElementById('increaseWeapon');
-    const increaseShieldButton = document.getElementById('increaseShield');
-    const decreaseEngineButton = document.getElementById('decreaseEngine');
-    const decreaseWeaponButton = document.getElementById('decreaseWeapon');
-    const decreaseShieldButton = document.getElementById('decreaseShield');
-
-    increaseEngineButton.onclick = function() {
-        increase(enginePower, 1);
-    };
-
-    increaseWeaponButton.onclick = function() {
-        increase(weaponPower, 1);
-    };
-
-    increaseShieldButton.onclick = function() {
-        increase(shieldPower, 1);
-    };
-
-    decreaseEngineButton.onclick = function() {
-        decrease(enginePower, 1);
-    };
-
-    decreaseWeaponButton.onclick = function() {
-        decrease(weaponPower, 1);
-    };
-
-    decreaseShieldButton.onclick = function() {
-        decrease(shieldPower, 1);
-    };
+    
 }
 
 
