@@ -47,6 +47,7 @@ function startDivertGame(){
 
 
 function increase(increasingMeter, amount){
+    console.log("increase function: " + {increasingMeter} + ":" + increasingMeter + " with amount " + amount)
     var maxPower; 
     if(increasingMeter == availablePower){
         maxPower = 50;
@@ -59,13 +60,17 @@ function increase(increasingMeter, amount){
     }
 
     if((increasingMeter + amount) < maxPower){
+        console.log("if statement in increasing called")
         increasingMeter = increasingMeter + amount;
         updateMeter(increasingMeter);
     }
 }
 
 function decrease(decreasingMeter, amount){
+    console.log("decrease function: " + {decreasingMeter} + ":" + decreasingMeter + " with amount " + amount)
+
     if(decreasingMeter - amount > 0){
+        console.log("if statement in decreasing called")
         decreasingMeter = decreasingMeter - amount;
         updateMeter(decreasingMeter);
     }
