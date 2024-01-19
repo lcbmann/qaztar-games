@@ -20,27 +20,27 @@ const decreaseWeaponButton = document.getElementById('decreaseWeapon');
 const decreaseShieldButton = document.getElementById('decreaseShield');
 
 increaseEngineButton.onclick = function() {
-    increase(enginePower, 1);
+    enginePower = increase(enginePower, 1, "engine");
 };
 
 increaseWeaponButton.onclick = function() {
-    increase(weaponPower, 1);
+    weaponPower = increase(weaponPower, 1, "weapon");
 };
 
 increaseShieldButton.onclick = function() {
-    increase(shieldPower, 1);
+    shieldPower = increase(shieldPower, 1, "shield");
 };
 
-decreaseEngineButton.onclick = function() {
-    decrease(enginePower, 1);
+decreaseEngineButton.onclick = function () {
+    enginePower = decrease(enginePower, 1, "engine");
 };
 
-decreaseWeaponButton.onclick = function() {
-    decrease(weaponPower, 1);
+decreaseWeaponButton.onclick = function () {
+    weaponPower = decrease(weaponPower, 1, "weapon");
 };
 
-decreaseShieldButton.onclick = function() {
-    decrease(shieldPower, 1);
+decreaseShieldButton.onclick = function () {
+    shieldPower = decrease(shieldPower, 1, "shield");
 };
 
 
@@ -49,7 +49,7 @@ function startDivertGame(){
 }
 
 
-function increase(increasingMeter, amount){
+function increase(increasingMeter, amount, meterType){
     console.log("increase function: " + increasingMeter + " with amount " + amount)
     console.log("increasingMeter: " + increasingMeter + " and enginePower: " + enginePower)
     var maxPower; 
@@ -67,39 +67,46 @@ function increase(increasingMeter, amount){
     if((increasingMeter + amount) < maxPower){
         console.log("if statement in increasing called")
         increasingMeter = increasingMeter + amount;
-        updateMeter(increasingMeter);
+        updateMeter(increasingMeter, meterType);
+        return increasingMeter;
     }
 }
 
-function decrease(decreasingMeter, amount){
-    console.log("decrease function: " + decreasingMeter + " with amount " + amount)
+function decrease(decreasingMeter, amount, meterType) {
+    console.log("decrease function: " + decreasingMeter + " with amount " + amount);
 
-    if(decreasingMeter - amount > 0){
-        console.log("if statement in decreasing called")
-        decreasingMeter = decreasingMeter - amount;
-        updateMeter(decreasingMeter);
+    // Check if decreasingMeter - amount is greater than or equal to 0
+    if (decreasingMeter - amount >= 0) {
+        console.log("if statement in decreasing called");
+        decreasingMeter = decreasingMeter - 1;
+        updateMeter(decreasingMeter, meterType);
+        return decreasingMeter;
+    } else {
+        // If decreasingMeter - amount would be negative, return the original value
+        return decreasingMeter;
     }
 }
 
-function updateMeter(meter){
+function updateMeter(meter, meterType){
     var updatingElement;
     console.log("engine power element length: " + enginePowerElement.textContent.length);
-    if(meter == availablePower){
+    if(meterType == "available"){
         updatingElement = availablePowerElement;
     }
-    else if(meter == enginePower){
+    else if(meterType == "engine"){
         updatingElement = enginePowerElement;
+        console.log("updatingElement set to enginePowerElement")
     }
-    else if(meter == weaponPower){
+    else if(meterType == "weapon"){
         updatingElement = weaponPowerElement;
     }
-    else if(meter == shieldPower){
+    else if(meterType == "shield"){
         updatingElement = shieldPowerElement;
     }
-    else if(meter == shieldHealth){
+    else if(meterType == "shieldHealth"){
         updatingelement = shieldHealthElement;
     }
-    else if(meter == hullHealth){
+    else if(meterType == "hullHealth"){
         updatingElement = hullHealthElement;
     }
 
