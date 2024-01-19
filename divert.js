@@ -47,7 +47,8 @@ function startDivertGame(){
 
 
 function increase(increasingMeter, amount){
-    console.log("increase function: " + {increasingMeter} + ":" + increasingMeter + " with amount " + amount)
+    console.log("increase function: " + increasingMeter + " with amount " + amount)
+    console.log("increasingMeter: " + increasingMeter + " and enginePower: " + enginePower)
     var maxPower; 
     if(increasingMeter == availablePower){
         maxPower = 50;
@@ -58,6 +59,7 @@ function increase(increasingMeter, amount){
     else if(increasingMeter == (shieldHealth || hullHealth)){
         maxPower = 100;
     }
+    console.log("max power set to " + maxPower)
 
     if((increasingMeter + amount) < maxPower){
         console.log("if statement in increasing called")
@@ -67,7 +69,7 @@ function increase(increasingMeter, amount){
 }
 
 function decrease(decreasingMeter, amount){
-    console.log("decrease function: " + {decreasingMeter} + ":" + decreasingMeter + " with amount " + amount)
+    console.log("decrease function: " + decreasingMeter + " with amount " + amount)
 
     if(decreasingMeter - amount > 0){
         console.log("if statement in decreasing called")
