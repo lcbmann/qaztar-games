@@ -1,9 +1,18 @@
-var availablePower = 50;
+var availablePower = 20;
+var maxAvailablePower = 20;
 var enginePower = 0;
 var weaponPower = 0;
 var shieldPower = 0;
-var shieldHealth = 100;
-var hullHealth = 100;
+var shieldHealth = 50;
+var hullHealth = 50;
+meters = Array(availablePower, enginePower, weaponPower, shieldPower, shieldHealth, hullHealth);
+
+
+var attackType;
+
+const descriptionsElement = document.getElementById('descriptions');
+const attacksElement = document.getElementById('attacks');
+const statusReportsElement = document.getElementById('statusReports');
 
 const availablePowerElement = document.getElementById('availablePowerID');
 const enginePowerElement = document.getElementById('enginePowerID');
@@ -19,42 +28,72 @@ const decreaseEngineButton = document.getElementById('decreaseEngine');
 const decreaseWeaponButton = document.getElementById('decreaseWeapon');
 const decreaseShieldButton = document.getElementById('decreaseShield');
 
+const startLevelButton = document.getElementById('startLevel');
+
+startLevelButton.onclick = function(){
+    startLevel();
+}
+
 increaseEngineButton.onclick = function() {
-    enginePower = increase(enginePower, 1, "engine");
+    if(availablePower > 0){
+        enginePower = increase(enginePower, 1, "engine");
+    }
 };
 
 increaseWeaponButton.onclick = function() {
-    weaponPower = increase(weaponPower, 1, "weapon");
+    if(availablePower > 0){
+        weaponPower = increase(weaponPower, 1, "weapon");
+    }
 };
 
 increaseShieldButton.onclick = function() {
-    shieldPower = increase(shieldPower, 1, "shield");
+    if(availablePower > 0){
+        shieldPower = increase(shieldPower, 1, "shield");
+    }
 };
 
 decreaseEngineButton.onclick = function () {
-    enginePower = decrease(enginePower, 1, "engine");
+    if(availablePower <= maxAvailablePower){
+        enginePower = decrease(enginePower, 1, "engine");
+    }
 };
 
 decreaseWeaponButton.onclick = function () {
-    weaponPower = decrease(weaponPower, 1, "weapon");
+    if(availablePower <= maxAvailablePower){
+        weaponPower = decrease(weaponPower, 1, "weapon");
+    }
 };
 
 decreaseShieldButton.onclick = function () {
-    shieldPower = decrease(shieldPower, 1, "shield");
+    if(availablePower <= maxAvailablePower){
+        shieldPower = decrease(shieldPower, 1, "shield");
+    }
 };
 
 
+function updateAllMeters(){
+    updateMeter(availablePower, "available");
+    updateMeter(enginePower, "engine");
+    updateMeter(weaponPower, "weapon");
+    updateMeter(shieldPower, "shield");
+    updateMeter(shieldHealth, "shieldHealth");
+    updateMeter(hullHealth, "hullHealth");
+}
+
 function startDivertGame(){
-    console.log("enginePowerElement: " + enginePowerElement.textContent);
+    updateAllMeters();
+}   
+
+function startLevel(){
+    descriptionsElement.innerText = "Incoming attack from an enemy ship!"
+    setTimeout(attack("energy", 10), 10000);
 }
 
 
 function increase(increasingMeter, amount, meterType){
-    console.log("increase function: " + increasingMeter + " with amount " + amount)
-    console.log("increasingMeter: " + increasingMeter + " and enginePower: " + enginePower)
     var maxPower; 
     if(increasingMeter == availablePower){
-        maxPower = 50;
+        maxPower = 20;
     }
     else if(increasingMeter == enginePower || increasingMeter == weaponPower || increasingMeter == shieldPower){
         maxPower = 10;
@@ -62,65 +101,73 @@ function increase(increasingMeter, amount, meterType){
     else if(increasingMeter == (shieldHealth || hullHealth)){
         maxPower = 100;
     }
-    console.log("max power set to " + maxPower)
 
-    if((increasingMeter + amount) < maxPower){
-        console.log("if statement in increasing called")
+    if((increasingMeter + amount) <= maxPower){
         increasingMeter = increasingMeter + amount;
         updateMeter(increasingMeter, meterType);
-        return increasingMeter;
+        if(meterType != "available"){
+            availablePower = decrease(availablePower, 1, "available");
+        }
     }
+    return increasingMeter;
 }
 
+
 function decrease(decreasingMeter, amount, meterType) {
-    console.log("decrease function: " + decreasingMeter + " with amount " + amount);
 
     // Check if decreasingMeter - amount is greater than or equal to 0
     if (decreasingMeter - amount >= 0) {
-        console.log("if statement in decreasing called");
-        decreasingMeter = decreasingMeter - 1;
+        decreasingMeter = decreasingMeter - amount;
         updateMeter(decreasingMeter, meterType);
-        return decreasingMeter;
-    } else {
-        // If decreasingMeter - amount would be negative, return the original value
-        return decreasingMeter;
+        if(meterType != "available"){
+            availablePower = increase(availablePower, 1, "available");
+        }
+        
+    }
+    return decreasingMeter;
+}
+
+function updateMeter(meter, meterType) {
+    const meterElements = {
+        available: availablePowerElement,
+        engine: enginePowerElement,
+        weapon: weaponPowerElement,
+        shield: shieldPowerElement,
+        shieldHealth: shieldHealthElement,
+        hullHealth: hullHealthElement
+    };
+
+    const updatingElement = meterElements[meterType];
+
+    if (meter > updatingElement.textContent.length) {
+        updatingElement.textContent += "▓".repeat(meter - updatingElement.textContent.length);
+    } else if (meter < updatingElement.textContent.length) {
+        updatingElement.textContent = updatingElement.textContent.slice(0, meter);
     }
 }
 
-function updateMeter(meter, meterType){
-    var updatingElement;
-    console.log("engine power element length: " + enginePowerElement.textContent.length);
-    if(meterType == "available"){
-        updatingElement = availablePowerElement;
-    }
-    else if(meterType == "engine"){
-        updatingElement = enginePowerElement;
-        console.log("updatingElement set to enginePowerElement")
-    }
-    else if(meterType == "weapon"){
-        updatingElement = weaponPowerElement;
-    }
-    else if(meterType == "shield"){
-        updatingElement = shieldPowerElement;
-    }
-    else if(meterType == "shieldHealth"){
-        updatingelement = shieldHealthElement;
-    }
-    else if(meterType == "hullHealth"){
-        updatingElement = hullHealthElement;
-    }
 
-    if(meter > updatingElement.textContent.length){
-        while(meter > updatingElement.textContent.length){
-            updatingElement.textContent = updatingElement.textContent + "▓";
+
+function attack(attackType, amount){
+    if(attackType == "energy"){
+        attacksElement.innerHTML = "The enemy has launched an energy attack of <b>" + amount + "</b> strength!";
+        var damage = amount;
+        damage = damage - shieldPower;
+        damage = damage - (0.5 * enginePower);
+        if(damage > 0){
+            if(shieldHealth > 0){
+                shieldHealth = decrease(shieldHealth, damage, "shieldHealth");
+                statusReportsElement.innerHTML = "The shields took <b>" + damage + "</b> points of damage.";
+            }
+            else if (shieldHealth <= 0){
+                hullHealth = decrease(hullHealth, damage, "hullHealth");
+                statusReportsElement.innerHTML = "The hull took <b>" + damage + "</b> points of damage."
+            }
+        }
+        else if (damage <= 0){
+            statusReportsElement.innerHTML = "All damage was avoided!";
         }
     }
-    else if (meter < updatingElement.textContent.length){
-        while(meter < updatingElement.textContent.length){
-            updatingElement.textContent = updatingElement.textContent.slice(0, -1);
-        }
-    }
-
 }
     
 startDivertGame();

@@ -18,49 +18,75 @@
 <body>
     <div class="container">
         <!-- Text Descriptions -->
-        <div class="descriptions">
-            <div id="text" class="fade-in-text" style="text-align:left">Text Description</div>
+        <div class="descriptions-attacks">
+            <div id="descriptions" class="descriptions">Text Description</div>
+            <div id="attacks" class="attacks">Attack Description</div>
+            <div id="statusReports" class="statusReports">Status Report</div>
         </div>
+
+        <button class="btn" id="startLevel">Start level</button>
+        
         <!-- Play Area -->
         <div class="playarea">
-            <div id="text" class="fade-in-text"><pre>
-              _
-             //\
-            //  \\
-            //____\\
-            |  0   |
-            |      |
-            \      /
-            /\____/\
+            <div id="text" class="ascii"><pre>
+                <br>
+                <br>
+                <br>
+^
+      | |      
+      |W|      
+       | |       
+_||S||_
+|  |  |
+\  |  /
+/  |  \
+  /|  |  |\  
+/    |    \
+/     |     \
+//      |      \\
+/|       |       |\
+/ |       !       | \
+/ @|       !       |@ \
+|....  ___  E  ___  ....|
+ |__----   \_!_/   ----__| 
+V
             </pre></div>
         </div>
         <div class="controls">
-            <b>Power Meters</b>
+            <div class="meter-title"><b>Power Meters&nbsp;</b></div>
+            <div class="meter">Available Power&nbsp;</div>
             <div class="control-group">
-                <div class="meter">Available Power: </div>
-                <div class="meter" id="availablePowerID">▓▓▓▓▓▓▓▓▓▓</div>
+                <div class="meter" id="availablePowerID" style="color:bisque">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</div>
+                <div class="meter">&nbsp;</div>
+                <br>
             </div>
+                                
+            <div class="meter">&nbsp;&nbsp;Engines&nbsp;</div>
             <div class="control-group">
-                    <button class="btn" id="increaseEngine">+</button>
-                    <div class="meter">&nbsp;&nbsp;Engines:&nbsp;</div>
                     <div class="meter" id="enginePowerID" style="color: orange"></div>
+                    <button class="btn" id="increaseEngine">+</button>
                     <button class="btn" id="decreaseEngine">-</button>
             </div>
+            <div class="meter">Weapons&nbsp;</div>
             <div class="control-group">
-                    <button class="btn" id="increaseWeapon">+</button>
-                    <div class="meter">Weapons:&nbsp;</div>
                     <div class="meter" id="weaponPowerID" style="color: lightcoral"></div>
+                    <button class="btn" id="increaseWeapon">+</button>
                     <button class="btn" id="decreaseWeapon">-</button>
             </div>
+            <div class="meter">Shields&nbsp;</div>
             <div class="control-group">
-                    <button class="btn" id="increaseShield">+</button>
-                    <div class="meter">&nbsp;&nbsp;Shields:&nbsp;</div>
                     <div class="meter" id="shieldPowerID" style="color: lightskyblue"></div>
+                    <button class="btn" id="increaseShield">+</button>
                     <button class="btn" id="decreaseShield">-</button>
             </div>
-            <b>Status</b>
-            <div class="meter" id="shieldHealthID">Shield Health: ▓▓▓▓▓▓▓▓▓▓</div>
-            <div class="meter" id="hullHealthID">Hull Health: ▓▓▓▓▓▓▓▓▓▓</div>
+            <br>
+            <br>
+            <br>
+            <div class="meter-title"><b>Status</b></div>
+            <div class="meter">Shield Health</div>
+            <div class="meter" id="shieldHealthID" style="color:deepskyblue">▓▓▓▓▓▓▓▓▓▓</div>
+            <div class="meter">Hull Health</div>
+            <div class="meter" id="hullHealthID" style="color:lightgreen">▓▓▓▓▓▓▓▓▓▓</div>
         </div>
 
     </div>
