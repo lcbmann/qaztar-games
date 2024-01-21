@@ -1,0 +1,50 @@
+body {
+    display: flex;
+    justify-content: space-between;
+    padding: 3% 4.5%;
+    background-color: black;
+    color: white;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.descriptions {
+    width: 30%;
+    text-align: left;
+}
+
+.playarea {
+    width: 40%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.controls {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.control-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn {
+    /* Your button styles */
+    margin-right: 10px;
+    margin-left: 10x;
+}
+
+.meter {
+    /* Your meter styles */
+}

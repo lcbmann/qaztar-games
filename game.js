@@ -29,6 +29,8 @@ const islandImageElement = document.getElementById('ascii-island');
 const volcanoImageElement = document.getElementById('ascii-volcano');
 const cyclopsImageElement = document.getElementById('ascii-cyclops');
 const olympusImageElement = document.getElementById('ascii-olympus');
+const circeImageElement = document.getElementById('ascii-circe');
+const townImageElement = document.getElementById('ascii-town');
 
 const statusElements = document.getElementsByClassName('status');
 
@@ -383,9 +385,9 @@ function updateBoons(){
 function generateLand(nextTextNodeId)
 {
     //Subtract food and water
-    foodChange = -Math.floor(Math.random() * 3 + 1);
+    foodChange = -Math.floor(Math.random() * 2 + 1);
 
-    waterChange = -Math.floor(Math.random() * 3 + 1);
+    waterChange = -Math.floor(Math.random() * 2 + 1);
 
     inspectFleet();
 
@@ -632,15 +634,17 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet navigates along a rocky coastline, and a shout goes out: something has been spotted inland. It\'s too difficult to discern what the object is from the ships. \n \n Will you prepare a party to investigate or move on?',
             'The fleet sails on, and a call goes out: another ship has been spotted on the horizon. Then another. And another. The entire horizon becomes dotted with ships fast approaching. The previously attacked merchants have not taken kindly to the fleet\'s piracy in their waters. \n \n Will you attempt to negotiate, or flee?',
             'The fleet drops anchor on a coastline, a tall volcano rising in the distance. Just as the sailors spot a herd of deer to hunt, a small tremor moves through the ground, and the nearby volcano belches a plume of black smoke. \n \n Will you stay to hunt the deer, or leave immediately?',
-            'The fleet arrives on a beach surrounded by thick forests. As they set up camp, an unknown man stumbles out from the tree-line. Obviously exhausted, the man explains that he and some of his fellow travelers were captives of a cyclops, and that he alone was able to escape. He implores you to lay a trap for the cyclops to free his kinsmen. \n \n Will you use some food to lure and attack the cyclops, or leave his kinsmen behind?'
+            'The fleet arrives on a beach surrounded by thick forests. As they set up camp, an unknown man stumbles out from the tree-line. Obviously exhausted, the man explains that he and some of his fellow travelers were captives of a cyclops, and that he alone was able to escape. He implores you to lay a trap for the cyclops to free his kinsmen. \n \n Will you use some food to lure and attack the cyclops, or leave his kinsmen behind?',
+            'The fleet arrives at an island, shrouded in an eerie purple mist. A large, ancient tree whispers in an unknown tongue. A seductive sorceress emerges, offering aid, but her glowing eyes betray a hidden cost. The sailors stand divided, drawn in by her promises, yet wary of the dark energies pulsating from the island\'s heart. \n \n Will you accept the sorceress\' gifts, or sail away as quickly as possible?'
         )
         var uniqueQuoteText = Array(
-            '"Now Scylla holds the right; insatiable Charybdis keeps the left." \n \n "Three times [Charybdis] sucks the vast waves into her abyss, the deepest whirlpool within her vortex, then she hurls the waters high, lashing the stars with spray." \n \n "Scylla is confined to blind retreats, a cavern; and her mouths thrust out to drag ships toward the shoals." \n \n - Vergil, The Aeneid',
+            '"Now Scylla holds the right; insatiable Charybdis keeps the left." \n \n "Three times [Charybdis] sucks the vast waves into her abyss, the deepest whirlpool within her vortex, then she hurls the waters high, lashing the stars with spray." \n \n "Scylla is confined to blind retreats, a cavern; and her mouths thrust out to drag ships toward the shoals." \n \n - Virgil, The Aeneid',
             '"They head for harbor; kind winds swell their sails; the fleet runs swift across the surge; at last, and glad, they reach familiar sands." \n \n - Virgil, The Aeneid',
             '',
             '',
             '"The harbor is wide and free from winds; but Etna is thundering nearby with dread upheavals. At times it belches into upper air dark clouds with tar-black whirlwinds, blazing lava, while lifting balls of flame that lick the stars." \n \n "The tale is told that, charred by lightning bolts, the body of Enceladus lies pressed beneath this mass." \n \n - Virgil, The Aeneid',
             '"Aurora had banned damp shadows from the sky, when suddenly a tattered stranger, gaunt with final hunger, staggers from the woods and stretches pleading hands toward shore." \n \n - Virgil, The Aeneid',
+            '"And Aeneas, aware of all, did not shift his flaming gaze from her till he sprang forth and fled from there, fearing the passions both just and unjust of Circe."\n \n - Virgil, The Aeneid'
         )
         var uniqueOption1Text = Array(
             'Go to the left, to Charybdis',
@@ -649,7 +653,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Attempt to negotiate',
             'Return to the ships and set sail',
             'Return to the ships and set sail',
-
+            'Set sail immediately',
         )
         
         var uniqueOption2Text = Array(
@@ -659,6 +663,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Flee',
             'Stay and hunt the deer',
             'Lay a food trap for the cyclops',
+            'Accept the gift of the sorceress',
         )
 
         var scenarioText = Array(
@@ -673,6 +678,7 @@ function generateScenario(nextTextNodeId, optionId)
             'The fleet slows to a stop, anchoring in a small inlet. The sailors disembark from the remaining ships. \n \n Will you order the creation of three new ships to be constructed from the remaining material stores?',
             'The fleet slows to a stop, and treks up a cliffside to a small temple. Within lies a basin, empty. Some of the sailors believe that refilling the basin would improve favor with the gods, increasing their chances of finding an ideal land to settle. \n \n Will you refill the basin with fresh water for the gods?',
             'The fleet clashes with the waves as a great stormfront rocks the ships. One of the ships begins to come apart, its planks creaking and growning as they split. \n \n Will you send sailors to try to repair the ship, or will you order its evacuation?',
+            'The fleet docks at a friendly coastal trading town, and the crew pools together their remaining gold. \n \n Should they go looking to hire new crewmates or to buy supplies?'
         )
         var quoteText = Array(
             '"Then, suddenly, the cloud banks snatch away the sky and daylight from the Trojan\'s eyes. Black night hangs on the waters, heavens thunder, and frequent lightning glitters in the air; everything intends quick death to men." \n \n "A blue-black cloud ran overhead; it brought the night and storm and breakers rough in darkness. The winds roll up the sea, great waters heave. And we are scattered, tossed upon the vast abyss." \n \n - Virgil, The Aeneid',
@@ -686,7 +692,7 @@ function generateScenario(nextTextNodeId, optionId)
             '"Then let us build out of Italian oak twice-ten ships for the Trojans - even more, if they can fill them.', // building ships
             '', // fill basin
             '"The seas are heaved to heaven. The oars are cracked; the prow sheers off; the waves attack broadside; against his hull the swell now shatters in a heap, mountainous, steep. Some sailors hang upon a wave crest; others stare out at the gaping waters, land that lies below the waves, surge that seethes with sand." \n \n - Virgil, The Aeneid',
-
+            '', // trading town
         )
         var option1Text = Array(
             'Send the sailors',
@@ -700,6 +706,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Construct three new ships',
             'Refill the temple basin',
             'Attempt to save the ship',
+            'Look for new sailors to hire',
         )
 
         var option2Text = Array(
@@ -714,6 +721,7 @@ function generateScenario(nextTextNodeId, optionId)
             'Continue with the existing ships and materials',
             'Leave the basin empty and depart',
             'Order the evacuation',
+            'Look for food, water, and materials to stock up on',
         )
         
         //Unique Scenario generator
@@ -784,6 +792,8 @@ function generateScenario(nextTextNodeId, optionId)
             'The sailors return to their ships despite the pleas of the stranger. Although he is unhappy with the decision, he still joins the Trojans as they set sail.',
             'The sailors lay a food trap for the cyclops, near to his cave. Within a few hours, he stumbles out of his cave, smells the food, and falls straight into the trap. The Trojans quickly release the prisoners, who happily join the crew.',
             'The sailors lay a food trap for the cyclops, near to his cave. The cyclops, while large, recognizes the trap before he falls for it. Now alerted to the Trojans presence, he returns to his cave. The Trojans depart soon after, taking the single escapee with them.',
+            'The sailors quickly make way, and the small island slowly fades from view in the distance. A cloaked figure watches them leave with glowing eyes. That night, the sailors hear her whispered curses in their dreams.',
+            'The sailors hesitantly make shore on the island, and accept the gifts and shelter of the sorceress. Yet many begin to report that some of their fellows have gone missing. At midnight, the sailors steal away, taking the gifts with them.',
         );
 
         var scenarioResultText = Array(
@@ -810,11 +820,13 @@ function generateScenario(nextTextNodeId, optionId)
             'The ship slowly disappears into the horizon. The sailors, grumbling, return to their routines.',
             'The sailors set to work building three more ships for the fleet, pulling from the existing material stores.',
             'No new ships are built.',
-            'The basin is filled',
-            'The basin is left empty',
+            'The basin is filled.',
+            'The basin is left empty.',
             'The sailors scramble to follow the shouted order, rushing to the broken ship. Fortunately, they are able to save it, sealing the gaps in its shuddering hull.',
             'The sailors scramble to follow the shouted order. Unfortunately, just as the first are arriving on the ship, it capsizes, and vanishes beneath the swell.',
             'The sailors pass on the shouted evacuation order, barely heard over the crashing waves and howling winds. The sailors grab as much of the cargo as they can before leaving, though some is left behind, and the ship soon vanishes beneath the surface.',
+            'The sailors set off into the town, searching for new crewmates to join their journey. A few are successful with refugees from Troy and other lost souls looking for a purpose.',
+            'The sailors set off into the town, searching for supplies to supplement their journey. They return with some rations, fresh water, and building materials.'
         );
         
         //Unique scenarios
@@ -851,7 +863,7 @@ function generateScenario(nextTextNodeId, optionId)
                 else if(optionId == 2){
                     assignedScenarioResult = uniqueScenarioResultText[3];
                     materialsChange = 30;
-                    shipsChange = 5;
+                    shipsChange = 6;
                     inspectFleet();
                 }
             }
@@ -862,19 +874,19 @@ function generateScenario(nextTextNodeId, optionId)
                     assignedScenarioResult = uniqueScenarioResultText[4];
                 }
                 else if (optionId == 2){
-                    var choice = Math.floor(Math.random() * 2 + 1)
+                    var choice = Math.floor(Math.random() * 3 + 1)
                     if (choice == 1){
                         assignedScenarioResult = uniqueScenarioResultText[5];
                         foodChange = -10;
                         waterChange = -10;
                         inspectFleet();
                     }
-                    else if (choice == 2){
+                    else if (choice == 2 || choice == 3){
                         var choice = Math.floor(Math.random() * 2 + 1)
                         if (choice == 1){
                             assignedScenarioResult = uniqueScenarioResultText[6];
-                            foodChange = 15;
-                            waterChange = 15;
+                            foodChange = 20;
+                            waterChange = 20;
                             inspectFleet();
                         }
                         else if (choice == 2){
@@ -954,6 +966,22 @@ function generateScenario(nextTextNodeId, optionId)
                 }
             }
 
+
+            //Circe
+            else if(scenarioId == 6){
+                if(optionId == 1){
+                    assignedScenarioResult = uniqueScenarioResultText[16];
+                    inspectFleet();
+                }
+                else if (optionId == 2){
+                    assignedScenarioResult = uniqueScenarioResultText[17];
+                    sailorsChange = -(Math.floor(Math.random() * 4 + 2));
+                    foodChange = (Math.floor(Math.random() * 5 + 3));
+                    waterChange = (Math.floor(Math.random() * 5 + 3));
+                    inspectFleet();
+                }
+            }
+
             uniqueScenarioSwitch = false;
             return;
         }
@@ -986,10 +1014,10 @@ function generateScenario(nextTextNodeId, optionId)
                 if (choice == 1){
                     assignedScenarioResult = scenarioResultText[3];
                     shipsChange = -1;
-                    foodChange = -10;
-                    waterChange = -10;
-                    sailorsChange -10;
-                    materialsChange = -10;
+                    foodChange = -(Math.floor(Math.random() * 10 + 1));
+                    waterChange = -(Math.floor(Math.random() * 10 + 1));
+                    materialsChange = -(Math.floor(Math.random() * 10 + 1));
+                    sailorsChange = -(Math.floor(Math.random() * 10 + 1));
                     inspectFleet();
                 }
                 if (choice == 2){
@@ -1038,13 +1066,13 @@ function generateScenario(nextTextNodeId, optionId)
         if(scenarioId == 3){
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[9];
-                foodChange = (Math.floor(Math.random() * 15 + 1));
-                waterChange = (Math.floor(Math.random() * 15 + 1));
+                foodChange = (Math.floor(Math.random() * 12 + 3));
+                waterChange = (Math.floor(Math.random() * 12 + 3));
                 inspectFleet();
             }
             else if (optionId == 2){
                 assignedScenarioResult = scenarioResultText[10];
-                materialsChange = (Math.floor(Math.random() * 15 + 1));
+                materialsChange = (Math.floor(Math.random() * 12 + 3));
                 shipsChange = (Math.floor(Math.random() * 3 + 1));
                 inspectFleet();
             }
@@ -1055,7 +1083,7 @@ function generateScenario(nextTextNodeId, optionId)
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[11];
                 isOffering = true;
-                foodChange = -(Math.floor(Math.random() * 15 + 1))
+                foodChange = -(Math.floor(Math.random() * 10 + 1))
                 inspectFleet();
             }
             else if (optionId == 2){
@@ -1068,7 +1096,7 @@ function generateScenario(nextTextNodeId, optionId)
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[13];
                 isOffering = true;
-                materialsChange = -(Math.floor(Math.random() * 15 + 1))
+                materialsChange = -(Math.floor(Math.random() * 10 + 1))
                 inspectFleet();
             }
             else if (optionId == 2){
@@ -1147,7 +1175,7 @@ function generateScenario(nextTextNodeId, optionId)
             if(optionId == 1){
                 assignedScenarioResult = scenarioResultText[23];
                 isOffering = true;
-                waterChange = -(Math.floor(Math.random() * 15 + 1))
+                waterChange = -(Math.floor(Math.random() * 10 + 1))
                 inspectFleet();
             }
             else if (optionId == 2){
@@ -1182,6 +1210,23 @@ function generateScenario(nextTextNodeId, optionId)
                 shipsChange = -1;
                 inspectFleet();
             }
+        }
+
+        //Merchant town
+        if(scenarioId == 11){
+            if(optionId == 1){
+                assignedScenarioResult = scenarioResultText[28];
+                sailorsChange = (Math.floor(Math.random() * 5 + 4))
+                inspectFleet();
+            }
+            else if (optionId == 2){
+                assignedScenarioResult = scenarioResultText[29];
+                foodChange = (Math.floor(Math.random() * 2 + 2));
+                waterChange = (Math.floor(Math.random() * 2 + 2));
+                materialsChange = (Math.floor(Math.random() * 2 + 2));
+                inspectFleet();
+            }
+
         }
     }
 }
@@ -1493,6 +1538,12 @@ function selectOption(option){
                 cyclopsImageElement.style.display = '';
                 shipImageElement.style.display = 'none';
             }
+            
+            //Circe
+            else if (scenarioId == 6){
+                circeImageElement.style.display = '';
+                shipImageElement.style.display = 'none';
+            }
         }
         //Stormy Sea
         else if(scenarioId == 0 || scenarioId == 10){
@@ -1506,6 +1557,7 @@ function selectOption(option){
             shipImageElement.style.display = 'none';
         }
 
+        //Prayer
         else if (scenarioId == 4 || scenarioId == 5 || scenarioId == 9){
             olympusImageElement.style.display = '';
             shipImageElement.style.display = 'none';
@@ -1515,6 +1567,12 @@ function selectOption(option){
             merchantImageElement.style.display = '';
             shipImageElement.style.display = 'none';
         }
+        //Merchant town
+        else if (scenarioId == 11){
+            townImageElement.style.display = '';
+            shipImageElement.style.display = 'none';
+        }
+
         
 
     }
@@ -1611,6 +1669,11 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
 
     var civilizationName = civilizationNames[Math.floor(Math.random()*civilizationNames.length)]
 
+    if(vegetationTier == 'Plentiful' && temperatureTier == "Comfortable" && harborTier == "Spacious" && riverTier == "Flowing" && nativesTier == "Generous" && ruinsTier == "Treasures"){
+        civilizationName = "Dankland"
+    }
+    
+    //Ideal Civilization
     if(vegetationTier == 'Plentiful' && temperatureTier == "Comfortable" && harborTier == "Spacious" && riverTier == "Flowing"){
         var idealCivilizationNames = Array(
             "Elysium",
@@ -1627,6 +1690,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
         civilizationName = idealCivilizationNames[Math.floor(Math.random()*idealCivilizationNames.length)]
     }
 
+    //Blessed Civilization
     else if (ceresLevel == 3 && jupiterLevel == 3 && neptuneLevel == 3){
         var godsCivilizationNames = Array(
             "Olympus",
@@ -1654,7 +1718,7 @@ function endGame(sailors, ships, food, water, materials, vegetationTier, tempera
 
     var ruinsText = "The ruins nearby were found to be empty. ";
 
-    var population = sailors;
+    var population = sailors * 1.1;
     var temperatureScore = 0;
     var ruinsScore = 0;
     var constructionScore = 0;
@@ -1866,8 +1930,11 @@ var arrivalTexts = Array(
     'The fleet pulls into a small cape, the sun low in the evening sky. Tiny waves lap against the side of the boat.',
     'The fleet passes around a bend, revealing a new land ahead. The evening sunbeams shatter across the cresting waves.',
     'The fleet glides along a shoreline of white sand, cliffs framing a beach ahead. Gusts of wind billow in the sails.',
-    'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.'
-    
+    'The fleet drops anchor at the base of a shore, its sailors weary after their journey. The sand sparkles under the bright sunlight.',
+    'As the ships reach the hidden cove, the first rays of dawn paint the sky in a fiery spectacle. Gulls swoop and cry overhead, welcoming the fleet to a secluded land.',
+    'Emerging from the mist, the fleet discovers an island paradise nestled amidst azure waters. The scent of tropical flowers fills the air, enticing the sailors to explore this new, enchanting realm.',
+    'Sailing into a tranquil bay, the fleet is greeted by a symphony of colors as the setting sun casts a golden glow on the tranquil waters. Palm trees sway gently in the breeze, whispering tales of the land\'s secrets.',
+    'At the mouth of a hidden river, the fleet is greeted by the lands inhabitants. Monkeys chatter excitedly in the treetops, curious about the newcomers to their undiscovered domain.'    
 )
 
 //Inspect land quotes
@@ -1875,7 +1942,9 @@ var landQuotes = Array(
     '"Along this side and that there towers, vast, a line of cliffs, each ending in like crags." \n \n - Virgil, The Aeneid',
     '"The Trojans, longing so to touch the land, now disembark to gain the wished-for sands." \n \n - Virgil, The Aeneid',
     '"And as soon as gracious daylight is given to him, this is his decision: to go out and explore this foreign country, to learn what shores the wind has brought him to." \n \n - Virgil, The Aeneid',
-    '"He hides his fleet inside the narrows of the wooded cove, beneath a hollow rock shut in by trees, with bristling shades around." \n \n - Virgil, The Aeneid'
+    '"He hides his fleet inside the narrows of the wooded cove, beneath a hollow rock shut in by trees, with bristling shades around." \n \n - Virgil, The Aeneid',
+    '"Aeneas, once he has landed, quickly scales the coast, surveying all the place, to see if any sign of life or culture is apparent, or any path that will direct him to the unknown settlers of this land." \n \n - Virgil, The Aeneid',
+    '"With hardy courage and undaunted heart, he cheers the exiled spirits of his band, reviving now their hopes, now urging them to toil." \n \n - Virgil, The Aeneid'
 )
 
 //Prayer quotes
@@ -1909,7 +1978,7 @@ const textNodes = [
     {
         id: 1,
         text: 'And when he knew the king was dead, he fled.',
-        quoteText: '"I go down and, guided by a god, move on among the foes and fires; weapons turn aside, the flames retire where I mke my way." \n \n - Virgil, The Aeneid',
+        quoteText: '"I go down and, guided by a god, move on among the foes and fires; weapons turn aside, the flames retire where I make my way." \n \n - Virgil, The Aeneid',
         options: [
             {
                 text: 'Continue',

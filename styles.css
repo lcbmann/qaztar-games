@@ -94,11 +94,11 @@ body {
 }
 
 .ending-ascii {
-    border-radius: 1em;
-    padding: 1em;
+    border-radius: 0.5em;
+    padding: 0.5em;
     position: absolute;
     top: 50%;
-    left: 80%;
+    left: 83%;
     margin-right: -50%;
     transform: translate(-50%, -50%);
     font-weight: bolder;
@@ -199,7 +199,7 @@ body {
 }
 
 .fade-in-quote {
-    animation: fadeInQuote 8s;
+    animation: fadeInQuote 7s;
 }
 
 .fade-in-buttons {
