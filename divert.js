@@ -5,6 +5,8 @@ var weaponPower = 0;
 var shieldPower = 0;
 var shieldHealth = 50;
 var hullHealth = 50;
+
+
 meters = Array(availablePower, enginePower, weaponPower, shieldPower, shieldHealth, hullHealth);
 
 
@@ -37,6 +39,7 @@ startLevelButton.onclick = function(){
 increaseEngineButton.onclick = function() {
     if(availablePower > 0){
         enginePower = increase(enginePower, 1, "engine");
+        document.documentElement.style.setProperty('--scale-factor', (enginePower / 8).toString());
     }
 };
 
@@ -55,6 +58,7 @@ increaseShieldButton.onclick = function() {
 decreaseEngineButton.onclick = function () {
     if(availablePower <= maxAvailablePower){
         enginePower = decrease(enginePower, 1, "engine");
+        document.documentElement.style.setProperty('--scale-factor', (enginePower / 8).toString());
     }
 };
 
@@ -70,6 +74,10 @@ decreaseShieldButton.onclick = function () {
     }
 };
 
+function startDivertGame(){
+    updateAllMeters();
+    document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
+}   
 
 function updateAllMeters(){
     updateMeter(availablePower, "available");
@@ -80,9 +88,7 @@ function updateAllMeters(){
     updateMeter(hullHealth, "hullHealth");
 }
 
-function startDivertGame(){
-    updateAllMeters();
-}   
+
 
 function startLevel(){
     descriptionsElement.innerText = "Incoming attack from an enemy ship!"
@@ -156,10 +162,16 @@ function attack(attackType, amount){
         damage = damage - (0.5 * enginePower);
         if(damage > 0){
             if(shieldHealth > 0){
+                if(damage >= shieldHealth){
+                    damage = shieldHealth;
+                }
                 shieldHealth = decrease(shieldHealth, damage, "shieldHealth");
                 statusReportsElement.innerHTML = "The shields took <b>" + damage + "</b> points of damage.";
             }
             else if (shieldHealth <= 0){
+                if(damage >= hullHealth){
+                    damage = hullHealth;
+                }
                 hullHealth = decrease(hullHealth, damage, "hullHealth");
                 statusReportsElement.innerHTML = "The hull took <b>" + damage + "</b> points of damage."
             }

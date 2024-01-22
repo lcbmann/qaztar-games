@@ -11,6 +11,8 @@ body {
     font-family: monospace;
     white-space: pre-wrap;
     font-weight: bold;
+    background-color: black;
+    z-index: 1;
 }
 
 .container {
@@ -46,6 +48,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    top:100px;
 }
 
 .controls {
@@ -75,3 +79,48 @@ body {
 .meter-title {
     font-size:large;
 }
+
+.thrusters {
+    position: absolute;
+    bottom: 0;
+    left: 50%; /* Adjust as needed */
+    transform: translateX(-50%);
+    font-family: monospace; /* Use a monospaced font for ASCII art consistency */
+    color: #ff8438; /* Adjust the color as needed */
+    bottom: -8px;
+}
+
+.fire {
+    animation: fireAnimation 0.1s infinite linear;
+
+}
+
+@keyframes fireAnimation {
+    0% {
+        opacity: 1;
+        transform: translateY(calc(100px * var(--scale-factor) * 1)) scale(var(--scale-factor)) rotate(0deg);
+        color: #ad4200;
+    }
+    25% {
+        opacity: 1;
+        transform: translateY(calc(100px * var(--scale-factor) * 1.1)) scale(calc(var(--scale-factor) * 1.05)) rotate(0deg);
+        color: #de5500;
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(calc(100px * var(--scale-factor) * 1.2)) scale(calc(var(--scale-factor) * 1.1)) rotate(0deg);
+        color: #ff6200;
+    }
+    75% {
+        opacity: 1;
+        transform: translateY(calc(100px * var(--scale-factor) * 1.4)) scale(calc(var(--scale-factor) * 1.2)) rotate(0deg);
+        color: #ff924e;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(calc(100px * var(--scale-factor) * 1.7)) scale(calc(var(--scale-factor) * 1.1)) rotate(0deg);
+        color: #ffd8c0;
+    }
+}
+
+
