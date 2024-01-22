@@ -39,7 +39,7 @@ startLevelButton.onclick = function(){
 increaseEngineButton.onclick = function() {
     if(availablePower > 0){
         enginePower = increase(enginePower, 1, "engine");
-        document.documentElement.style.setProperty('--scale-factor', (enginePower / 8).toString());
+        document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
     }
 };
 
@@ -58,7 +58,7 @@ increaseShieldButton.onclick = function() {
 decreaseEngineButton.onclick = function () {
     if(availablePower <= maxAvailablePower){
         enginePower = decrease(enginePower, 1, "engine");
-        document.documentElement.style.setProperty('--scale-factor', (enginePower / 8).toString());
+        document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
     }
 };
 
