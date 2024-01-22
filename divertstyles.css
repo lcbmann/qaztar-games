@@ -92,25 +92,21 @@ body {
     bottom: -8px;
 }
 
-.fire1 {
-    animation: fireAnimation 0.1s infinite linear;
+.fire1, .fire2 {
+    animation: fireAnimation 0.09s infinite linear;
 
 }
 
-.fire2 {
-    animation: fireAnimation 0.1s infinite linear;
-
-}
 
 .thrusters .fire1{
     position: absolute;
-    left: -100%;
-    bottom: 12px;
+    left: -20%;
+    bottom: 100%;
 }
 .thrusters .fire2{
     position: absolute;
-    left: 115%;
-    bottom: 12px;
+    left: 85%;
+    bottom: 100%;
 }
 
 @keyframes fireAnimation {
@@ -138,6 +134,59 @@ body {
         opacity: 1;
         transform: translateY(calc(60px * var(--scale-factor) * 2.7)) scale(calc(var(--scale-factor) * 1.1)) rotate(0deg);
         color: #ffd8c0;
+    }
+}
+
+
+.shield {
+    position: absolute;
+    bottom: 700%;
+    left: -18%;
+    --shield-power: 10; /* Replace with your shieldPower variable */
+    --shield-health: 10; /* Replace with your shieldHealth variable */
+    /*color: rgba(calc(var(--shield-power) * 10), calc(var(--shield-power) * 10), calc(var(--shield-power) * 25));*/
+    color:blue;
+    animation: shieldAnimation 1s infinite linear;
+}
+
+@keyframes shieldAnimation {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.9;
+    }
+}
+
+
+
+
+
+#notificationBox {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 300px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    opacity: 0;
+    animation: fadeInOut 4s ease-out; /* Adjust the animation duration as needed */
+}
+
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0;
+    }
+    10%, 90% {
+        opacity: 1;
     }
 }
 

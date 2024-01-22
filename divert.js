@@ -31,6 +31,8 @@ const decreaseWeaponButton = document.getElementById('decreaseWeapon');
 const decreaseShieldButton = document.getElementById('decreaseShield');
 
 const startLevelButton = document.getElementById('startLevel');
+const notificationBox = document.getElementById('notificationBox');
+
 
 startLevelButton.onclick = function(){
     startLevel();
@@ -91,36 +93,36 @@ function updateAllMeters(){
 }
 
 
+
 //Activate the level
 function startLevel() {
 
     //Event 1 - 5 seconds in
-    descriptionsElement.innerText = "Incoming laser attack from an enemy ship!";
+    showNotification("Incoming laser attack from an enemy ship!");
     setTimeout(function() {
         attack("laser", 10);
         
         setTimeout(function() {
-            descriptionsElement.innerText = "Incoming plasma attack from an enemy ship!";
+            showNotification("Incoming plasma attack from an enemy ship!");
 
             //Event 2
             setTimeout(function() {
                 attack("plasma", 10);
                 
-                // Change description after 5 seconds
                 setTimeout(function() {
-                    descriptionsElement.innerText = "Incoming missile attack from an enemy ship!";
+                    showNotification("Incoming missile attack from an enemy ship!");
+
+                    //Event 3
                     setTimeout(function() {
                         attack("missile", 10);
                     }, 5000);
-                }, 2000);
+                }, 5000);
     
-                // Schedule the next attack after 5 seconds from the start
                 
             }, 5000);
 
-        }, 2000);
+        }, 5000);
 
-        // Schedule the next attack after 5 seconds from the start
         
     }, 5000);
 }
@@ -206,28 +208,45 @@ function attack(attackType, amount) {
 
 
     //Damaging the ship
-    attacksElement.innerHTML = `The enemy has fired a ${attackMessage} of <b>${amount}</b> strength!`;
-    if (damage > 0) {
-        if (shieldHealth > 0) {
-            if (damage >= shieldHealth) {
-                damage = shieldHealth;
+    showNotification(`The enemy has fired a ${attackMessage} of <b>${amount}</b> strength!`);
+
+    setTimeout(function() {
+        if (damage > 0) {
+            if (shieldHealth > 0) {
+                if (damage >= shieldHealth) {
+                    damage = shieldHealth;
+                }
+                shieldHealth = decrease(shieldHealth, damage, "shieldHealth");
+                showNotification(`The shields took <b>${damage}</b> points of damage.`);
+            } else if (shieldHealth <= 0) {
+                if (damage >= hullHealth) {
+                    damage = hullHealth;
+                }
+                hullHealth = decrease(hullHealth, damage, "hullHealth");
+                showNotification(`The hull took <b>${damage}</b> points of damage.`);
             }
-            shieldHealth = decrease(shieldHealth, damage, "shieldHealth");
-            statusReportsElement.innerHTML = `The shields took <b>${damage}</b> points of damage.`;
-        } else if (shieldHealth <= 0) {
-            if (damage >= hullHealth) {
-                damage = hullHealth;
-            }
-            hullHealth = decrease(hullHealth, damage, "hullHealth");
-            statusReportsElement.innerHTML = `The hull took <b>${damage}</b> points of damage.`;
+        } else if (damage <= 0) {
+            showNotification("All damage was avoided!");
         }
-    } else if (damage <= 0) {
-        statusReportsElement.innerHTML = "All damage was avoided!";
-    }
-
-
-    
+    }, 1500);
 }
+
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.classList.add('notification');
+    notification.innerHTML = message;
+
+    notificationBox.prepend(notification);
+
+    // Remove the notification after 4 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 4000);
+}
+
+// Usage example:
+showNotification('Notification box initialized.');
 
     
 startDivertGame();
