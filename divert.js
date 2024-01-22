@@ -54,6 +54,7 @@ increaseWeaponButton.onclick = function() {
 increaseShieldButton.onclick = function() {
     if(availablePower > 0){
         shieldPower = increase(shieldPower, 1, "shield");
+        document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
     }
 };
 
@@ -73,6 +74,7 @@ decreaseWeaponButton.onclick = function () {
 decreaseShieldButton.onclick = function () {
     if(availablePower <= maxAvailablePower){
         shieldPower = decrease(shieldPower, 1, "shield");
+        document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
     }
 };
 
@@ -80,6 +82,8 @@ decreaseShieldButton.onclick = function () {
 function startDivertGame(){
     updateAllMeters();
     document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
+    document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
+    document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
 }   
 
 //Update all meters
@@ -182,7 +186,7 @@ function updateMeter(meter, meterType) {
     const updatingElement = meterElements[meterType];
 
     if (meter > updatingElement.textContent.length) {
-        updatingElement.textContent += "▓".repeat(meter - updatingElement.textContent.length);
+        updatingElement.textContent += "▄".repeat(meter - updatingElement.textContent.length);
     } else if (meter < updatingElement.textContent.length) {
         updatingElement.textContent = updatingElement.textContent.slice(0, meter);
     }
@@ -209,8 +213,9 @@ function attack(attackType, amount) {
 
     //Damaging the ship
     showNotification(`The enemy has fired a ${attackMessage} of <b>${amount}</b> strength!`);
-
     setTimeout(function() {
+    document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
+
         if (damage > 0) {
             if (shieldHealth > 0) {
                 if (damage >= shieldHealth) {
@@ -242,7 +247,7 @@ function showNotification(message) {
     // Remove the notification after 4 seconds
     setTimeout(() => {
         notification.remove();
-    }, 4000);
+    }, 7000);
 }
 
 // Usage example:

@@ -43,19 +43,24 @@ body {
 }
 
 .playarea {
-    width: 40%;
+    width: 18%;
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-    top:100px;
+    position: absolute;
+    background-color: black;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .controls {
     width: 30%;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end; /* Align controls to the right */
     align-items: flex-end;
 }
 
@@ -64,6 +69,8 @@ body {
     justify-content: space-between;
     align-items: center;
 }
+
+
 
 .btn {
     /* Your button styles */
@@ -74,8 +81,14 @@ body {
 
 .meter {
     /* Your meter styles */
+    font-size:small;
+    margin-bottom: 5px;
+}
+
+.meter-label {
+    /* Your meter styles */
     margin-top: 5px;
-    font-size:large;
+    font-size:small;
 }
 
 .meter-title {
@@ -140,21 +153,22 @@ body {
 
 .shield {
     position: absolute;
-    bottom: 700%;
-    left: -18%;
-    --shield-power: 10; /* Replace with your shieldPower variable */
-    --shield-health: 10; /* Replace with your shieldHealth variable */
-    /*color: rgba(calc(var(--shield-power) * 10), calc(var(--shield-power) * 10), calc(var(--shield-power) * 25));*/
-    color:blue;
-    animation: shieldAnimation 1s infinite linear;
+    color: rgba(
+        calc(255 - var(--shield-power) * 25.5),  /* Red component */
+        calc(255 - var(--shield-power) * 25.5),  /* Green component */
+        calc(255 + var(--shield-power) * 15),     /* Blue component */
+        calc(0.1 + var(--shield-power) * 0.05)
+    );
+    animation: shieldAnimation 3s infinite linear;
 }
+
 
 @keyframes shieldAnimation {
     0%, 100% {
-        opacity: 1;
+        opacity: calc(var(--shield-health) * 0.005); /* Initial and final opacity */
     }
     50% {
-        opacity: 0.9;
+        opacity: calc(var(--shield-health) * 0.007); /* Higher opacity for flickering effect */
     }
 }
 
@@ -164,8 +178,8 @@ body {
 
 #notificationBox {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 40px;
+    left: 60px;
     width: 300px;
     padding: 10px;
     background-color: rgba(0, 0, 0, 0.8);
@@ -178,7 +192,7 @@ body {
 
 .notification {
     opacity: 0;
-    animation: fadeInOut 4s ease-out; /* Adjust the animation duration as needed */
+    animation: fadeInOut 7s ease-out; /* Adjust the animation duration as needed */
 }
 
 @keyframes fadeInOut {
