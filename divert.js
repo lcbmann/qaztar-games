@@ -74,11 +74,13 @@ decreaseShieldButton.onclick = function () {
     }
 };
 
+//Start game
 function startDivertGame(){
     updateAllMeters();
     document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
 }   
 
+//Update all meters
 function updateAllMeters(){
     updateMeter(availablePower, "available");
     updateMeter(enginePower, "engine");
@@ -89,13 +91,43 @@ function updateAllMeters(){
 }
 
 
+//Activate the level
+function startLevel() {
 
-function startLevel(){
-    descriptionsElement.innerText = "Incoming attack from an enemy ship!"
-    setTimeout(attack("energy", 10), 10000);
+    //Event 1 - 5 seconds in
+    descriptionsElement.innerText = "Incoming laser attack from an enemy ship!";
+    setTimeout(function() {
+        attack("laser", 10);
+        
+        setTimeout(function() {
+            descriptionsElement.innerText = "Incoming plasma attack from an enemy ship!";
+
+            //Event 2
+            setTimeout(function() {
+                attack("plasma", 10);
+                
+                // Change description after 5 seconds
+                setTimeout(function() {
+                    descriptionsElement.innerText = "Incoming missile attack from an enemy ship!";
+                    setTimeout(function() {
+                        attack("missile", 10);
+                    }, 5000);
+                }, 2000);
+    
+                // Schedule the next attack after 5 seconds from the start
+                
+            }, 5000);
+
+        }, 2000);
+
+        // Schedule the next attack after 5 seconds from the start
+        
+    }, 5000);
 }
 
 
+
+//Increase a meter by amount
 function increase(increasingMeter, amount, meterType){
     var maxPower; 
     if(increasingMeter == availablePower){
@@ -111,7 +143,7 @@ function increase(increasingMeter, amount, meterType){
     if((increasingMeter + amount) <= maxPower){
         increasingMeter = increasingMeter + amount;
         updateMeter(increasingMeter, meterType);
-        if(meterType != "available"){
+        if(meterType == "engine" || meterType == "weapon" || meterType == "shield"){
             availablePower = decrease(availablePower, 1, "available");
         }
     }
@@ -119,13 +151,14 @@ function increase(increasingMeter, amount, meterType){
 }
 
 
+//Decrease a meter by amount
 function decrease(decreasingMeter, amount, meterType) {
 
     // Check if decreasingMeter - amount is greater than or equal to 0
     if (decreasingMeter - amount >= 0) {
         decreasingMeter = decreasingMeter - amount;
         updateMeter(decreasingMeter, meterType);
-        if(meterType != "available"){
+        if(meterType == "engine" || meterType == "weapon" || meterType == "shield"){
             availablePower = increase(availablePower, 1, "available");
         }
         
@@ -133,6 +166,7 @@ function decrease(decreasingMeter, amount, meterType) {
     return decreasingMeter;
 }
 
+//Update meter visuals
 function updateMeter(meter, meterType) {
     const meterElements = {
         available: availablePowerElement,
@@ -153,33 +187,47 @@ function updateMeter(meter, meterType) {
 }
 
 
+//Launch attack on the ship
+function attack(attackType, amount) {
+    let attackMessage, damage;
 
-function attack(attackType, amount){
-    if(attackType == "energy"){
-        attacksElement.innerHTML = "The enemy has launched an energy attack of <b>" + amount + "</b> strength!";
-        var damage = amount;
-        damage = damage - shieldPower;
-        damage = damage - (0.5 * enginePower);
-        if(damage > 0){
-            if(shieldHealth > 0){
-                if(damage >= shieldHealth){
-                    damage = shieldHealth;
-                }
-                shieldHealth = decrease(shieldHealth, damage, "shieldHealth");
-                statusReportsElement.innerHTML = "The shields took <b>" + damage + "</b> points of damage.";
-            }
-            else if (shieldHealth <= 0){
-                if(damage >= hullHealth){
-                    damage = hullHealth;
-                }
-                hullHealth = decrease(hullHealth, damage, "hullHealth");
-                statusReportsElement.innerHTML = "The hull took <b>" + damage + "</b> points of damage."
-            }
-        }
-        else if (damage <= 0){
-            statusReportsElement.innerHTML = "All damage was avoided!";
-        }
+    //Attack types
+    if (attackType === "laser") {
+        attackMessage = "laser beam";
+        damage = Math.round(amount - shieldPower - 0.1 * enginePower);
+    } else if (attackType === "plasma") {
+        attackMessage = "plasma projectile";
+        damage = Math.round(amount - 0.8 * shieldPower - 0.3 * enginePower);
     }
+    else if (attackType === "missile"){
+        attackMessage = "missile";
+        damage = Math.round(amount - 0.3 * shieldPower - 0.8 * enginePower);
+    }
+
+
+    //Damaging the ship
+    attacksElement.innerHTML = `The enemy has fired a ${attackMessage} of <b>${amount}</b> strength!`;
+    if (damage > 0) {
+        if (shieldHealth > 0) {
+            if (damage >= shieldHealth) {
+                damage = shieldHealth;
+            }
+            shieldHealth = decrease(shieldHealth, damage, "shieldHealth");
+            statusReportsElement.innerHTML = `The shields took <b>${damage}</b> points of damage.`;
+        } else if (shieldHealth <= 0) {
+            if (damage >= hullHealth) {
+                damage = hullHealth;
+            }
+            hullHealth = decrease(hullHealth, damage, "hullHealth");
+            statusReportsElement.innerHTML = `The hull took <b>${damage}</b> points of damage.`;
+        }
+    } else if (damage <= 0) {
+        statusReportsElement.innerHTML = "All damage was avoided!";
+    }
+
+
+    
 }
+
     
 startDivertGame();

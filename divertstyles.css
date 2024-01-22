@@ -69,11 +69,13 @@ body {
     /* Your button styles */
     margin-right: 10px;
     margin-left: 10x;
+   
 }
 
 .meter {
     /* Your meter styles */
     margin-top: 5px;
+    font-size:large;
 }
 
 .meter-title {
