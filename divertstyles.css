@@ -98,10 +98,10 @@ body {
 .thrusters {
     position: absolute;
     bottom: 0;
-    left: 50%; /* Adjust as needed */
+    left: 50%;
     transform: translateX(-50%);
-    font-family: monospace; /* Use a monospaced font for ASCII art consistency */
-    color: #ff8438; /* Adjust the color as needed */
+    font-family: monospace;
+    color: #ff8438;
     bottom: -8px;
 }
 
@@ -112,14 +112,14 @@ body {
 
 
 .thrusters .fire1{
-    position: absolute;
-    left: -20%;
-    bottom: 100%;
+    position: relative;
+    left: -55px;
+    bottom: 20px;
 }
 .thrusters .fire2{
-    position: absolute;
-    left: 85%;
-    bottom: 100%;
+    position: relative;
+    left: 55px;
+    bottom: 20px;
 }
 
 @keyframes fireAnimation {
