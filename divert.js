@@ -6,6 +6,8 @@ var shieldPower = 0;
 var shieldHealth = 50;
 var hullHealth = 50;
 
+var gameOver = false;
+
 
 meters = Array(availablePower, enginePower, weaponPower, shieldPower, shieldHealth, hullHealth);
 
@@ -32,6 +34,10 @@ const decreaseShieldButton = document.getElementById('decreaseShield');
 
 const startLevelButton = document.getElementById('startLevel');
 const notificationBox = document.getElementById('notificationBox');
+
+const shipElement = document.querySelector('.ship');
+const shieldElement = document.querySelector('.shield');
+const thrustersElement = document.querySelector('.thrusters');
 
 
 startLevelButton.onclick = function(){
@@ -88,6 +94,11 @@ function startDivertGame(){
 
 //Update all meters
 function updateAllMeters(){
+
+    if (gameOver) {
+        return;
+    }
+
     updateMeter(availablePower, "available");
     updateMeter(enginePower, "engine");
     updateMeter(weaponPower, "weapon");
@@ -100,25 +111,26 @@ function updateAllMeters(){
 
 //Activate the level
 function startLevel() {
+    gameOver = false;
 
     //Event 1 - 5 seconds in
     showNotification("Incoming laser attack from an enemy ship!");
     setTimeout(function() {
-        attack("laser", 10);
+        attack("laser", 30);
         
         setTimeout(function() {
             showNotification("Incoming plasma attack from an enemy ship!");
 
             //Event 2
             setTimeout(function() {
-                attack("plasma", 10);
+                attack("plasma", 30);
                 
                 setTimeout(function() {
                     showNotification("Incoming missile attack from an enemy ship!");
 
                     //Event 3
                     setTimeout(function() {
-                        attack("missile", 10);
+                        attack("missile", 30);
                     }, 5000);
                 }, 5000);
     
@@ -135,6 +147,11 @@ function startLevel() {
 
 //Increase a meter by amount
 function increase(increasingMeter, amount, meterType){
+
+    if (gameOver) {
+        return;
+    }
+
     var maxPower; 
     if(increasingMeter == availablePower){
         maxPower = 20;
@@ -160,6 +177,9 @@ function increase(increasingMeter, amount, meterType){
 //Decrease a meter by amount
 function decrease(decreasingMeter, amount, meterType) {
 
+    if (gameOver) {
+        return;
+    }
     // Check if decreasingMeter - amount is greater than or equal to 0
     if (decreasingMeter - amount >= 0) {
         decreasingMeter = decreasingMeter - amount;
@@ -174,6 +194,11 @@ function decrease(decreasingMeter, amount, meterType) {
 
 //Update meter visuals
 function updateMeter(meter, meterType) {
+
+    if (gameOver) {
+        return;
+    }
+
     const meterElements = {
         available: availablePowerElement,
         engine: enginePowerElement,
@@ -195,19 +220,46 @@ function updateMeter(meter, meterType) {
 
 //Launch attack on the ship
 function attack(attackType, amount) {
+
+    if (gameOver) {
+        return;
+    }
+
     let attackMessage, damage;
 
     //Attack types
     if (attackType === "laser") {
         attackMessage = "laser beam";
-        damage = Math.round(amount - shieldPower - 0.1 * enginePower);
+        if (shieldHealth <= 0) {
+            damage = Math.round(amount - 0.1 * enginePower);
+        } else if (shieldHealth > 0) {
+            damage = Math.round(amount - shieldPower - 0.1 * enginePower);
+        }
     } else if (attackType === "plasma") {
         attackMessage = "plasma projectile";
-        damage = Math.round(amount - 0.8 * shieldPower - 0.3 * enginePower);
+        if (shieldHealth <= 0) {
+            damage = Math.round(amount - 0.3 * enginePower);
+        } else if (shieldHealth > 0) {
+            damage = Math.round(amount - 0.8 * shieldPower - 0.3 * enginePower);
+        }
     }
     else if (attackType === "missile"){
         attackMessage = "missile";
-        damage = Math.round(amount - 0.3 * shieldPower - 0.8 * enginePower);
+        if(shieldHealth <= 0){
+            damage = Math.round(amount - 0.8 * enginePower);
+        }
+        else if(shieldHealth > 0){
+            damage = Math.round(amount - 0.3 * shieldPower - 0.8 * enginePower);
+        }
+    }
+    else if (attackType === "railgun"){
+        attackMessage = "railgun shot";
+        if(shieldHealth <= 0){
+            damage = Math.round(amount - 0.5 * enginePower);
+        }
+        else if(shieldHealth > 0){
+            damage = Math.round(amount - 0.5 * shieldPower - 0.5 * enginePower);
+        }
     }
 
 
@@ -225,10 +277,12 @@ function attack(attackType, amount) {
                 showNotification(`The shields took <b>${damage}</b> points of damage.`);
             } else if (shieldHealth <= 0) {
                 if (damage >= hullHealth) {
-                    damage = hullHealth;
+                    death();
                 }
-                hullHealth = decrease(hullHealth, damage, "hullHealth");
-                showNotification(`The hull took <b>${damage}</b> points of damage.`);
+                else {
+                    hullHealth = decrease(hullHealth, damage, "hullHealth");
+                    showNotification(`The hull took <b>${damage}</b> points of damage.`);
+                }
             }
         } else if (damage <= 0) {
             showNotification("All damage was avoided!");
@@ -237,7 +291,23 @@ function attack(attackType, amount) {
 }
 
 
+function death(){
+    showNotification("The ship has been destroyed!");
+    hullHealth = 0;
+    updateMeter(hullHealth, "hullHealth");
+
+    shipElement.classList.add('explode');
+    shieldElement.classList.add('explode');
+    thrustersElement.classList.add('explode');
+    gameOver = true;
+}
+
 function showNotification(message) {
+
+    if (gameOver) {
+        return;
+    }
+    
     const notification = document.createElement('div');
     notification.classList.add('notification');
     notification.innerHTML = message;
@@ -255,3 +325,4 @@ showNotification('Notification box initialized.');
 
     
 startDivertGame();
+

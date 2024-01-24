@@ -7,13 +7,7 @@ body {
     font-family: monospace;
 }
 
-.ascii{
-    font-family: monospace;
-    white-space: pre-wrap;
-    font-weight: bold;
-    background-color: black;
-    z-index: 1;
-}
+
 
 .container {
     display: flex;
@@ -202,6 +196,24 @@ body {
     10%, 90% {
         opacity: 1;
     }
+}
+
+.ship{
+    font-family: monospace;
+    white-space: pre-wrap;
+    font-weight: bold;
+    background-color: black;
+    z-index: 1;
+}
+
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; color:#ffd8c0 }
+    50% { transform: scale(1.5); opacity: 1; color:#fc5522 }
+    100% { transform: scale(2); opacity: 0; color:#ad4200}
+}
+
+.explode {
+    animation: explode 2s forwards;
 }
 
 
