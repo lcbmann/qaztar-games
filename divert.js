@@ -6,6 +6,15 @@ var shieldPower = 0;
 var shieldHealth = 50;
 var hullHealth = 50;
 
+var maxShieldHealth = 50;
+var shieldRegenInterval = 1000;
+var regenDelay = 8000;
+let isRegenerating = true;
+var regenerationSpeed = shieldPower * 0.1;
+var elapsedTime = shieldRegenInterval / 1000;
+var regenerationAmount = regenerationSpeed * elapsedTime;
+
+
 var gameOver = false;
 
 
@@ -87,6 +96,7 @@ decreaseShieldButton.onclick = function () {
 //Start game
 function startDivertGame(){
     updateAllMeters();
+    regenerateShield();
     document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
     document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
@@ -153,15 +163,16 @@ function increase(increasingMeter, amount, meterType){
     }
 
     var maxPower; 
-    if(increasingMeter == availablePower){
+    if(meterType == "available"){
         maxPower = 20;
     }
-    else if(increasingMeter == enginePower || increasingMeter == weaponPower || increasingMeter == shieldPower){
+    else if(meterType == "engine" || meterType == "weapon" || meterType == "shield"){
         maxPower = 10;
     }
-    else if(increasingMeter == (shieldHealth || hullHealth)){
+    else if(meterType == "shieldHealth" || meterType == "hullHealth"){
         maxPower = 100;
     }
+
 
     if((increasingMeter + amount) <= maxPower){
         increasingMeter = increasingMeter + amount;
@@ -191,6 +202,43 @@ function decrease(decreasingMeter, amount, meterType) {
     }
     return decreasingMeter;
 }
+
+
+
+function regenerateShield() {
+    setInterval(() => {
+        if (isRegenerating) {
+            // Check if shields need regeneration
+            if (shieldHealth < maxShieldHealth && shieldHealth > 0) {
+                // Calculate regeneration speed based on shieldPower
+                regenerationSpeed = shieldPower * 0.1; // Adjust the multiplier as needed
+
+                // Calculate regeneration amount based on time since last regeneration
+                elapsedTime = shieldRegenInterval / 1000; // Convert milliseconds to seconds
+                regenerationAmount = regenerationSpeed * elapsedTime;
+
+                // Update shieldHealth
+                shieldHealth = increase(shieldHealth, Math.min(maxShieldHealth - shieldHealth, regenerationAmount), "shieldHealth");
+    
+                updateMeter(shieldHealth, "shieldHealth");
+            } else if (shieldHealth <= 0) {
+                // Disable normal regeneration and wait for a few seconds
+                isRegenerating = false;
+                setTimeout(() => {
+                    // Reset shieldHealth to starting value
+                    shieldHealth = increase(shieldHealth, Math.min(maxShieldHealth - shieldHealth, regenerationAmount), "shieldHealth");
+                    updateMeter(shieldHealth, "shieldHealth");
+                    // Enable normal regeneration
+                    isRegenerating = true;
+                }, regenDelay); // Delay in milliseconds // if shieldPower is 10, it should take 5 seconds to recharge. If shieldPower is 5, it should take 10 seconds to recharge. if shieldPower is 1, it should take 50 seconds to recharge. If shieldPower is 0, it should not recharge.
+            } 
+        }
+    }, shieldRegenInterval);
+}
+
+
+
+
 
 //Update meter visuals
 function updateMeter(meter, meterType) {
