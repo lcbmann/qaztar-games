@@ -5,6 +5,7 @@ var weaponPower = 0;
 var shieldPower = 0;
 var shieldHealth = 50;
 var hullHealth = 50;
+var enemyCount = 0;
 
 var maxShieldHealth = 50;
 var shieldRegenInterval = 1000;
@@ -236,8 +237,10 @@ function regenerateShield() {
     }, shieldRegenInterval);
 }
 
-
-
+//Spawn an enemy
+function spawnEnemy() {
+    
+}
 
 
 //Update meter visuals

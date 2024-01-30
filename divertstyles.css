@@ -10,6 +10,7 @@ body {
 
 
 .container {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -45,10 +46,12 @@ body {
     position: absolute;
     background-color: black;
     z-index: 1;
-    top: 50%;
+    top: 50vh; /* Change top to 50vh (50% of the viewport height) */
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+
 
 .controls {
     width: 30%;
@@ -56,6 +59,9 @@ body {
     flex-direction: column;
     justify-content: flex-end; /* Align controls to the right */
     align-items: flex-end;
+    position: absolute;
+    top: 10%;
+    right: 0%;
 }
 
 .control-group {
@@ -63,6 +69,43 @@ body {
     justify-content: space-between;
     align-items: center;
 }
+
+
+.enemies {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align controls to the left */
+    align-items: flex-start;
+    position: absolute;
+    top: 10%;
+    left: 0%;
+}
+
+.enemy-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.enemy-meter {
+    /* Your meter styles */
+    font-size: small;
+    margin-bottom: 5px;
+}
+
+.enemy-meter-label {
+    /* Your meter styles */
+    margin-top: 5px;
+    font-size: small;
+}
+
+.enemy-meter-title {
+    font-size: large;
+}
+
+/* ... (existing styles) ... */
+
 
 
 
@@ -171,9 +214,9 @@ body {
 
 
 #notificationBox {
-    position: fixed;
-    top: 40px;
-    left: 60px;
+    position: absolute;
+    top: 10%;
+    left: 50%;
     width: 300px;
     padding: 10px;
     background-color: rgba(0, 0, 0, 0.8);
@@ -182,6 +225,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    text-align: center;
+    transform: translate(-50%); /* Add this line */
 }
 
 .notification {
