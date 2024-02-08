@@ -5,7 +5,10 @@ var weaponPower = 0;
 var shieldPower = 0;
 var shieldHealth = 50;
 var hullHealth = 50;
+
 var enemyCount = 0;
+var enemyShieldHealth = 20;
+var enemyHullHealth = 20;
 
 var maxShieldHealth = 50;
 var shieldRegenInterval = 1000;
@@ -34,6 +37,9 @@ const weaponPowerElement = document.getElementById('weaponPowerID');
 const shieldPowerElement = document.getElementById('shieldPowerID');
 const shieldHealthElement = document.getElementById('shieldHealthID');
 const hullHealthElement = document.getElementById('hullHealthID')
+
+const enemyShieldElement = document.getElementById('enemyShieldsID');
+const enemyHealthElement = document.getElementById('enemyHealthID');
 
 const increaseEngineButton = document.getElementById('increaseEngine');
 const increaseWeaponButton = document.getElementById('increaseWeapon');
@@ -116,6 +122,8 @@ function updateAllMeters(){
     updateMeter(shieldPower, "shield");
     updateMeter(shieldHealth, "shieldHealth");
     updateMeter(hullHealth, "hullHealth");
+    updateMeter(enemyShieldHealth, "enemyShieldHealth");
+    updateMeter(enemyHullHealth, "enemyHullHealth");
 }
 
 
@@ -238,7 +246,10 @@ function regenerateShield() {
 }
 
 //Spawn an enemy
-function spawnEnemy() {
+function spawnEnemy(enemmyHullHealth, enemyShieldHealth, attackType, attackRate) {
+    enemyCount++;
+    updateMeter(enemyShieldHealth, "enemyShieldHealth");
+    updateMeter(enemmyHullHealth, "enemyHullHealth");
     
 }
 
@@ -256,7 +267,9 @@ function updateMeter(meter, meterType) {
         weapon: weaponPowerElement,
         shield: shieldPowerElement,
         shieldHealth: shieldHealthElement,
-        hullHealth: hullHealthElement
+        hullHealth: hullHealthElement,
+        enemyHullHealth: enemyHealthElement,
+        enemyShieldHealth: enemyShieldElement
     };
 
     const updatingElement = meterElements[meterType];
