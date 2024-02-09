@@ -25,11 +25,7 @@ var gameOver = false;
 meters = Array(availablePower, enginePower, weaponPower, shieldPower, shieldHealth, hullHealth);
 
 
-var attackType;
-
-const descriptionsElement = document.getElementById('descriptions');
-const attacksElement = document.getElementById('attacks');
-const statusReportsElement = document.getElementById('statusReports');
+var damageType;
 
 const availablePowerElement = document.getElementById('availablePowerID');
 const enginePowerElement = document.getElementById('enginePowerID');
@@ -132,34 +128,7 @@ function updateAllMeters(){
 function startLevel() {
     gameOver = false;
 
-    //Event 1 - 5 seconds in
-    showNotification("Incoming laser attack from an enemy ship!");
-    setTimeout(function() {
-        attack("laser", 30);
-        
-        setTimeout(function() {
-            showNotification("Incoming plasma attack from an enemy ship!");
-
-            //Event 2
-            setTimeout(function() {
-                attack("plasma", 30);
-                
-                setTimeout(function() {
-                    showNotification("Incoming missile attack from an enemy ship!");
-
-                    //Event 3
-                    setTimeout(function() {
-                        attack("missile", 30);
-                    }, 5000);
-                }, 5000);
-    
-                
-            }, 5000);
-
-        }, 5000);
-
-        
-    }, 5000);
+    spawnEnemy(enemyHullHealth, enemyShieldHealth, "laser", 5000);
 }
 
 
@@ -246,10 +215,26 @@ function regenerateShield() {
 }
 
 //Spawn an enemy
-function spawnEnemy(enemmyHullHealth, enemyShieldHealth, attackType, attackRate) {
+function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate) {
+    showNotification("An enemy ship has appeared!", "enemy");
     enemyCount++;
     updateMeter(enemyShieldHealth, "enemyShieldHealth");
-    updateMeter(enemmyHullHealth, "enemyHullHealth");
+    updateMeter(enemyHullHealth, "enemyHullHealth");
+
+    
+    setInterval(() => {
+        if(enemyHullHealth > 0 && !gameOver){
+            damage(damageType, 30);
+        }
+    }, damageRate);
+
+
+    setInterval(() => {
+        if(enemyHullHealth > 0 && !gameOver){
+            attack("laser", weaponPower);
+        }
+    }, 5000);
+    
     
 }
 
@@ -282,33 +267,33 @@ function updateMeter(meter, meterType) {
 }
 
 
-//Launch attack on the ship
-function attack(attackType, amount) {
+//Get damaged
+function damage(damageType, amount) {
 
     if (gameOver) {
         return;
     }
 
-    let attackMessage, damage;
+    let damageMessage, damage;
 
-    //Attack types
-    if (attackType === "laser") {
-        attackMessage = "laser beam";
+    //Damage types
+    if (damageType === "laser") {
+        damageMessage = "laser beam";
         if (shieldHealth <= 0) {
             damage = Math.round(amount - 0.1 * enginePower);
         } else if (shieldHealth > 0) {
             damage = Math.round(amount - shieldPower - 0.1 * enginePower);
         }
-    } else if (attackType === "plasma") {
-        attackMessage = "plasma projectile";
+    } else if (damageType === "plasma") {
+        damageMessage = "plasma projectile";
         if (shieldHealth <= 0) {
             damage = Math.round(amount - 0.3 * enginePower);
         } else if (shieldHealth > 0) {
             damage = Math.round(amount - 0.8 * shieldPower - 0.3 * enginePower);
         }
     }
-    else if (attackType === "missile"){
-        attackMessage = "missile";
+    else if (damageType === "missile"){
+        damageMessage = "missile";
         if(shieldHealth <= 0){
             damage = Math.round(amount - 0.8 * enginePower);
         }
@@ -316,8 +301,8 @@ function attack(attackType, amount) {
             damage = Math.round(amount - 0.3 * shieldPower - 0.8 * enginePower);
         }
     }
-    else if (attackType === "railgun"){
-        attackMessage = "railgun shot";
+    else if (damageType === "railgun"){
+        damageMessage = "railgun shot";
         if(shieldHealth <= 0){
             damage = Math.round(amount - 0.5 * enginePower);
         }
@@ -328,7 +313,7 @@ function attack(attackType, amount) {
 
 
     //Damaging the ship
-    showNotification(`The enemy has fired a ${attackMessage} of <b>${amount}</b> strength!`);
+    showNotification(`The enemy has fired a ${damageMessage} of <b>${amount}</b> strength!`, "enemy");
     setTimeout(function() {
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
 
@@ -338,25 +323,74 @@ function attack(attackType, amount) {
                     damage = shieldHealth;
                 }
                 shieldHealth = decrease(shieldHealth, damage, "shieldHealth");
-                showNotification(`The shields took <b>${damage}</b> points of damage.`);
+                showNotification(`Your shields took <b>${damage}</b> points of damage.`, "enemy");
             } else if (shieldHealth <= 0) {
                 if (damage >= hullHealth) {
                     death();
                 }
                 else {
                     hullHealth = decrease(hullHealth, damage, "hullHealth");
-                    showNotification(`The hull took <b>${damage}</b> points of damage.`);
+                    showNotification(`Your hull took <b>${damage}</b> points of damage.`, "enemy");
                 }
             }
-        } else if (damage <= 0) {
-            showNotification("All damage was avoided!");
+        } else if (damage <= 0) {   
+            showNotification("You avoided all damage!", "player");
         }
     }, 1500);
 }
 
+function attack(attackType, amount) {
+    if (gameOver) {
+        return;
+    }
+
+    let attackMessage, attack;
+
+    if (attackType === "laser") {
+        attackMessage = "laser beam";
+        attack = Math.round(amount + 0.1 * weaponPower);
+    } else if (attackType === "plasma") {
+        attackMessage = "plasma projectile";
+        attack = Math.round(amount + 0.3 * weaponPower);
+    }
+    else if (attackType === "missile"){
+        attackMessage = "missile";
+        attack = Math.round(amount + 0.8 * weaponPower);
+    }
+    else if (attackType === "railgun"){
+        attackMessage = "railgun shot";
+        attack = Math.round(amount + 0.5 * weaponPower);
+    }
+
+    showNotification(`You have fired a ${attackMessage} of <b>${amount}</b> strength!`, "player");
+    setTimeout(function() {
+        if (attack > 0) {
+            if (enemyShieldHealth > 0) {
+                if (attack >= enemyShieldHealth) {
+                    attack = enemyShieldHealth;
+                }
+                enemyShieldHealth = decrease(enemyShieldHealth, attack, "enemyShieldHealth");
+                showNotification(`The enemy's shields took <b>${attack}</b> points of damage.`, "player");
+            } else if (enemyShieldHealth <= 0) {
+                if (attack >= enemyHullHealth) {
+                    showNotification("The enemy ship has been destroyed!", "player");
+                    enemyHullHealth = 0;
+                    updateMeter(enemyHullHealth, "enemyHullHealth");
+                    gameOver = true;
+                }
+                else {
+                    enemyHullHealth = decrease(enemyHullHealth, attack, "enemyHullHealth");
+                    showNotification(`The enemy's hull took <b>${attack}</b> points of damage.`, "player");
+                }
+            }
+        } else if (attack <= 0) {
+            showNotification("All damage was avoided by the enemy!", "enemy");
+        }
+    }, 1500);
+}
 
 function death(){
-    showNotification("The ship has been destroyed!");
+    showNotification("The ship has been destroyed!", "enemy");
     hullHealth = 0;
     updateMeter(hullHealth, "hullHealth");
 
@@ -366,7 +400,7 @@ function death(){
     gameOver = true;
 }
 
-function showNotification(message) {
+function showNotification(message, type = 'neutral') {
 
     if (gameOver) {
         return;
@@ -376,13 +410,27 @@ function showNotification(message) {
     notification.classList.add('notification');
     notification.innerHTML = message;
 
+    // Determine the color based on the specified type
+    switch (type) {
+        case 'enemy':
+            notification.style.color = 'red'; // Enemy damage notification
+            break;
+        case 'player':
+            notification.style.color = 'green'; // Player attack notification
+            break;
+        default:
+            notification.style.color = 'white'; // Neutral notification
+            break;
+    }
+
     notificationBox.prepend(notification);
 
-    // Remove the notification after 4 seconds
+    // Remove the notification after 7 seconds
     setTimeout(() => {
         notification.remove();
     }, 7000);
 }
+
 
 // Usage example:
 showNotification('Notification box initialized.');
