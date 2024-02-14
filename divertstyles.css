@@ -1,3 +1,11 @@
+.enemies,
+.controls,
+.status {
+    border: 1px solid white; /* Add thin white outline */
+    padding: 10px; /* Add padding for better spacing */
+    box-sizing: border-box; /* Include border in the box size */
+}
+
 body {
     display: flex;
     justify-content: space-between;
@@ -51,18 +59,45 @@ body {
     transform: translate(-50%, -50%);
 }
 
+.status {
+    width: 28%; /* Adjust the width */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align status to the left */
+    align-items: flex-end;
+    position: absolute;
+    top: 10%; /* Adjust the top position */
+    right: 0%; /* Adjust the right position */
+    z-index: 1;
+    background-color:black;
 
+}
 
 .controls {
-    width: 30%;
+    width: 15%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end; /* Align controls to the right */
     align-items: flex-end;
     position: absolute;
-    top: 10%;
-    right: 0%;
+    top: calc(10% + var(--status-height)); /* Adjust the top position */
+    right: 0%; /* Adjust the right position */
+    z-index: 1;
+    background-color:black;
+
+
 }
+
+/* Define the height of the status section */
+:root {
+    --status-height: 200px; /* Adjust the height as needed */
+}
+
+/* Add margin between status and controls */
+.controls {
+    margin-top: 20px;
+}
+
 
 .control-group {
     display: flex;
@@ -71,8 +106,11 @@ body {
 }
 
 
+
+
+
 .enemies {
-    width: 30%;
+    width: 28%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Align controls to the left */
@@ -80,6 +118,10 @@ body {
     position: absolute;
     top: 10%;
     left: 0%;
+    z-index: 1;
+    background-color:black;
+
+
 }
 
 .enemy-group {
@@ -124,13 +166,14 @@ body {
 
 .meter-label {
     /* Your meter styles */
-    margin-top: 5px;
+    margin-top: 10px;
     font-size:small;
 }
 
 .meter-title {
     font-size:large;
 }
+
 
 .thrusters {
     position: absolute;

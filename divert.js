@@ -5,6 +5,8 @@ var weaponPower = 0;
 var shieldPower = 0;
 var shieldHealth = 50;
 var hullHealth = 50;
+var coreTemperature = 0;
+var maxTemperature = 1000;
 
 var enemyCount = 0;
 var enemyShieldHealth = 20;
@@ -33,6 +35,7 @@ const weaponPowerElement = document.getElementById('weaponPowerID');
 const shieldPowerElement = document.getElementById('shieldPowerID');
 const shieldHealthElement = document.getElementById('shieldHealthID');
 const hullHealthElement = document.getElementById('hullHealthID')
+const temperatureElement = document.getElementById('coreTemperature');
 
 const enemyShieldElement = document.getElementById('enemyShieldsID');
 const enemyHealthElement = document.getElementById('enemyHealthID');
@@ -51,6 +54,31 @@ const shipElement = document.querySelector('.ship');
 const shieldElement = document.querySelector('.shield');
 const thrustersElement = document.querySelector('.thrusters');
 
+document.addEventListener('keydown', function(event) {
+    switch(event.key) {
+        case 'i':
+            increaseEngineButton.click();
+            break;
+        case 'o':
+            decreaseEngineButton.click();
+            break;
+        case 'j':
+            increaseWeaponButton.click();
+            break;
+        case 'k':
+            decreaseWeaponButton.click();
+            break;
+        case 'n':
+            increaseShieldButton.click();
+            break;
+        case 'm':
+            decreaseShieldButton.click();
+            break;
+        default:
+            // Do nothing for other keys
+            break;
+    }
+});
 
 startLevelButton.onclick = function(){
     startLevel();
@@ -100,6 +128,8 @@ decreaseShieldButton.onclick = function () {
 function startDivertGame(){
     updateAllMeters();
     regenerateShield();
+    initializeCoreTemperature();
+    gameOver = false;
     document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
     document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
@@ -126,9 +156,12 @@ function updateAllMeters(){
 
 //Activate the level
 function startLevel() {
-    gameOver = false;
-
-    spawnEnemy(enemyHullHealth, enemyShieldHealth, "laser", 5000);
+    if(gameOver == false){
+        spawnEnemy(enemyHullHealth, enemyShieldHealth, "laser", 5000);
+    }
+    else if(gameOver == true){
+        resetGame();
+    }
 }
 
 
@@ -214,6 +247,36 @@ function regenerateShield() {
     }, shieldRegenInterval);
 }
 
+function initializeCoreTemperature(){
+    setInterval(() => {
+        updateCoreTemperature();
+    }, 500); 
+    checkCoreTemperature();
+}
+
+function updateCoreTemperature() {
+    const totalPowerUsage = enginePower + weaponPower + shieldPower;
+
+    // Calculate the percentage of power used
+    const powerPercentage = (totalPowerUsage / maxAvailablePower) * 100;
+
+    // Determine temperature change based on power usage
+    if (powerPercentage <= 50) {
+        // If using less than half of available power, decrease core temperature
+        coreTemperature -= (50 - powerPercentage) * 0.4; // Adjust temperature change rate as needed
+    } else {
+        // If using more than half of available power, increase core temperature
+        coreTemperature += (powerPercentage - 50) * 0.4; // Adjust temperature change rate as needed
+    }
+
+    // Ensure core temperature stays within bounds
+    coreTemperature = Math.max(0, Math.min(coreTemperature, maxTemperature + 200));
+
+    // Update core temperature display
+    updateMeter(coreTemperature, "coreTemperature");
+}
+
+
 //Spawn an enemy
 function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate) {
     showNotification("An enemy ship has appeared!", "enemy");
@@ -221,21 +284,21 @@ function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate) 
     updateMeter(enemyShieldHealth, "enemyShieldHealth");
     updateMeter(enemyHullHealth, "enemyHullHealth");
 
-    
-    setInterval(() => {
+    let damageInterval = setInterval(() => {
         if(enemyHullHealth > 0 && !gameOver){
             damage(damageType, 30);
+        } else {
+            clearInterval(damageInterval);
         }
     }, damageRate);
 
-
-    setInterval(() => {
+    let attackInterval = setInterval(() => {
         if(enemyHullHealth > 0 && !gameOver){
             attack("laser", weaponPower);
+        } else {
+            clearInterval(attackInterval);
         }
     }, 5000);
-    
-    
 }
 
 
@@ -254,12 +317,16 @@ function updateMeter(meter, meterType) {
         shieldHealth: shieldHealthElement,
         hullHealth: hullHealthElement,
         enemyHullHealth: enemyHealthElement,
-        enemyShieldHealth: enemyShieldElement
+        enemyShieldHealth: enemyShieldElement,
+        coreTemperature: temperatureElement
     };
 
     const updatingElement = meterElements[meterType];
 
-    if (meter > updatingElement.textContent.length) {
+    if(meterType == "coreTemperature"){
+        temperatureElement.textContent = `${Math.round(coreTemperature)}°C`;
+    }
+    else if (meter > updatingElement.textContent.length) {
         updatingElement.textContent += "▄".repeat(meter - updatingElement.textContent.length);
     } else if (meter < updatingElement.textContent.length) {
         updatingElement.textContent = updatingElement.textContent.slice(0, meter);
@@ -334,7 +401,7 @@ function damage(damageType, amount) {
                 }
             }
         } else if (damage <= 0) {   
-            showNotification("You avoided all damage!", "player");
+            showNotification("You avoided all damage!", "enemy");
         }
     }, 1500);
 }
@@ -384,15 +451,49 @@ function attack(attackType, amount) {
                 }
             }
         } else if (attack <= 0) {
-            showNotification("All damage was avoided by the enemy!", "enemy");
+            showNotification("All damage was avoided by the enemy!", "player");
         }
     }, 1500);
+}
+
+function checkCoreTemperature() {
+    const timeThreshold = 7000; // Time threshold in milliseconds
+    let overheatingTime = 0; // Time in milliseconds the temperature has been above threshold
+
+    setInterval(() => {
+        if (coreTemperature > maxTemperature) {
+            console.log('overheatingTime increased');
+            overheatingTime += 1000; // Increment by 1 second
+            if (overheatingTime >= timeThreshold) {
+                // Call death function if temperature remains high for too long
+                showNotification("The ship has overheated!", "neutral");
+                death();
+            }
+        } else if (overheatingTime >= 1000){
+            console.log('overheatingTime decreased');
+            overheatingTime -= 1000; // Decrease overheating time if temperature is below threshold
+        }
+
+        if(overheatingTime == 0){
+            temperatureElement.style.color = "white";
+        }
+        if(overheatingTime > 0 && overheatingTime < 5000){
+            showNotification("WARNING: Core temperature above operating limits!", "neutral");
+            temperatureElement.style.color = "orange";
+        }
+        else if(overheatingTime >= 5000){
+            showNotification("WARNING: Core temperature has been above maximum level for too long, explosion imminent!", "enemy");
+            temperatureElement.style.color = "red";
+        }
+    }, 1000); // Check temperature every second
 }
 
 function death(){
     showNotification("The ship has been destroyed!", "enemy");
     hullHealth = 0;
+    shieldHealth = 0;
     updateMeter(hullHealth, "hullHealth");
+    updateMeter(shieldHealth, "shieldHealth");
 
     shipElement.classList.add('explode');
     shieldElement.classList.add('explode');
@@ -432,6 +533,29 @@ function showNotification(message, type = 'neutral') {
 }
 
 
+function resetGame(){
+    availablePower = 20;
+    enginePower = 0;
+    weaponPower = 0;
+    shieldPower = 0;
+    shieldHealth = 50;
+    hullHealth = 50;
+    enemyCount = 0;
+    enemyShieldHealth = 20;
+    enemyHullHealth = 20;
+    gameOver = false;
+    meters = Array(availablePower, enginePower, weaponPower, shieldPower, shieldHealth, hullHealth);
+    updateAllMeters();
+    document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
+    document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
+    document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
+    shipElement.classList.remove('explode');
+    shieldElement.classList.remove('explode');
+    thrustersElement.classList.remove('explode');
+    notificationBox.innerHTML = '';
+    gameOver = false;
+    startDivertGame();
+}
 // Usage example:
 showNotification('Notification box initialized.');
 

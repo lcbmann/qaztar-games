@@ -171,7 +171,7 @@ V
         
         <div class="controls">
             <div class="meter-title"><b>Reactor Controls&nbsp;</b></div>
-            <div class="meter">Available Power&nbsp;</div>
+            <div class="meter-label">Available Power&nbsp;</div>
             <div class="control-group">
                 <div class="meter" id="availablePowerID" style="color:bisque">▄▄▄▄▄▄▄▄▄▄</div>
                 <div class="meter">&nbsp;</div>
@@ -196,9 +196,13 @@ V
                     <button class="btn" id="increaseShield">+</button>
                     <button class="btn" id="decreaseShield">-</button>
             </div>
+            <div class="meter-label">Core Temperature:</div> 
+                <div id="coreTemperature"><b>0°C</b></div>
             <br>
             <br>
             <br>
+        </div>
+        <div class="status">
             <div class="meter-title"><b>Status</b></div>
             <div class="meter-label">Shield Health</div>
             <div class="meter" id="shieldHealthID" style="color:deepskyblue">▄▄▄▄▄▄▄▄▄▄</div>
@@ -232,6 +236,8 @@ V
 
             document.body.appendChild(star);
         }
+
+    
     </script>
 
 </body>
