@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="divertstyles.css" rel="stylesheet">
+    <script defer src="divert.js"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Background -->
+    <style>
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        .stars {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background-color: #fff;
+            animation: twinkle 1s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            to {
+                opacity: 0.3;
+            }
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 3% 4.5%;
+            background-color: black;
+            color: white;
+            font-family: monospace;
+            margin: 0;
+        }
+
+        .level-selector {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .level-selector h2 {
+            margin-bottom: 20px;
+        }
+
+        .level-selector ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .level-selector li {
+            margin-bottom: 10px;
+        }
+
+        .level-selector button {
+            background-color: #1f1f1f;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button#startLevel {
+            position: absolute;
+            top: 300px;
+            background-color: #1f1f1f;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .container {
+            /* Your existing container styles */
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <title>Divert</title>
+</head>
+<body>
+    <div class="title">Divert</div>
+
+    <div class="level-selector">
+        <h2>Select a Level</h2>
+        <ul>
+            <li><button id="level1button" onclick="runLevel(1)">Level 1</button></li>
+            <li><button id="level2button" onclick="runLevel(2)">Level 2</button></li>
+            <!-- Add more level buttons as needed -->
+        </ul>
+    </div>
+
+    
+
+    <div class="container">
+        <!-- Your existing content -->
+    </div>
+
+    <script>
+    
+
+        const numStars = 300;
+
+        for (let i = 0; i < numStars; i++) {
+            createStar();
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'stars';
+
+            const xPos = Math.random() * window.innerWidth;
+            const yPos = Math.random() * window.innerHeight;
+            const duration = Math.random() * 5 + 0.5;
+
+            star.style.left = `${xPos}px`;
+            star.style.top = `${yPos}px`;
+            star.style.animationDuration = `${duration}s`;
+
+            document.body.appendChild(star);
+        }
+    </script>
+</body>
+</html>

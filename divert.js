@@ -1,3 +1,4 @@
+//#region Basic Variables
 var availablePower = 20;
 var maxAvailablePower = 20;
 var enginePower = 0;
@@ -28,7 +29,9 @@ meters = Array(availablePower, enginePower, weaponPower, shieldPower, shieldHeal
 
 
 var damageType;
+//#endregion
 
+//#region Page Elements
 const availablePowerElement = document.getElementById('availablePowerID');
 const enginePowerElement = document.getElementById('enginePowerID');
 const weaponPowerElement = document.getElementById('weaponPowerID');
@@ -47,31 +50,38 @@ const decreaseEngineButton = document.getElementById('decreaseEngine');
 const decreaseWeaponButton = document.getElementById('decreaseWeapon');
 const decreaseShieldButton = document.getElementById('decreaseShield');
 
+const level1button = document.getElementById('level1button');
+const level2button = document.getElementById('level2button');
 const startLevelButton = document.getElementById('startLevel');
-const notificationBox = document.getElementById('notificationBox');
+const notificationBox1 = document.getElementById('notificationBox1');
+const notificationBox2 = document.getElementById('notificationBox2');
+
 
 const shipElement = document.querySelector('.ship');
 const shieldElement = document.querySelector('.shield');
 const thrustersElement = document.querySelector('.thrusters');
 
+//#endregion
+
+//#region Buttons and Controls
 document.addEventListener('keydown', function(event) {
     switch(event.key) {
-        case 'i':
+        case 'o':
             increaseEngineButton.click();
             break;
-        case 'o':
+        case 'i':
             decreaseEngineButton.click();
             break;
-        case 'j':
+        case 'k':
             increaseWeaponButton.click();
             break;
-        case 'k':
+        case 'j':
             decreaseWeaponButton.click();
             break;
-        case 'n':
+        case 'm':
             increaseShieldButton.click();
             break;
-        case 'm':
+        case 'n':
             decreaseShieldButton.click();
             break;
         default:
@@ -80,9 +90,7 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-startLevelButton.onclick = function(){
-    startLevel();
-}
+
 
 increaseEngineButton.onclick = function() {
     if(availablePower > 0){
@@ -123,6 +131,7 @@ decreaseShieldButton.onclick = function () {
         document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
     }
 };
+//#endregion
 
 //Start game
 function startDivertGame(){
@@ -154,14 +163,22 @@ function updateAllMeters(){
 
 
 
-//Activate the level
-function startLevel() {
-    if(gameOver == false){
-        spawnEnemy(enemyHullHealth, enemyShieldHealth, "laser", 5000);
+//Go to level page
+function runLevel(level) {
+    // Redirect to the divertgame.html page with the selected level as a parameter
+    window.location.href = `divertgame.html?level=${level}`;
+}
+
+//Start the selected level
+function startLevel(level){
+    if(level == 1){
+        spawnEnemy(20, 20, "laser", 6000, 20);
+        
     }
-    else if(gameOver == true){
-        resetGame();
+    else if(level == 2){
+        spawnEnemy(30, 30, "plasma", 6000);
     }
+
 }
 
 
@@ -217,7 +234,7 @@ function decrease(decreasingMeter, amount, meterType) {
 
 
 function regenerateShield() {
-    setInterval(() => {
+    setInterval(async () => {
         if (isRegenerating) {
             // Check if shields need regeneration
             if (shieldHealth < maxShieldHealth && shieldHealth > 0) {
@@ -231,14 +248,20 @@ function regenerateShield() {
                 // Update shieldHealth
                 shieldHealth = increase(shieldHealth, Math.min(maxShieldHealth - shieldHealth, regenerationAmount), "shieldHealth");
     
+                // Wait for a bit before updating the meter
+                await new Promise(resolve => setTimeout(resolve, 100)); // Adjust the delay as needed
                 updateMeter(shieldHealth, "shieldHealth");
             } else if (shieldHealth <= 0) {
                 // Disable normal regeneration and wait for a few seconds
                 isRegenerating = false;
-                setTimeout(() => {
+                setTimeout(async () => {
                     // Reset shieldHealth to starting value
                     shieldHealth = increase(shieldHealth, Math.min(maxShieldHealth - shieldHealth, regenerationAmount), "shieldHealth");
+                    
+                    // Wait for a bit before updating the meter
+                    await new Promise(resolve => setTimeout(resolve, 100)); // Adjust the delay as needed
                     updateMeter(shieldHealth, "shieldHealth");
+                    
                     // Enable normal regeneration
                     isRegenerating = true;
                 }, regenDelay); // Delay in milliseconds // if shieldPower is 10, it should take 5 seconds to recharge. If shieldPower is 5, it should take 10 seconds to recharge. if shieldPower is 1, it should take 50 seconds to recharge. If shieldPower is 0, it should not recharge.
@@ -246,6 +269,7 @@ function regenerateShield() {
         }
     }, shieldRegenInterval);
 }
+
 
 function initializeCoreTemperature(){
     setInterval(() => {
@@ -278,15 +302,16 @@ function updateCoreTemperature() {
 
 
 //Spawn an enemy
-function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate) {
-    showNotification("An enemy ship has appeared!", "enemy");
+function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate, damageAmount = 30) {
+    console.log("Enemy spawned");
+    showNotification("An enemy ship has appeared!", "enemy", 2);
     enemyCount++;
     updateMeter(enemyShieldHealth, "enemyShieldHealth");
     updateMeter(enemyHullHealth, "enemyHullHealth");
 
     let damageInterval = setInterval(() => {
         if(enemyHullHealth > 0 && !gameOver){
-            damage(damageType, 30);
+            damage(damageType, damageAmount);
         } else {
             clearInterval(damageInterval);
         }
@@ -302,13 +327,12 @@ function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate) 
 }
 
 
-//Update meter visuals
+//#region Update meter visuals
 function updateMeter(meter, meterType) {
-
     if (gameOver) {
         return;
     }
-
+    console.log("Shield health")
     const meterElements = {
         available: availablePowerElement,
         engine: enginePowerElement,
@@ -323,15 +347,44 @@ function updateMeter(meter, meterType) {
 
     const updatingElement = meterElements[meterType];
 
-    if(meterType == "coreTemperature"){
+    if (meterType == "coreTemperature") {
         temperatureElement.textContent = `${Math.round(coreTemperature)}°C`;
-    }
-    else if (meter > updatingElement.textContent.length) {
-        updatingElement.textContent += "▄".repeat(meter - updatingElement.textContent.length);
-    } else if (meter < updatingElement.textContent.length) {
-        updatingElement.textContent = updatingElement.textContent.slice(0, meter);
+    } else {
+        updateMeterText(updatingElement, meter);
     }
 }
+
+function updateMeterText(element, targetLength) {
+    const currentLength = element.textContent.length;
+    const delay = 30; // Adjust the delay between characters as needed
+
+    if (targetLength > currentLength) {
+        // If the target length is greater, add characters one by one
+        addCharacters(element, targetLength, currentLength, delay);
+    } else if (targetLength < currentLength) {
+        // If the target length is smaller, remove characters one by one
+        removeCharacters(element, targetLength, currentLength, delay);
+    }
+}
+
+function addCharacters(element, targetLength, currentLength, delay) {
+    if (currentLength < targetLength) {
+        element.textContent += "▄";
+        setTimeout(() => {
+            addCharacters(element, targetLength, currentLength + 1, delay);
+        }, delay);
+    }
+}
+
+function removeCharacters(element, targetLength, currentLength, delay) {
+    if (currentLength > targetLength) {
+        element.textContent = element.textContent.slice(0, -1);
+        setTimeout(() => {
+            removeCharacters(element, targetLength, currentLength - 1, delay);
+        }, delay);
+    }
+}
+//#endregion
 
 
 //Get damaged
@@ -380,7 +433,7 @@ function damage(damageType, amount) {
 
 
     //Damaging the ship
-    showNotification(`The enemy has fired a ${damageMessage} of <b>${amount}</b> strength!`, "enemy");
+    showNotification(`The enemy has fired a ${damageMessage} of <b>${amount}</b> strength!`, "enemy", 2);
     setTimeout(function() {
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
 
@@ -437,21 +490,24 @@ function attack(attackType, amount) {
                     attack = enemyShieldHealth;
                 }
                 enemyShieldHealth = decrease(enemyShieldHealth, attack, "enemyShieldHealth");
-                showNotification(`The enemy's shields took <b>${attack}</b> points of damage.`, "player");
+                showNotification(`The enemy's shields took <b>${attack}</b> points of damage.`, "player", 2);
             } else if (enemyShieldHealth <= 0) {
                 if (attack >= enemyHullHealth) {
-                    showNotification("The enemy ship has been destroyed!", "player");
+                    showNotification("The enemy ship has been destroyed!", "player", 2);
                     enemyHullHealth = 0;
                     updateMeter(enemyHullHealth, "enemyHullHealth");
                     gameOver = true;
+                    setTimeout(() => {
+                        window.location.href = `divertlevelselector.html`;
+                    }, 5000);
                 }
                 else {
                     enemyHullHealth = decrease(enemyHullHealth, attack, "enemyHullHealth");
-                    showNotification(`The enemy's hull took <b>${attack}</b> points of damage.`, "player");
+                    showNotification(`The enemy's hull took <b>${attack}</b> points of damage.`, "player", 2);
                 }
             }
         } else if (attack <= 0) {
-            showNotification("All damage was avoided by the enemy!", "player");
+            showNotification("All damage was avoided by the enemy!", "enemy", 2);
         }
     }, 1500);
 }
@@ -489,7 +545,7 @@ function checkCoreTemperature() {
 }
 
 function death(){
-    showNotification("The ship has been destroyed!", "enemy");
+    showNotification("Your ship has been destroyed!", "enemy");
     hullHealth = 0;
     shieldHealth = 0;
     updateMeter(hullHealth, "hullHealth");
@@ -499,9 +555,12 @@ function death(){
     shieldElement.classList.add('explode');
     thrustersElement.classList.add('explode');
     gameOver = true;
+    setTimeout(() => {
+        window.location.href = `divertlevelselector.html`;
+    }, 5000);
 }
 
-function showNotification(message, type = 'neutral') {
+function showNotification(message, type = 'neutral', box = 1) {
 
     if (gameOver) {
         return;
@@ -524,7 +583,13 @@ function showNotification(message, type = 'neutral') {
             break;
     }
 
-    notificationBox.prepend(notification);
+    if(box == 1){
+        notificationBox1.prepend(notification);
+    }
+    else{
+        notificationBox2.prepend(notification);
+    }
+    
 
     // Remove the notification after 7 seconds
     setTimeout(() => {

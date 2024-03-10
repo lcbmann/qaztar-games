@@ -61,11 +61,11 @@
 </head>
 <body>
     
-    <button style="position: absolute; top: 300px" id="startLevel">Start level</button>
 
     <div class="container">
         
-<div id="notificationBox"></div>
+<div id="notificationBox1"></div>
+<div id="notificationBox2"></div>
         <div></div>
         <!-- Play Area -->
         <div class="playarea">
@@ -178,23 +178,23 @@ V
                 <br>
             </div>
                                 
-            <div class="meter-label">&nbsp;&nbsp;Engines&nbsp;</div>
+            <div class="meter-label">Engines&nbsp;</div>
             <div class="control-group">
-                    <div class="meter" id="enginePowerID" style="color: orange"></div>
-                    <button class="btn" id="increaseEngine">+</button>
                     <button class="btn" id="decreaseEngine">-</button>
+                    <button class="btn" id="increaseEngine">+</button>
+                    <div class="meter" id="enginePowerID" style="color: orange"></div>
             </div>
             <div class="meter-label">Weapons&nbsp;</div>
             <div class="control-group">
-                    <div class="meter" id="weaponPowerID" style="color: lightcoral"></div>
-                    <button class="btn" id="increaseWeapon">+</button>
                     <button class="btn" id="decreaseWeapon">-</button>
+                    <button class="btn" id="increaseWeapon">+</button>
+                    <div class="meter" id="weaponPowerID" style="color: lightcoral"></div>
             </div>
             <div class="meter-label">Shields&nbsp;</div>
             <div class="control-group">
-                    <div class="meter" id="shieldPowerID" style="color: lightskyblue"></div>
-                    <button class="btn" id="increaseShield">+</button>
                     <button class="btn" id="decreaseShield">-</button>
+                    <button class="btn" id="increaseShield">+</button>
+                    <div class="meter" id="shieldPowerID" style="color: lightskyblue"></div>
             </div>
             <div class="meter-label">Core Temperature:</div> 
                 <div id="coreTemperature"><b>0°C</b></div>
@@ -237,7 +237,16 @@ V
             document.body.appendChild(star);
         }
 
-    
+        document.addEventListener('DOMContentLoaded', function() {
+            // Retrieve the selected level from the URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedLevel = urlParams.get('level');
+
+            // Call the startLevel function to initiate the selected level
+            if (selectedLevel) {
+                startLevel(parseInt(selectedLevel, 10));
+            }
+        });
     </script>
 
 </body>

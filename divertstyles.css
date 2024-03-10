@@ -60,14 +60,14 @@ body {
 }
 
 .status {
-    width: 28%; /* Adjust the width */
+    width: 21%; /* Adjust the width */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Align status to the left */
-    align-items: flex-end;
+    align-items: flex-start;
     position: absolute;
     top: 10%; /* Adjust the top position */
-    right: 0%; /* Adjust the right position */
+    left: 0%; /* Adjust the right position */
     z-index: 1;
     background-color:black;
 
@@ -77,11 +77,11 @@ body {
     width: 15%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Align controls to the right */
-    align-items: flex-end;
+    justify-content: flex-start; /* Align controls to the right */
+    align-items: flex-start;
     position: absolute;
     top: calc(10% + var(--status-height)); /* Adjust the top position */
-    right: 0%; /* Adjust the right position */
+    left: 0%; /* Adjust the right position */
     z-index: 1;
     background-color:black;
 
@@ -110,18 +110,16 @@ body {
 
 
 .enemies {
-    width: 28%;
+    width: 21%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Align controls to the left */
-    align-items: flex-start;
+    justify-content: flex-end; /* Align controls to the left */
+    align-items: flex-end;
     position: absolute;
     top: 10%;
-    left: 0%;
+    right: 0%;
     z-index: 1;
     background-color:black;
-
-
 }
 
 .enemy-group {
@@ -256,20 +254,38 @@ body {
 
 
 
-#notificationBox {
+#notificationBox1 {
     position: absolute;
     top: 10%;
     left: 50%;
-    width: 300px;
+    width: 28%;
+    display: flex;
     padding: 10px;
     background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 5px;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    transform: translate(-50%); /* Add this line */
+    font-size:x-large;
+}
+
+#notificationBox2 {
+    position: absolute;
+    top: calc(5% + var(--status-height));
+    padding: 10px;
     color: white;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     text-align: center;
-    transform: translate(-50%); /* Add this line */
+    width: 21%;
+    right: 0%;
+    z-index: 1; 
+    background-color:black;
+    font-size:large;
 }
 
 .notification {
