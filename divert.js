@@ -12,14 +12,18 @@ var maxTemperature = 1000;
 var enemyCount = 0;
 var enemyShieldHealth = 20;
 var enemyHullHealth = 20;
+var enemyDistance = 100;
+const minDistance = 100;
+const maxDistance = 30000;
 
 var maxShieldHealth = 50;
-var shieldRegenInterval = 1000;
+var shieldRegenInterval = 500;
 var regenDelay = 8000;
 let isRegenerating = true;
 var regenerationSpeed = shieldPower * 0.1;
 var elapsedTime = shieldRegenInterval / 1000;
 var regenerationAmount = regenerationSpeed * elapsedTime;
+var flyingTowardEnemy = false;
 
 
 var gameOver = false;
@@ -42,6 +46,7 @@ const temperatureElement = document.getElementById('coreTemperature');
 
 const enemyShieldElement = document.getElementById('enemyShieldsID');
 const enemyHealthElement = document.getElementById('enemyHealthID');
+const enemyDistanceElement = document.getElementById('enemyDistance');
 
 const increaseEngineButton = document.getElementById('increaseEngine');
 const increaseWeaponButton = document.getElementById('increaseWeapon');
@@ -49,6 +54,9 @@ const increaseShieldButton = document.getElementById('increaseShield');
 const decreaseEngineButton = document.getElementById('decreaseEngine');
 const decreaseWeaponButton = document.getElementById('decreaseWeapon');
 const decreaseShieldButton = document.getElementById('decreaseShield');
+
+const flyTowardEnemyButton = document.getElementById('towardEnemy');
+const flyAwayEnemyButton = document.getElementById('awayEnemy');
 
 const level1button = document.getElementById('level1button');
 const level2button = document.getElementById('level2button');
@@ -131,6 +139,17 @@ decreaseShieldButton.onclick = function () {
         document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
     }
 };
+
+flyTowardEnemyButton.onclick = function() {
+    flyingTowardEnemy = true;
+    showNotification("Flying toward the enemy!", "neutral");
+};
+
+flyAwayEnemyButton.onclick = function() {
+    flyingTowardEnemy = false;
+    showNotification("Flying away from the enemy!", "neutral");
+};
+
 //#endregion
 
 //Start game
@@ -138,6 +157,7 @@ function startDivertGame(){
     updateAllMeters();
     regenerateShield();
     initializeCoreTemperature();
+    setInterval(calculateEnemyDistance, 100); // Adjust the interval as needed
     gameOver = false;
     document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
@@ -332,7 +352,6 @@ function updateMeter(meter, meterType) {
     if (gameOver) {
         return;
     }
-    console.log("Shield health")
     const meterElements = {
         available: availablePowerElement,
         engine: enginePowerElement,
@@ -386,6 +405,14 @@ function removeCharacters(element, targetLength, currentLength, delay) {
 }
 //#endregion
 
+function calculateDistanceModifier() {
+    // Assuming a linear relationship between distance and damage
+    const distanceRange = maxDistance - minDistance;
+    distanceModifier = 1 - ((enemyDistance - minDistance) / distanceRange);
+    
+    // Ensure the modifier is within bounds (0 to 1)
+    return Math.max(0, Math.min(distanceModifier, 1));
+}
 
 //Get damaged
 function damage(damageType, amount) {
@@ -395,39 +422,40 @@ function damage(damageType, amount) {
     }
 
     let damageMessage, damage;
+    distanceModifier = calculateDistanceModifier();
 
     //Damage types
     if (damageType === "laser") {
         damageMessage = "laser beam";
         if (shieldHealth <= 0) {
-            damage = Math.round(amount - 0.1 * enginePower);
+            damage = Math.round((amount - 0.1 * enginePower) * distanceModifier);
         } else if (shieldHealth > 0) {
-            damage = Math.round(amount - shieldPower - 0.1 * enginePower);
+            damage = Math.round((amount - (shieldPower - 0.1 * enginePower)) * distanceModifier);
         }
     } else if (damageType === "plasma") {
         damageMessage = "plasma projectile";
         if (shieldHealth <= 0) {
-            damage = Math.round(amount - 0.3 * enginePower);
+            damage = Math.round((amount - 0.3 * enginePower) * distanceModifier);
         } else if (shieldHealth > 0) {
-            damage = Math.round(amount - 0.8 * shieldPower - 0.3 * enginePower);
+            damage = Math.round((amount - (0.8 * shieldPower - 0.3 * enginePower)) * distanceModifier);
         }
     }
     else if (damageType === "missile"){
         damageMessage = "missile";
         if(shieldHealth <= 0){
-            damage = Math.round(amount - 0.8 * enginePower);
+            damage = Math.round((amount - 0.8 * enginePower) * distanceModifier);
         }
         else if(shieldHealth > 0){
-            damage = Math.round(amount - 0.3 * shieldPower - 0.8 * enginePower);
+            damage = Math.round((amount - (0.3 * shieldPower - 0.8 * enginePower)) * distanceModifier);
         }
     }
     else if (damageType === "railgun"){
         damageMessage = "railgun shot";
         if(shieldHealth <= 0){
-            damage = Math.round(amount - 0.5 * enginePower);
+            damage = Math.round((amount - 0.5 * enginePower) * distanceModifier);
         }
         else if(shieldHealth > 0){
-            damage = Math.round(amount - 0.5 * shieldPower - 0.5 * enginePower);
+            damage = Math.round((amount - (0.5 * shieldPower - 0.5 * enginePower)) * distanceModifier);
         }
     }
 
@@ -459,27 +487,29 @@ function damage(damageType, amount) {
     }, 1500);
 }
 
+//Attack enemy ship
 function attack(attackType, amount) {
     if (gameOver) {
         return;
     }
 
     let attackMessage, attack;
+    distanceModifier = calculateDistanceModifier();
 
     if (attackType === "laser") {
         attackMessage = "laser beam";
-        attack = Math.round(amount + 0.1 * weaponPower);
+        attack = Math.round((amount + 0.1 * weaponPower) * distanceModifier);
     } else if (attackType === "plasma") {
         attackMessage = "plasma projectile";
-        attack = Math.round(amount + 0.3 * weaponPower);
+        attack = Math.round((amount + 0.3 * weaponPower) * distanceModifier);
     }
     else if (attackType === "missile"){
         attackMessage = "missile";
-        attack = Math.round(amount + 0.8 * weaponPower);
+        attack = Math.round((amount + 0.8 * weaponPower) * distanceModifier);
     }
     else if (attackType === "railgun"){
         attackMessage = "railgun shot";
-        attack = Math.round(amount + 0.5 * weaponPower);
+        attack = Math.round((amount + 0.5 * weaponPower) * distanceModifier);
     }
 
     showNotification(`You have fired a ${attackMessage} of <b>${amount}</b> strength!`, "player");
@@ -543,6 +573,42 @@ function checkCoreTemperature() {
         }
     }, 1000); // Check temperature every second
 }
+
+function updateEnemyDistance() {
+    enemyDistanceElement.textContent = `${enemyDistance} km`;
+}
+
+function calculateEnemyDistance() {
+    const distanceChangeRate = 5; // Adjust the rate at which the enemyDistance changes
+    
+
+    if (flyingTowardEnemy) {
+        // Decrease enemyDistance when flying toward the enemy
+        enemyDistance -= enginePower * distanceChangeRate;
+    } else {
+        // Increase enemyDistance when flying away from the enemy
+        enemyDistance += enginePower * distanceChangeRate;
+    }
+
+    // Ensure enemyDistance stays within bounds
+    enemyDistance = Math.max(minDistance, Math.min(enemyDistance, maxDistance));
+
+    // Check if the enemy has escaped
+    if (enemyDistance >= maxDistance) {
+        showNotification("The enemy has escaped!", "enemy");
+        endGame();
+    }
+    updateEnemyDistance();
+}
+
+function endGame() {
+    gameOver = true;
+    setTimeout(() => {
+        window.location.href = `divertlevelselector.html`;
+    }, 6000);
+}
+
+
 
 function death(){
     showNotification("Your ship has been destroyed!", "enemy");

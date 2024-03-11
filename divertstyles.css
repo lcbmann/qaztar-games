@@ -1,5 +1,7 @@
+
 .enemies,
-.controls,
+.reactorControls,
+.flightControls,
 .status {
     border: 1px solid white; /* Add thin white outline */
     padding: 10px; /* Add padding for better spacing */
@@ -73,14 +75,32 @@ body {
 
 }
 
-.controls {
+.reactorControls {
     width: 15%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Align controls to the right */
     align-items: flex-start;
     position: absolute;
-    top: calc(10% + var(--status-height)); /* Adjust the top position */
+    top: 200px; /* Adjust the top position */
+    left: 0%; /* Adjust the right position */
+    z-index: 1;
+    background-color:black;
+}
+
+#coreTemperature {
+    font-size: x-large;
+    font-style: bold;
+    margin-top: 5px;
+}
+.flightControls {
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align controls to the right */
+    align-items: flex-start;
+    position: absolute;
+    top: 600px; /* Adjust the top position */
     left: 0%; /* Adjust the right position */
     z-index: 1;
     background-color:black;
@@ -148,13 +168,29 @@ body {
 
 
 
-
-.btn {
-    /* Your button styles */
-    margin-right: 10px;
-    margin-left: 10x;
-   
+.btn,
+#level1button,
+#level2button {
+    font-family: monospace;
+    font-size: 14px; /* Adjust the font size */
+    font-style: bolder;
+    padding: 6px 12px; /* Adjust the padding */
+    margin-right: 3px;
+    margin-top: 8px;
+    background-color: #222; /* Darker background color */
+    color: #ccc; /* Lighter text color */
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
 }
+
+.btn:hover, #level1button:hover, #level2button:hover {
+    background-color: #444; /* Darker color on hover */
+    color: #fff; /* White text color on hover */
+}
+
+
 
 .meter {
     /* Your meter styles */
