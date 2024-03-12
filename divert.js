@@ -103,6 +103,7 @@ document.addEventListener('keydown', function(event) {
 increaseEngineButton.onclick = function() {
     if(availablePower > 0){
         enginePower = increase(enginePower, 1, "engine");
+        updateStarSpeed(enginePower);
         document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
     }
 };
@@ -123,6 +124,7 @@ increaseShieldButton.onclick = function() {
 decreaseEngineButton.onclick = function () {
     if(availablePower <= maxAvailablePower){
         enginePower = decrease(enginePower, 1, "engine");
+        updateStarSpeed(enginePower);
         document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
     }
 };
@@ -153,6 +155,7 @@ flyAwayEnemyButton.onclick = function() {
 //#endregion
 
 //Start game
+//Start game
 function startDivertGame(){
     updateAllMeters();
     regenerateShield();
@@ -162,7 +165,14 @@ function startDivertGame(){
     document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
     document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
-}   
+
+    const numStars = 200;
+    for (let i = 0; i < numStars; i++) {
+        // Pass the engine power to adjust the speed of stars
+        createStar(enginePower + 0.1); // Add 1 to engine power to ensure minimum speed
+    }
+}
+
 
 //Update all meters
 function updateAllMeters(){
@@ -180,6 +190,58 @@ function updateAllMeters(){
     updateMeter(enemyShieldHealth, "enemyShieldHealth");
     updateMeter(enemyHullHealth, "enemyHullHealth");
 }
+
+function createStar(speed) {
+    const star = document.createElement('div');
+    star.className = 'stars';
+
+    const xPos = Math.random() * window.innerWidth;
+    const yPos = Math.random() * window.innerHeight; // Stars start from a random position
+
+    // Initial position
+    star.style.left = `${xPos}px`;
+    star.style.top = `${yPos}px`;
+
+    // Randomize animation delay for twinkling effect
+    const twinklingDelay = Math.random() * 2; // Adjust the delay as needed
+
+    // Set a custom animation duration based on enginePower
+    const newDuration = Math.max(1, (Math.random() * 5 + 0.5) / (speed + 1)); // Ensure minimum duration is 1s
+    star.style.animation = `moveDown ${newDuration}s linear infinite, twinkle 2s ${twinklingDelay}s infinite alternate`;
+
+    document.body.appendChild(star);
+}
+
+
+function updateStarSpeed(enginePower) {
+    const stars = document.getElementsByClassName('stars');
+    for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
+        // Calculate animation duration based on enginePower
+        const newDuration = Math.max(1, (Math.random() * 5 + 0.5) / (enginePower + 1)); // Ensure minimum duration is 1s
+        // Update animation duration for moveDown animation
+        star.style.animationDuration = `${newDuration}s`;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -252,7 +314,7 @@ function decrease(decreasingMeter, amount, meterType) {
 }
 
 
-
+//Regenerate shield
 function regenerateShield() {
     setInterval(async () => {
         if (isRegenerating) {
@@ -290,14 +352,13 @@ function regenerateShield() {
     }, shieldRegenInterval);
 }
 
-
+//Run core-temperature
 function initializeCoreTemperature(){
     setInterval(() => {
         updateCoreTemperature();
     }, 500); 
     checkCoreTemperature();
 }
-
 function updateCoreTemperature() {
     const totalPowerUsage = enginePower + weaponPower + shieldPower;
 
@@ -405,6 +466,7 @@ function removeCharacters(element, targetLength, currentLength, delay) {
 }
 //#endregion
 
+//Calculate distance modifier for damage and attacks
 function calculateDistanceModifier() {
     // Assuming a linear relationship between distance and damage
     const distanceRange = maxDistance - minDistance;
@@ -526,10 +588,7 @@ function attack(attackType, amount) {
                     showNotification("The enemy ship has been destroyed!", "player", 2);
                     enemyHullHealth = 0;
                     updateMeter(enemyHullHealth, "enemyHullHealth");
-                    gameOver = true;
-                    setTimeout(() => {
-                        window.location.href = `divertlevelselector.html`;
-                    }, 5000);
+                    endGame();
                 }
                 else {
                     enemyHullHealth = decrease(enemyHullHealth, attack, "enemyHullHealth");
@@ -542,6 +601,7 @@ function attack(attackType, amount) {
     }, 1500);
 }
 
+//Check core temperature for overheating
 function checkCoreTemperature() {
     const timeThreshold = 7000; // Time threshold in milliseconds
     let overheatingTime = 0; // Time in milliseconds the temperature has been above threshold
@@ -574,10 +634,10 @@ function checkCoreTemperature() {
     }, 1000); // Check temperature every second
 }
 
+//Update enemy distance
 function updateEnemyDistance() {
     enemyDistanceElement.textContent = `${enemyDistance} km`;
 }
-
 function calculateEnemyDistance() {
     const distanceChangeRate = 5; // Adjust the rate at which the enemyDistance changes
     
@@ -601,6 +661,7 @@ function calculateEnemyDistance() {
     updateEnemyDistance();
 }
 
+//End the game
 function endGame() {
     gameOver = true;
     setTimeout(() => {
@@ -609,7 +670,7 @@ function endGame() {
 }
 
 
-
+//Player ship destruction
 function death(){
     showNotification("Your ship has been destroyed!", "enemy");
     hullHealth = 0;
@@ -620,12 +681,10 @@ function death(){
     shipElement.classList.add('explode');
     shieldElement.classList.add('explode');
     thrustersElement.classList.add('explode');
-    gameOver = true;
-    setTimeout(() => {
-        window.location.href = `divertlevelselector.html`;
-    }, 5000);
+    endGame();
 }
 
+//Display a notification
 function showNotification(message, type = 'neutral', box = 1) {
 
     if (gameOver) {
@@ -663,7 +722,7 @@ function showNotification(message, type = 'neutral', box = 1) {
     }, 7000);
 }
 
-
+//Reset the game
 function resetGame(){
     availablePower = 20;
     enginePower = 0;
