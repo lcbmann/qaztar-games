@@ -154,8 +154,13 @@ flyAwayEnemyButton.onclick = function() {
 
 //#endregion
 
+
 //Start game
 //Start game
+let starSpawnInterval;
+const stars = []; // Store references to the created stars
+
+
 function startDivertGame(){
     updateAllMeters();
     regenerateShield();
@@ -166,12 +171,72 @@ function startDivertGame(){
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
     document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
 
-    const numStars = 200;
-    for (let i = 0; i < numStars; i++) {
-        // Pass the engine power to adjust the speed of stars
-        createStar(enginePower + 0.1); // Add 1 to engine power to ensure minimum speed
-    }
+    // Spawn stars continuously at random x coordinates along the top of the screen
+    starSpawnInterval = setInterval(() => {
+        createStar(enginePower);
+    }, 200); // Adjust the interval for star spawning as needed
 }
+
+function createStar(enginePower) {
+    const star = document.createElement('div');
+    star.className = 'stars';
+
+    const xPos = Math.random() * window.innerWidth;
+    // Start the stars at the top of the screen
+    const yPos = -10;
+
+    // Initial position
+    star.style.left = `${xPos}px`;
+    star.style.top = `${yPos}px`;
+
+    // Randomize animation delay for twinkling effect
+    const twinklingDelay = Math.random() * 2; // Adjust the delay as needed
+
+    // Set animation duration based on enginePower with slight randomization
+    const speedFactor = 0.5 + Math.random(); // Random speed factor between 0.5 and 1.5
+    const newDuration = Math.max(1, 10 / (enginePower * speedFactor + 1)); // Ensure minimum duration is 1s
+
+    star.style.animation = `moveDown ${newDuration}s 0s linear infinite, twinkle 2s ${twinklingDelay}s infinite alternate`;
+    star.style.animationPlayState = 'running'; // Start the animations immediately
+
+    // Add an event listener to remove the star if it's outside the viewport
+    star.addEventListener('animationiteration', () => {
+        if (star.getBoundingClientRect().top > window.innerHeight) {
+            star.remove();
+            // Remove the reference from the stars array
+            const index = stars.indexOf(star);
+            if (index !== -1) {
+                stars.splice(index, 1);
+            }
+        }
+    });
+
+    document.body.appendChild(star);
+    // Store the reference to the created star
+    stars.push(star);
+}
+
+function updateStarSpeed(enginePower) {
+    // Adjust animation duration for existing stars
+    stars.forEach((star, index) => {
+        const rect = star.getBoundingClientRect(); // Get the current position
+        const currentDuration = parseFloat(getComputedStyle(star).animationDuration); // Get the current duration
+        const speedFactor = 0.5 + Math.random(); // Random speed factor between 0.5 and 1.5
+        const newDuration = Math.max(1, 10 / (enginePower * speedFactor + 1)); // Calculate new duration
+
+        // Create a new star with the updated speed
+        const newStar = createStar(enginePower);
+        newStar.style.left = `${rect.left}px`;
+        newStar.style.top = `${rect.top}px`;
+        newStar.style.animationDuration = `${newDuration}s`;
+
+        // Replace the old star with the new one
+        document.body.replaceChild(newStar, star);
+        stars[index] = newStar;
+    });
+}
+
+
 
 
 //Update all meters
@@ -190,59 +255,6 @@ function updateAllMeters(){
     updateMeter(enemyShieldHealth, "enemyShieldHealth");
     updateMeter(enemyHullHealth, "enemyHullHealth");
 }
-
-function createStar(speed) {
-    const star = document.createElement('div');
-    star.className = 'stars';
-
-    const xPos = Math.random() * window.innerWidth;
-    const yPos = Math.random() * window.innerHeight; // Stars start from a random position
-
-    // Initial position
-    star.style.left = `${xPos}px`;
-    star.style.top = `${yPos}px`;
-
-    // Randomize animation delay for twinkling effect
-    const twinklingDelay = Math.random() * 2; // Adjust the delay as needed
-
-    // Set a custom animation duration based on enginePower
-    const newDuration = Math.max(1, (Math.random() * 5 + 0.5) / (speed + 1)); // Ensure minimum duration is 1s
-    star.style.animation = `moveDown ${newDuration}s linear infinite, twinkle 2s ${twinklingDelay}s infinite alternate`;
-
-    document.body.appendChild(star);
-}
-
-
-function updateStarSpeed(enginePower) {
-    const stars = document.getElementsByClassName('stars');
-    for (let i = 0; i < stars.length; i++) {
-        const star = stars[i];
-        // Calculate animation duration based on enginePower
-        const newDuration = Math.max(1, (Math.random() * 5 + 0.5) / (enginePower + 1)); // Ensure minimum duration is 1s
-        // Update animation duration for moveDown animation
-        star.style.animationDuration = `${newDuration}s`;
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //Go to level page

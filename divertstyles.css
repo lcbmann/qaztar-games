@@ -1,4 +1,11 @@
-
+@keyframes moveDown {
+    0% {
+        transform: translateY(-100vh); /* Start from the top of the viewport */
+    }
+    100% {
+        transform: translateY(100vh); /* Move down to the bottom of the viewport */
+    }
+}
 .enemies,
 .reactorControls,
 .flightControls,
@@ -15,6 +22,8 @@ body {
     background-color: black;
     color: white;
     font-family: monospace;
+    overflow: hidden;
+
 }
 
 
@@ -379,14 +388,7 @@ body::before {
 
 
 
-@keyframes moveDown {
-    0% {
-        transform: translateY(-100vh); /* Start from the top of the viewport */
-    }
-    100% {
-        transform: translateY(100vh); /* Move down to the bottom of the viewport */
-    }
-}
+
 
 
 
@@ -397,7 +399,7 @@ body::before {
     background-color: #fff; /* Set your desired star color */
     animation: moveDown 10s linear infinite, twinkle 4s infinite alternate; /* Adjust duration values as needed */
     animation-fill-mode: forwards; /* Add this line */
-    transition: animation-duration 1s;
+    animation-play-state: running;
 }
 
 
