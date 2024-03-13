@@ -26,6 +26,7 @@ var regenerationAmount = regenerationSpeed * elapsedTime;
 var flyingTowardEnemy = false;
 
 
+
 var gameOver = false;
 
 
@@ -174,13 +175,13 @@ function startDivertGame(){
 
     // Spawn stars continuously at random x coordinates along the top of the screen
     starSpawnInterval = setInterval(() => {
-        if (starCounter < 100) {
-            createStar(enginePower);
+        if (starCounter < 150) {
+            createStar(enginePower + 0.1);
             starCounter++;
         } else {
             clearInterval(starSpawnInterval); // Stop spawning stars
         }
-    }, 200); // Adjust the interval for star spawning as needed
+    }, 50); // Adjust the interval for star spawning as needed
 }
 
 function createStar(speed) {
@@ -196,6 +197,13 @@ function createStar(speed) {
     // Initial position
     star.style.left = `${xPos}px`;
     star.style.top = `${yPos}px`;
+
+    // Generate a random size between 1 and 2
+    const size = Math.random() + 1;
+
+    // Set the width and height of the star to the random size
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
 
     // Randomize animation delay for twinkling effect
     const twinklingDelay = Math.random() * 2; // Adjust the delay as needed
@@ -223,6 +231,7 @@ function createStar(speed) {
     // Store the reference to the created star
     stars.push(star);
 }
+
 function updateStarSpeed(enginePower) {
     // Adjust animation duration for existing stars
     stars.forEach(star => {
