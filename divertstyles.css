@@ -1,11 +1,4 @@
-@keyframes moveDown {
-    0% {
-        transform: translateY(-100vh); /* Start from the top of the viewport */
-    }
-    100% {
-        transform: translateY(100vh); /* Move down to the bottom of the viewport */
-    }
-}
+
 .enemies,
 .reactorControls,
 .flightControls,
@@ -396,9 +389,14 @@ body::before {
 }
 
 
-
-
-
+@keyframes moveDown {
+    0% {
+        transform: translateY(-100vh); /* Start from the top of the viewport */
+    }
+    100% {
+        transform: translateY(100vh); /* Move down to the bottom of the viewport */
+    }
+}
 
 
 .stars {

@@ -104,7 +104,7 @@ document.addEventListener('keydown', function(event) {
 increaseEngineButton.onclick = function() {
     if(availablePower > 0){
         enginePower = increase(enginePower, 1, "engine");
-        updateStarSpeed(enginePower);
+        updateStarSpeed(enginePower + 0.1);
         document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
     }
 };
@@ -125,7 +125,7 @@ increaseShieldButton.onclick = function() {
 decreaseEngineButton.onclick = function () {
     if(availablePower <= maxAvailablePower){
         enginePower = decrease(enginePower, 1, "engine");
-        updateStarSpeed(enginePower);
+        updateStarSpeed(enginePower + 0.1);
         document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
     }
 };
@@ -163,63 +163,52 @@ const stars = []; // Store references to the created stars
 let starCounter = 0; // Counter to track the number of stars created
 
 
-function startDivertGame(){
+function startDivertGame() {
     updateAllMeters();
     regenerateShield();
     initializeCoreTemperature();
-    setInterval(calculateEnemyDistance, 100); // Adjust the interval as needed
+    setInterval(calculateEnemyDistance, 100);
     gameOver = false;
     document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
     document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
 
-    // Spawn stars continuously at random x coordinates along the top of the screen
     starSpawnInterval = setInterval(() => {
         if (starCounter < 150) {
             createStar(enginePower + 0.1);
             starCounter++;
         } else {
-            clearInterval(starSpawnInterval); // Stop spawning stars
+            clearInterval(starSpawnInterval);
         }
-    }, 50); // Adjust the interval for star spawning as needed
+    }, 50);
 }
 
 function createStar(speed) {
     const star = document.createElement('div');
     star.className = 'stars';
 
-    star.animationStartTime = Date.now();
-
     const xPos = Math.random() * window.innerWidth;
-    // Start the stars at the top of the screen
     const yPos = -10;
 
-    // Initial position
     star.style.left = `${xPos}px`;
     star.style.top = `${yPos}px`;
 
-    // Generate a random size between 1 and 2
     const size = Math.random() + 1;
 
-    // Set the width and height of the star to the random size
     star.style.width = size + 'px';
     star.style.height = size + 'px';
 
-    // Randomize animation delay for twinkling effect
-    const twinklingDelay = Math.random() * 2; // Adjust the delay as needed
+    const twinklingDelay = Math.random() * 2;
 
-    // Set animation duration based on enginePower
-    const randomFactor = Math.random() * 2 + 0.5; // Adjust the range as needed
-    const newDuration = Math.max(1, 10 / (speed * randomFactor + 1)); // Ensure minimum duration is 1s
+    const randomFactor = Math.random() * 2 + 0.5;
+    const newDuration = Math.max(1, 10 / (speed * randomFactor + 1));
 
     star.style.animation = `moveDown ${newDuration}s 0s linear infinite, twinkle 2s ${twinklingDelay}s infinite alternate`;
-    star.style.animationPlayState = 'running'; // Start the animations immediately
+    star.style.animationPlayState = 'running';
 
-    // Add an event listener to remove the star if it's outside the viewport
     star.addEventListener('animationiteration', () => {
         if (star.getBoundingClientRect().top > window.innerHeight) {
             star.remove();
-            // Remove the reference from the stars array
             const index = stars.indexOf(star);
             if (index !== -1) {
                 stars.splice(index, 1);
@@ -228,38 +217,29 @@ function createStar(speed) {
     });
 
     document.body.appendChild(star);
-    // Store the reference to the created star
     stars.push(star);
 }
 
 function updateStarSpeed(enginePower) {
-    // Adjust animation duration for existing stars
     stars.forEach(star => {
-        // Pause the animation and get the current progress
-        star.style.animationPlayState = 'paused';
-        const currentDuration = parseFloat(getComputedStyle(star).animationDuration); // Get the current duration
+        const currentDuration = parseFloat(getComputedStyle(star).animationDuration);
         const currentTime = Date.now();
-        const elapsedTime = (currentTime - (star.animationStartTime || currentTime)) % currentDuration; // Calculate elapsed time since animation start
+        const elapsedTime = (currentTime - (star.animationStartTime || currentTime)) % currentDuration;
 
-        // Calculate the progress of the moveDown animation
         const progress = elapsedTime / currentDuration;
 
-        // After the fade out animation is complete, update the speed and fade the star back in
-        const randomFactor = Math.random() * 2 + 0.5; // Adjust the range as needed
-        const newDuration = Math.max(1, 10 / (enginePower * randomFactor + 1)); // Calculate new duration
+        const randomFactor = Math.random() * 2 + 0.5;
+        const newDuration = Math.max(1, 10 / (enginePower * randomFactor + 1));
 
-        // Adjust the elapsedTime based on the progress and the new duration
         const adjustedElapsedTime = progress * newDuration;
 
-        // Update the moveDown animation with the new duration and the adjusted progress
-        const twinklingDelay = Math.random() * 2; // Adjust the delay as needed
+        const twinklingDelay = Math.random() * 2;
 
-        // Update the animation-duration and animation-delay properties separately
         star.style.animationDuration = `${newDuration}s, 2s`;
         star.style.animationDelay = `${adjustedElapsedTime}ms, ${twinklingDelay}s`;
 
         star.style.animationPlayState = 'running';
-        star.animationStartTime = currentTime - adjustedElapsedTime; // Store the adjusted animation start time
+        star.animationStartTime = currentTime - adjustedElapsedTime;
     });
 }
 
