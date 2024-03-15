@@ -2,7 +2,8 @@
 .enemies,
 .reactorControls,
 .flightControls,
-.status {
+.status,
+.enemyVisualBox {
     border: 1px solid white; /* Add thin white outline */
     padding: 10px; /* Add padding for better spacing */
     box-sizing: border-box; /* Include border in the box size */
@@ -16,6 +17,7 @@ body {
     color: white;
     font-family: monospace;
     overflow: hidden;
+    height: 100%;
 
 }
 
@@ -62,6 +64,8 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+
 
 .status {
     width: 25%;
@@ -149,6 +153,7 @@ body {
     flex-wrap:wrap;
 }
 
+
 .enemy-group {
     display: flex;
     justify-content: space-between;
@@ -171,7 +176,36 @@ body {
     font-size: large;
 }
 
-/* ... (existing styles) ... */
+.enemyVisualBox{
+    width: 18%;
+    height: 130px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    background-color: black;
+    z-index: 1;
+    top: 250px; /* Change top to 50% of the viewport height */
+    right: 0%;
+}
+
+.enemy-visual-label{
+    position: absolute; /* Set position to absolute */
+    top: 0; /* Position at the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust horizontally */
+    background-color: black;
+    color: white;
+    padding: 6px;
+    z-index: 2; /* Set a higher z-index */
+}
+
+.enemyVisual {
+    font-size: inherit; /* Reset font size to inherit from parent */
+    margin-top: 30px;
+}
+
 
 
 
@@ -415,7 +449,7 @@ body::before {
         opacity: 1;
     }
     50% {
-        opacity: 0.5;
+        opacity: 0.7;
     }
     100% {
         opacity: 1;

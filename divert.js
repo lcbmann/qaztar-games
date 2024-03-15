@@ -69,6 +69,7 @@ const notificationBox2 = document.getElementById('notificationBox2');
 const shipElement = document.querySelector('.ship');
 const shieldElement = document.querySelector('.shield');
 const thrustersElement = document.querySelector('.thrusters');
+const enemyVisualElement = document.getElementById('enemyVisual');
 
 //#endregion
 
@@ -242,16 +243,6 @@ function updateStarSpeed(enginePower) {
         star.animationStartTime = currentTime - adjustedElapsedTime;
     });
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -666,7 +657,22 @@ function checkCoreTemperature() {
 //Update enemy distance
 function updateEnemyDistance() {
     enemyDistanceElement.textContent = `${enemyDistance} km`;
+    scaleEnemySize();
 }
+
+
+function scaleEnemySize() {
+    const startingSize = 120; // Adjust the starting font size as needed
+    const minSize = 10; // Minimum font size when enemyDistance is maxDistance
+    const fontSize = `${Math.max(startingSize - (enemyDistance / maxDistance * (startingSize - minSize)), minSize)}%`;
+    enemyVisualElement.style.fontSize = fontSize;
+}
+
+
+
+
+ 
+
 function calculateEnemyDistance() {
     const distanceChangeRate = 5; // Adjust the rate at which the enemyDistance changes
     
