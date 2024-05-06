@@ -608,6 +608,7 @@ function attack(attackType, amount) {
                     showNotification("The enemy ship has been destroyed!", "player", 2);
                     enemyHullHealth = 0;
                     updateMeter(enemyHullHealth, "enemyHullHealth");
+                    enemyVisualElement.classList.add('explode');
                     endGame();
                 }
                 else {
@@ -777,6 +778,7 @@ function resetGame(){
     shipElement.classList.remove('explode');
     shieldElement.classList.remove('explode');
     thrustersElement.classList.remove('explode');
+    enemyVisualElement.classList.remove('explode');
     notificationBox.innerHTML = '';
     gameOver = false;
     startDivertGame();
@@ -786,4 +788,3 @@ showNotification('Notification box initialized.');
 
     
 startDivertGame();
-

@@ -186,7 +186,7 @@ body {
     position: absolute;
     background-color: black;
     z-index: 1;
-    top: 250px; /* Change top to 50% of the viewport height */
+    top: 50vh; /* Change top to 50% of the viewport height */
     right: 0%;
 }
 
@@ -363,7 +363,7 @@ body {
     text-align: center;
     width: 21%;
     right: 0%;
-    z-index: 1; 
+    z-index: 4; 
     background-color:black;
     font-size:large;
 }
