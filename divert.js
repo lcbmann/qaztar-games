@@ -27,6 +27,8 @@ var flyingTowardEnemy = false;
 
 
 
+
+
 var gameOver = false;
 
 
@@ -71,6 +73,15 @@ const shieldElement = document.querySelector('.shield');
 const thrustersElement = document.querySelector('.thrusters');
 const enemyVisualElement = document.getElementById('enemyVisual');
 
+const playAreaElement = document.getElementById('playArea');
+const enemyStatusElement = document.getElementById('enemyStatus');
+const statusElement = document.getElementById('status');
+const reactorControlsElement = document.getElementById('reactorControls');
+const flightControlsElement = document.getElementById('flightControls');
+const continueButtonElement = document.getElementById('continueButton');
+continueButtonElement.style.display = 'none';
+
+
 //#endregion
 
 //#region Buttons and Controls
@@ -94,13 +105,24 @@ document.addEventListener('keydown', function(event) {
         case 'n':
             decreaseShieldButton.click();
             break;
+        case 'Enter':
+            continueButtonElement.click();
+            break;
         default:
             // Do nothing for other keys
             break;
     }
 });
 
-
+function waitForButtonClick(buttonElement) {
+    return new Promise(resolve => {
+        const onClick = () => {
+            buttonElement.removeEventListener('click', onClick);
+            resolve();
+        };
+        buttonElement.addEventListener('click', onClick);
+    });
+}
 
 increaseEngineButton.onclick = function() {
     if(availablePower > 0){
@@ -273,16 +295,117 @@ function runLevel(level) {
 
 //Start the selected level
 function startLevel(level){
-    if(level == 1){
+    continueButtonElement.style.display = 'none';
+    if(level == 0){
+        runTutorial();
+        maxTemperature = 10000;
+    }
+    else if(level == 1){
+        maxTemperature = 1000;
         spawnEnemy(20, 20, "laser", 6000, 20);
         
     }
     else if(level == 2){
+        maxTemperature = 1000;
         spawnEnemy(30, 30, "plasma", 6000);
     }
 
 }
 
+//Create a delay
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+//Run tutorial
+async function runTutorial() {
+    playAreaElement.style.display = 'none';
+    enemyStatusElement.style.display = 'none';
+    statusElement.style.display = 'none';
+    reactorControlsElement.style.display = 'none';
+    flightControlsElement.style.display = 'none';
+    enemyVisualElement.style.display = 'none';
+    continueButtonElement.style.display = '';
+
+    showNotification("Welcome to the tutorial! Click Continue to continue.", "neutral", 1);
+
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+
+    showNotification("Piloting your spaceship requires knowledge of its systems. Let's walk through those now.");
+
+    await delay(5000);
+    showNotification("Here is your ship.");
+    playAreaElement.style.display = '';
+
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+
+    showNotification("You can keep track of your ship's shields and health here.");
+    statusElement.style.display = '';
+
+    await delay(5000);
+    showNotification("Be aware: shields can recharge, but health is gone for good until you return to base.");
+
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+    
+    showNotification("Your primary job is to divert power between the three primary systems: Engines, Weapons, and Shields.");
+    reactorControlsElement.style.display = '';
+
+
+    await delay(6000);
+    showNotification("You can adjust your ship's power levels here. Each system has a maximum power level, and when you run out of Available Power, you can't increase them further.");
+
+    await delay(6000);
+    showNotification("You also must keep track of the reactor Core Temperature. If it gets too high for too long, the ship will explode.");
+
+    await delay(6000);
+    showNotification("Try adjusting the power to each system by clicking the + and - buttons. To continue, increase the Weapon Power to 1.");
+
+    await waitForButtonClick(increaseWeaponButton);
+
+    showNotification("You can also use the 'i', 'o', 'j', 'k', 'n', and 'm' keys to adjust the power levels.");
+
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+
+    showNotification("Here is the enemy ship. Your goal is to destroy it before it escapes.");
+    enemyStatusElement.style.display = '';
+    enemyVisualElement.style.display = '';
+
+    await delay(4000);
+    showNotification("You can see the enemy's shields and hull health here.");
+
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+
+    showNotification("You can also adjust your ship's speed by flying toward or away from the enemy.");
+    flightControlsElement.style.display = '';
+
+
+    await delay(4000);
+    showNotification("Try flying toward the enemy by clicking the 'Fly Toward Enemy' button.");
+    await waitForButtonClick(flyTowardEnemyButton);
+    showNotification("Flying toward the enemy will make your and their weapons more effective.");
+    await delay(3000);
+    showNotification("Make sure they don't get too far away, or they'll escape!");
+
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+
+    showNotification("That's it for the tutorial! Click Continue to start the first level.");
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+    runLevel(1);
+
+}
 
 
 //Increase a meter by amount

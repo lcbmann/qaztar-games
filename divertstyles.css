@@ -211,7 +211,8 @@ body {
 
 .btn,
 #level1button,
-#level2button {
+#level2button,
+#continueButton {
     font-family: monospace;
     font-size: 14px; /* Adjust the font size */
     font-style: bolder;
@@ -234,6 +235,14 @@ body {
 .highlightedButton{
     background-color: #ff8438;
     color: #000;
+}
+
+#continueButton {
+    position: absolute;
+    top: 600px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
 }
 
 .meter {

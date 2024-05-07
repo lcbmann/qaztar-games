@@ -31,9 +31,10 @@
     <div class="container">
         <div id="notificationBox1"></div>
         <div id="notificationBox2"></div>
+        <button id="continueButton">Continue</button>
         <div></div>
         <!-- Play Area -->
-        <div class="playarea">
+        <div class="playarea" id="playArea">
             <div id="text" class="shield">
                 <pre>
                                                       
@@ -121,7 +122,7 @@ V
     </div>
         </div>
         </div>
-        <div class="enemies">
+        <div class="enemies" id="enemyStatus">
             <div class="enemy-meter-title"><b>Enemy Status</b></div>
             <div class="enemy-meter-label">Enemy Shields</div>
             <div class="enemy-group">
@@ -135,9 +136,9 @@ V
                 <div id="enemyDistance"><b>0 meters</b></div>
             <!-- Add more enemy-related elements as needed -->
         </div>
-        <div class="enemyVisualBox">
+        <div class="enemyVisualBox" id="enemyVisual">
             <div class="enemy-visual-label"><b>Enemy Visual</b></div>
-            <div class="enemyVisual" id="enemyVisual">
+            <div class="enemyVisual">
             <div id="text">
                 <pre>
 //-A-\\
@@ -156,7 +157,7 @@ ___---=======---___
             <div class="meter" id="hullHealthID" style="color:lightgreen">▄▄▄▄▄▄▄▄▄▄</div>
             
         </div>
-        <div class="reactorControls">
+        <div class="reactorControls" id="reactorControls">
             <div class="meter-title"><b>Reactor Controls&nbsp;</b></div>
             <div class="meter-label">Available Power&nbsp;</div>
             <div class="control-group">
@@ -189,7 +190,7 @@ ___---=======---___
             <br>
             <br>
         </div>
-        <div class="flightControls">
+        <div class="flightControls" id="flightControls">
             <div class="meter-title"><b>Flight Controls</b></div>
             <div class="control-group">
                 <button class="btn" id="towardEnemy">Towards Enemy</button>
