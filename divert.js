@@ -46,6 +46,7 @@ const shieldPowerElement = document.getElementById('shieldPowerID');
 const shieldHealthElement = document.getElementById('shieldHealthID');
 const hullHealthElement = document.getElementById('hullHealthID')
 const temperatureElement = document.getElementById('coreTemperature');
+const maxTemperatureElement = document.getElementById('maxCoreTemperature');
 
 const enemyShieldElement = document.getElementById('enemyShieldsID');
 const enemyHealthElement = document.getElementById('enemyHealthID');
@@ -297,8 +298,8 @@ function runLevel(level) {
 function startLevel(level){
     continueButtonElement.style.display = 'none';
     if(level == 0){
-        runTutorial();
         maxTemperature = 10000;
+        runTutorial();
     }
     else if(level == 1){
         maxTemperature = 1000;
@@ -327,73 +328,80 @@ async function runTutorial() {
     enemyVisualElement.style.display = 'none';
     continueButtonElement.style.display = '';
 
-    showNotification("Welcome to the tutorial! Click Continue to continue.", "neutral", 1);
+    showNotification("Welcome to the tutorial! Click Continue or press Enter to continue.", "neutral", 1, 10000);
 
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("Piloting your spaceship requires knowledge of its systems. Let's walk through those now.");
+    showNotification("Piloting your spaceship requires knowledge of its systems. Let's walk through those now.", "neutral", 1, 5000);
 
-    await delay(5000);
-    showNotification("Here is your ship.");
+    await delay(6000);
+    showNotification("Here is your ship.", "neutral", 1, 2000);
     playAreaElement.style.display = '';
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("You can keep track of your ship's shields and health here.");
+    showNotification("You can keep track of your ship's shields and health here.", "neutral", 1, 5000);
     statusElement.style.display = '';
 
-    await delay(5000);
+    await delay(6000);
     showNotification("Be aware: shields can recharge, but health is gone for good until you return to base.");
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
     
-    showNotification("Your primary job is to divert power between the three primary systems: Engines, Weapons, and Shields.");
+    showNotification("Your primary job is to divert power between the three primary systems: Engines, Weapons, and Shields.", "neutral", 1, 5000);
     reactorControlsElement.style.display = '';
 
 
     await delay(6000);
-    showNotification("You can adjust your ship's power levels here. Each system has a maximum power level, and when you run out of Available Power, you can't increase them further.");
+    showNotification("You can adjust your ship's power levels here. Each system has a maximum power level, and when you run out of Available Power, you can't increase them further.", "neutral", 1, 6000);
+
+    await delay(7000);
+    showNotification("You also must keep track of the reactor Core Temperature. If it gets too high for too long, the ship will explode.", "neutral", 1, 5000);
 
     await delay(6000);
-    showNotification("You also must keep track of the reactor Core Temperature. If it gets too high for too long, the ship will explode.");
-
-    await delay(6000);
-    showNotification("Try adjusting the power to each system by clicking the + and - buttons. To continue, increase the Weapon Power to 1.");
+    showNotification("Try adjusting the power to each system by clicking the + and - buttons. To continue, increase the Weapon Power to 1.", "neutral", 1, 8000);
 
     await waitForButtonClick(increaseWeaponButton);
 
-    showNotification("You can also use the 'i', 'o', 'j', 'k', 'n', and 'm' keys to adjust the power levels.");
+    showNotification("You can also adjust power using the keyboard (I and O for Engines, J and K for Weapons, and N and M for Shields.)", "neutral", 1, 5000);
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("Here is the enemy ship. Your goal is to destroy it before it escapes.");
+    showNotification("Here is the enemy ship. Your goal is to destroy it before it escapes.", "neutral", 1, 4000);
     enemyStatusElement.style.display = '';
     enemyVisualElement.style.display = '';
 
-    await delay(4000);
+    await delay(5000);
     showNotification("You can see the enemy's shields and hull health here.");
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("You can also adjust your ship's speed by flying toward or away from the enemy.");
+    showNotification("You can also adjust your ship's speed by flying toward or away from the enemy.", "neutral", 1, 4000);
     flightControlsElement.style.display = '';
 
 
-    await delay(4000);
+    await delay(5000);
     showNotification("Try flying toward the enemy by clicking the 'Fly Toward Enemy' button.");
     await waitForButtonClick(flyTowardEnemyButton);
-    showNotification("Flying toward the enemy will make your and their weapons more effective.");
-    await delay(3000);
+    showNotification("Flying toward the enemy will make your and their weapons more effective.", "neutral", 1, 3000);
+    await delay(4000);
     showNotification("Make sure they don't get too far away, or they'll escape!");
+
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+
+    showNotification("Status updates will appear here when they're about your ship,", "neutral", 1, 6000)
+    showNotification("and here when they're about the enemy.", "neutral", 2, 6000);
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
@@ -497,10 +505,13 @@ function regenerateShield() {
 
 //Run core-temperature
 function initializeCoreTemperature(){
+    maxTemperatureElement.textContent = `/${Math.round(maxTemperature)}°C`;
+
     setInterval(() => {
         updateCoreTemperature();
     }, 500); 
     checkCoreTemperature();
+
 }
 function updateCoreTemperature() {
     const totalPowerUsage = enginePower + weaponPower + shieldPower;
@@ -526,9 +537,10 @@ function updateCoreTemperature() {
 
 
 //Spawn an enemy
-function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate, damageAmount = 30) {
+async function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate, damageAmount = 30) {
     console.log("Enemy spawned");
     showNotification("An enemy ship has appeared!", "enemy", 2);
+    await delay(3000);
     enemyCount++;
     updateMeter(enemyShieldHealth, "enemyShieldHealth");
     updateMeter(enemyHullHealth, "enemyHullHealth");
@@ -565,7 +577,8 @@ function updateMeter(meter, meterType) {
         hullHealth: hullHealthElement,
         enemyHullHealth: enemyHealthElement,
         enemyShieldHealth: enemyShieldElement,
-        coreTemperature: temperatureElement
+        coreTemperature: temperatureElement,
+        maxCoreTemperature: maxTemperatureElement
     };
 
     const updatingElement = meterElements[meterType];
@@ -844,7 +857,7 @@ function death(){
 }
 
 //Display a notification
-function showNotification(message, type = 'neutral', box = 1) {
+function showNotification(message, type = 'neutral', box = 1, duration = 7000) {
 
     if (gameOver) {
         return;
@@ -878,7 +891,7 @@ function showNotification(message, type = 'neutral', box = 1) {
     // Remove the notification after 7 seconds
     setTimeout(() => {
         notification.remove();
-    }, 7000);
+    }, (duration * 1000));
 }
 
 //Reset the game
@@ -906,8 +919,6 @@ function resetGame(){
     gameOver = false;
     startDivertGame();
 }
-// Usage example:
-showNotification('Notification box initialized.');
 
     
 startDivertGame();
