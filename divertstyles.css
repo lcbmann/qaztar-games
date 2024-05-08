@@ -151,9 +151,9 @@ body {
     align-items: center;
     position: absolute;
     background-color: black;
-    z-index: 1;
-    top: 24%;
-    right: 1%;
+    z-index: 4;
+    top: 50vh; /* Change top to 50% of the viewport height */
+    right: 0%;
 }
 
 .enemy-visual-label {
@@ -173,7 +173,8 @@ body {
 
 .btn,
 #level1button,
-#level2button {
+#level2button,
+#continueButton {
     font-family: monospace;
     font-size: 14px;
     font-style: bolder;
@@ -199,6 +200,31 @@ body {
     background-color: #ff8438;
     color: #000;
 }
+
+#continueButton {
+    position: absolute;
+    top: 600px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+.meter {
+    /* Your meter styles */
+    font-size:small;
+    margin-bottom: 5px;
+}
+
+.meter-label {
+    /* Your meter styles */
+    margin-top: 10px;
+    font-size:small;
+}
+
+.meter-title {
+    font-size:large;
+}
+
 
 .thrusters {
     position: absolute;
@@ -321,11 +347,10 @@ body {
     gap: 10px;
     text-align: right;
     width: 21%;
-    right: 3%;
-    z-index: 1;
-    background-color: black;
-    font-size: large;
-    font-style: italic;
+    right: 0%;
+    z-index: 4; 
+    background-color:black;
+    font-size:large;
 }
 
 

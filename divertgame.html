@@ -34,9 +34,10 @@
         <div class="comms-box" id="comms-box">
             <div class="comms-label" id="comms-label"><b>Communications</b></div>
         </div>
+        <button id="continueButton">Continue</button>
         <div></div>
         <!-- Play Area -->
-        <div class="playarea">
+        <div class="playarea" id="playArea">
             <div id="text" class="shield">
                 <pre>
                                                       
@@ -124,7 +125,7 @@ V
     </div>
         </div>
         </div>
-        <div class="enemies">
+        <div class="enemies" id="enemyStatus">
             <div class="enemy-meter-title"><b>Enemy Status</b></div>
             <div class="enemy-meter-label">Enemy Shields</div>
             <div class="enemy-group">
@@ -138,9 +139,9 @@ V
                 <div id="enemyDistance"><b>0 meters</b></div>
             <!-- Add more enemy-related elements as needed -->
         </div>
-        <div class="enemy-visual-box">
+        <div class="enemyVisualBox" id="enemyVisual">
             <div class="enemy-visual-label"><b>Enemy Visual</b></div>
-            <div class="enemyVisual" id="enemyVisual">
+            <div class="enemyVisual">
             <div id="text">
                 <pre>
 //-A-\\
@@ -159,7 +160,7 @@ ___---=======---___
             <div class="meter" id="hullHealthID" style="color:lightgreen">▄▄▄▄▄▄▄▄▄▄</div>
             
         </div>
-        <div class="reactorControls">
+        <div class="reactorControls" id="reactorControls">
             <div class="meter-title"><b>Reactor Controls&nbsp;</b></div>
             <div class="meter-label">Available Power&nbsp;</div>
             <div class="control-group">
@@ -188,11 +189,12 @@ ___---=======---___
             </div>
             <div class="meter-label">Core Temperature:</div> 
                 <div style='font-style: bold' id="coreTemperature"><b>0°C</b></div>
+                <div style='font-style: bold' id="maxCoreTemperature"><b>0°C</b></div>
             <br>
             <br>
             <br>
         </div>
-        <div class="flightControls">
+        <div class="flightControls" id="flightControls">
             <div class="meter-title"><b>Flight Controls</b></div>
             <div class="control-group">
                 <button class="btn" id="towardEnemy">Towards Enemy</button>

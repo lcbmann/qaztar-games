@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="divertstyles.css" rel="stylesheet">
+    <script defer src="divert.js"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1% 4.5%;
+            background-color: black;
+            color: white;
+            font-family: monospace;
+            margin: 0;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px;
+        }
+
+        .item-selectors {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .item-selector {
+            text-align: center;
+            margin: 10px;
+            flex: 1;
+        }
+
+        .item-selector h2 {
+            margin-bottom: 20px;
+        }
+
+        .item-selector ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .item-selector li {
+            margin-bottom: 10px;
+        }
+
+        .item-selector button {
+            background-color: #1f1f1f;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .credits-display {
+            font-size: 24px;
+            margin: 20px;
+        }
+
+        .stars {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background-color: #fff;
+            animation: twinkle 1s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            to {
+                opacity: 0.3;
+            }
+        }
+    </style>
+    <title>Shop</title>
+</head>
+
+<body>
+    <div class="title">Shop</div>
+
+    <div class="credits-display" id="playerCreditsDisplay">
+        Credits: <span id="creditsAmount">0</span>
+    </div>
+
+    <div class="item-selectors">
+        <div class="item-selector">
+            <h2>Select an Engine</h2>
+            <ul>
+                <li><button id="engine1button">Engine 1</button></li>
+                <li><button id="engine2button">Engine 2</button></li>
+                <li><button id="engine3button">Engine 3</button></li>
+            </ul>
+        </div>
+
+        <div class="item-selector">
+            <h2>Select a Weapon</h2>
+            <ul>
+                <li><button id="weapon1button">Weapon 1</button></li>
+                <li><button id="weapon2button">Weapon 2</button></li>
+                <li><button id="weapon3button">Weapon 3</button></li>
+            </ul>
+        </div>
+
+        <div class="item-selector">
+            <h2>Select a Shield</h2>
+            <ul>
+                <li><button id="shield1button">Shield 1</button></li>
+                <li><button id="shield2button">Shield 2</button></li>
+                <li><button id="shield3button">Shield 3</button></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const numStars = 300;
+        for (let i = 0; i < numStars; i++) {
+            createStar();
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'stars';
+            const xPos = Math.random() * window.innerWidth;
+            const yPos = Math.random() * window.innerHeight;
+            const duration = Math.random() * 5 + 0.5;
+            star.style.left = `${xPos}px`;
+            star.style.top = `${yPos}px`;
+            star.style.animationDuration = `${duration}s`;
+            document.body.appendChild(star);
+        }
+
+        // Assuming 'playerCredits' is a global variable updated elsewhere
+        function updateCreditsDisplay() {
+            const creditsDisplay = document.getElementById('creditsAmount');
+            creditsDisplay.textContent = playerCredits; // Make sure this variable is defined in your linked JS file
+        }
+
+        updateCreditsDisplay();
+    </script>
+</body>
+</html>
