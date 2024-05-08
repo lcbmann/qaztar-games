@@ -185,7 +185,7 @@ body {
     align-items: center;
     position: absolute;
     background-color: black;
-    z-index: 1;
+    z-index: 4;
     top: 50vh; /* Change top to 50% of the viewport height */
     right: 0%;
 }

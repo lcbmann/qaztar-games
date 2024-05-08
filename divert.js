@@ -25,6 +25,8 @@ var elapsedTime = shieldRegenInterval / 1000;
 var regenerationAmount = regenerationSpeed * elapsedTime;
 var flyingTowardEnemy = false;
 
+var playerCredits; 
+
 
 
 
@@ -368,7 +370,7 @@ async function runTutorial() {
 
     await waitForButtonClick(increaseWeaponButton);
 
-    showNotification("You can also adjust power using the keyboard (I and O for Engines, J and K for Weapons, and N and M for Shields.)", "neutral", 1, 5000);
+    showNotification("You can also adjust power using the keyboard (I and O for Engines, J and K for Weapons, and N and M for Shields.)", "neutral", 1, 8000);
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);

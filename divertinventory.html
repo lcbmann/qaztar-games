@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="divertstyles.css" rel="stylesheet">
+    <script defer src="divert.js"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3% 4.5%;
+            background-color: black;
+            color: white;
+            font-family: monospace;
+            margin: 0;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .inventory-item {
+            background-color: #1f1f1f;
+            border: 1px solid #555;
+            padding: 20px;
+            margin: 10px;
+            width: 300px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .stars {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background-color: #fff;
+            animation: twinkle 1s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            to {
+                opacity: 0.3;
+            }
+        }
+    </style>
+    <title>Inventory</title>
+</head>
+
+<body>
+    <div class="title">Current Inventory</div>
+
+    <div class="inventory-item" id="currentWeapon">
+        <h2>Weapon Installed</h2>
+        <p id="weaponName">None</p>
+    </div>
+
+    <div class="inventory-item" id="currentEngine">
+        <h2>Engine Installed</h2>
+        <p id="engineName">None</p>
+    </div>
+
+    <div class="inventory-item" id="currentShield">
+        <h2>Shield Installed</h2>
+        <p id="shieldName">None</p>
+    </div>
+
+    <script>
+        // Example JavaScript to dynamically update inventory
+        function updateInventory(itemType, itemName) {
+            const element = document.getElementById(itemType);
+            if (element) {
+                element.querySelector('p').textContent = itemName;
+            }
+        }
+
+        // Simulating inventory updates
+        updateInventory('currentWeapon', 'Laser Blaster');
+        updateInventory('currentEngine', 'Hyperdrive');
+        updateInventory('currentShield', 'Titanium Shield');
+    </script>
+
+    <div class="stars"></div>
+</body>
+</html>
