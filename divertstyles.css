@@ -1,27 +1,17 @@
-
-.enemies,
-.reactorControls,
-.flightControls,
-.status,
-.enemyVisualBox {
-    border: 1px solid white; /* Add thin white outline */
-    padding: 10px; /* Add padding for better spacing */
-    box-sizing: border-box; /* Include border in the box size */
+html,
+body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: black;
+    color: white;
+    font-family: monospace;
 }
 
 body {
     display: flex;
     justify-content: space-between;
-    padding: 3% 4.5%;
-    background-color: black;
-    color: white;
-    font-family: monospace;
-    overflow: hidden;
-    height: 100%;
-
 }
-
-
 
 .container {
     position: relative;
@@ -32,23 +22,21 @@ body {
     height: 100%;
 }
 
-.descriptions-attacks {
-    width: 25%;
-    text-align: left;
+.enemies,
+.reactorControls,
+.flightControls,
+.status,
+.enemy-visual-box,
+.comms-box {
+    border: 1px solid white;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
-.descriptions {
-    margin-bottom: 100px;
-}
-
-.attacks {
+.attacks,
+.statusReports {
     margin-bottom: 30px;
-    font-style:italic;
-}
-
-.statusReports{
-    margin-bottom: 30px;
-    font-style:italic;
+    font-style: italic;
 }
 
 .playarea {
@@ -60,40 +48,42 @@ body {
     position: absolute;
     background-color: black;
     z-index: 1;
-    top: 50vh; /* Change top to 50vh (50% of the viewport height) */
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-
+.status,
+.reactorControls,
+.flightControls {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: absolute;
+    z-index: 1;
+    background-color: black;
+}
 
 .status {
     width: 25%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align status to the left */
-    align-items: flex-start;
-    position: absolute;
-    top: 10%; /* Adjust the top position */
-    left: 0%; /* Adjust the right position */
-    z-index: 1;
-    background-color:black;
-
-
+    height: 15%;
+    top: 3%;
+    left: 1%;
 }
-
 
 .reactorControls {
     width: 15%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align controls to the right */
-    align-items: flex-start;
-    position: absolute;
-    top: 200px; /* Adjust the top position */
-    left: 0%; /* Adjust the right position */
-    z-index: 1;
-    background-color:black;
+    height: 35%;
+    top: 20%;
+    left: 1%;
+}
+
+.flightControls {
+    width: 15%;
+    height: 12%;
+    top: 57%;
+    left: 1%;
 }
 
 #coreTemperature,
@@ -102,83 +92,59 @@ body {
     font-style: bold;
     margin-top: 5px;
 }
-.flightControls {
-    width: 15%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align controls to the right */
-    align-items: flex-start;
-    position: absolute;
-    top: 600px; /* Adjust the top position */
-    left: 0%; /* Adjust the right position */
-    z-index: 1;
-    background-color:black;
 
-
-}
-
-/* Define the height of the status section */
 :root {
-    --status-height: 200px; /* Adjust the height as needed */
+    --status-height: 200px;
 }
 
-/* Add margin between status and controls */
 .controls {
     margin-top: 20px;
 }
 
-
-.control-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-
-
-
-
-.enemies {
-    width: 25%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end; /* Align controls to the left */
-    align-items: flex-end;
-    position: absolute;
-    top: 10%;
-    right: 0%;
-    z-index: 1;
-    background-color:black;
-    overflow: hidden;
-    flex-wrap:wrap;
-}
-
-
+.control-group,
 .enemy-group {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.enemy-meter {
-    /* Your meter styles */
+.enemies {
+    width: 25%;
+    height: 18.5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    position: absolute;
+    top: 3%;
+    right: 1%;
+    z-index: 1;
+    background-color: black;
+    overflow: hidden;
+    flex-wrap: wrap;
+    padding: 10px;
+}
+
+.enemy-meter,
+.meter {
     font-size: small;
     margin-bottom: 5px;
 }
 
-.enemy-meter-label {
-    /* Your meter styles */
+.enemy-meter-label,
+.meter-label {
     margin-top: 5px;
     font-size: small;
 }
 
-.enemy-meter-title {
+.enemy-meter-title,
+.meter-title {
     font-size: large;
 }
 
-.enemyVisualBox{
+.enemy-visual-box {
     width: 18%;
-    height: 130px;
+    height: 15%;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -186,72 +152,53 @@ body {
     position: absolute;
     background-color: black;
     z-index: 1;
-    top: 250px; /* Change top to 50% of the viewport height */
-    right: 0%;
+    top: 24%;
+    right: 1%;
 }
 
-.enemy-visual-label{
-    position: absolute; /* Set position to absolute */
-    top: 0; /* Position at the top */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust horizontally */
+.enemy-visual-label {
+    position: absolute;
+    top: 0;
+    right: 0%;
     background-color: black;
     color: white;
     padding: 6px;
-    z-index: 2; /* Set a higher z-index */
+    z-index: 2;
 }
 
 .enemyVisual {
-    font-size: inherit; /* Reset font size to inherit from parent */
+    font-size: inherit;
     margin-top: 30px;
 }
-
-
-
 
 .btn,
 #level1button,
 #level2button {
     font-family: monospace;
-    font-size: 14px; /* Adjust the font size */
+    font-size: 14px;
     font-style: bolder;
-    padding: 6px 12px; /* Adjust the padding */
+    padding: 6px 12px;
     margin-right: 3px;
     margin-top: 8px;
-    background-color: #222; /* Darker background color */
-    color: #ccc; /* Lighter text color */
+    background-color: #222;
+    color: #ccc;
     border: none;
     border-radius: 3px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
 }
 
-.btn:hover, #level1button:hover, #level2button:hover {
-    background-color: #444; /* Darker color on hover */
-    color: #fff; /* White text color on hover */
+.btn:hover,
+#level1button:hover,
+#level2button:hover {
+    background-color: #444;
+    color: #fff;
 }
 
-.highlightedButton{
+.highlightedButton {
     background-color: #ff8438;
     color: #000;
 }
-
-.meter {
-    /* Your meter styles */
-    font-size:small;
-    margin-bottom: 5px;
-}
-
-.meter-label {
-    /* Your meter styles */
-    margin-top: 10px;
-    font-size:small;
-}
-
-.meter-title {
-    font-size:large;
-}
-
 
 .thrusters {
     position: absolute;
@@ -263,18 +210,20 @@ body {
     bottom: -8px;
 }
 
-.fire1, .fire2 {
+.fire1,
+.fire2 {
     animation: fireAnimation 0.09s infinite linear;
 
 }
 
 
-.thrusters .fire1{
+.thrusters .fire1 {
     position: relative;
     left: -55px;
     bottom: 20px;
 }
-.thrusters .fire2{
+
+.thrusters .fire2 {
     position: relative;
     left: 55px;
     bottom: 20px;
@@ -286,21 +235,25 @@ body {
         transform: translateY(calc(60px * var(--scale-factor) * 1)) scale(var(--scale-factor)) rotate(0deg);
         color: #ad4200;
     }
+
     25% {
         opacity: 1;
         transform: translateY(calc(60px * var(--scale-factor) * 1.2)) scale(calc(var(--scale-factor) * 1.05)) rotate(0deg);
         color: #de5500;
     }
+
     50% {
         opacity: 1;
         transform: translateY(calc(60px * var(--scale-factor) * 1.5)) scale(calc(var(--scale-factor) * 1.1)) rotate(0deg);
         color: #ff6200;
     }
+
     75% {
         opacity: 1;
         transform: translateY(calc(60px * var(--scale-factor) * 2)) scale(calc(var(--scale-factor) * 1.2)) rotate(0deg);
         color: #ff924e;
     }
+
     100% {
         opacity: 1;
         transform: translateY(calc(60px * var(--scale-factor) * 2.7)) scale(calc(var(--scale-factor) * 1.1)) rotate(0deg);
@@ -311,22 +264,26 @@ body {
 
 .shield {
     position: absolute;
-    color: rgba(
-        calc(255 - var(--shield-power) * 25.5),  /* Red component */
-        calc(255 - var(--shield-power) * 25.5),  /* Green component */
-        calc(255 + var(--shield-power) * 15),     /* Blue component */
-        calc(0.1 + var(--shield-power) * 0.05)
-    );
+    color: rgba(calc(255 - var(--shield-power) * 25.5),
+            /* Red component */
+            calc(255 - var(--shield-power) * 25.5),
+            /* Green component */
+            calc(255 + var(--shield-power) * 15),
+            /* Blue component */
+            calc(0.1 + var(--shield-power) * 0.05));
     animation: shieldAnimation 3s infinite linear;
 }
 
 
 @keyframes shieldAnimation {
-    0%, 100% {
-        opacity: calc(var(--shield-health) * 0.005); /* Initial and final opacity */
+
+    0%,
+    100% {
+        opacity: calc(var(--shield-health) * 0.005);
     }
+
     50% {
-        opacity: calc(var(--shield-health) * 0.007); /* Higher opacity for flickering effect */
+        opacity: calc(var(--shield-health) * 0.007);
     }
 }
 
@@ -347,51 +304,167 @@ body {
     flex-direction: column;
     gap: 10px;
     text-align: center;
-    transform: translate(-50%); /* Add this line */
-    font-size:x-large;
+    transform: translate(-50%);
+    font-size: x-large;
+    z-index: 2;
+    font-style: italic;
 }
 
 #notificationBox2 {
     position: absolute;
-    top: calc(5% + var(--status-height));
+    top: 400px;
     padding: 10px;
     color: white;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    text-align: center;
+    text-align: right;
     width: 21%;
-    right: 0%;
-    z-index: 1; 
-    background-color:black;
-    font-size:large;
+    right: 3%;
+    z-index: 1;
+    background-color: black;
+    font-size: large;
+    font-style: italic;
 }
 
-.notification {
-    opacity: 0;
-    animation: fadeInOut 7s ease-out; /* Adjust the animation duration as needed */
+
+#comms-box {
+    position: absolute;
+    bottom: 10%;
+    padding: 10px;
+    padding-top: 50px; /* Adjust this value to create enough space for the label */
+    color: white;
+    border: 1px solid white;
+    border-radius: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    width: 21%;
+    height: 20%;
+    left: 1%;
+    z-index: 1;
+    background-color: black;
+    font-size: large;
+    overflow: hidden;
+    align-items: flex-start;
 }
 
-@keyframes fadeInOut {
-    0%, 100% {
+.comms-name {
+    float: left;
+    font-weight:900;
+    font-style: normal;
+}
+
+
+.comms-message {
+    display: block;
+    animation: fadeIn 1s, fadeOutComms 15s;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
+    white-space: pre-wrap; /* Make the message wrap */
+    overflow: hidden;
+    margin-top: 5px;
+    z-index: 2;
+    font-size: 0.7vw;
+    font-style: italic;
+
+}
+
+
+@keyframes typeOut {
+    0% {
+        width: 0;
         opacity: 0;
     }
-    10%, 90% {
+    10% {
+        opacity: 0.2;
+    }
+    90% {
+        opacity: 0.2;
+    }
+    100% {
+        width: 100%;
         opacity: 1;
     }
 }
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+
+
+
+
+
+@keyframes fadeOutComms {
+    0%, 93.33% { /* Adjust this percentage to delay the start of the fade-out */
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    0% {
+        visibility: hidden;
+        opacity: 0;
+    }
+    100% {
+        visibility: visible;
+        opacity: 1;
+    }
 }
 
-.ship{
+.comms-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: black;
+    color: white;
+    padding: 10px;
+    z-index: 3;
+    font-size: large;
+}
+
+
+.notification {
+    opacity: 0;
+    animation: fadeInOut 7s ease-out;
+}
+
+@keyframes fadeInOut {
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    10%,
+    90% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.ship {
     font-family: monospace;
     white-space: pre-wrap;
     font-weight: bold;
@@ -400,9 +473,23 @@ body {
 }
 
 @keyframes explode {
-    0% { transform: scale(1); opacity: 1; color:#ffd8c0 }
-    50% { transform: scale(1.5); opacity: 1; color:#fc5522 }
-    100% { transform: scale(2); opacity: 0; color:#ad4200}
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        color: #ffd8c0
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
+        color: #fc5522
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+        color: #ad4200
+    }
 }
 
 .explode {
@@ -418,28 +505,30 @@ body::before {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background-color: #000; /* Set your desired background color */
+    background-color: #000;
     overflow: hidden;
 }
 
 
 @keyframes moveDown {
     0% {
-        transform: translateY(-100vh); /* Start from the top of the viewport */
+        transform: translateY(calc(var(--speed) * -1px));
     }
+
     100% {
-        transform: translateY(100vh); /* Move down to the bottom of the viewport */
+        transform: translateY(100vh);
     }
 }
+
 
 
 .stars {
     position: absolute;
     width: 1px;
     height: 1px;
-    background-color: #fff; /* Set your desired star color */
-    animation: moveDown 10s linear infinite, twinkle 4s infinite alternate; /* Adjust duration values as needed */
-    animation-fill-mode: forwards; /* Add this line */
+    background-color: #fff;
+    animation: moveDown 10s linear infinite, twinkle 4s infinite alternate;
+    animation-fill-mode: forwards;
     animation-play-state: running;
 }
 
@@ -448,11 +537,12 @@ body::before {
     0% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.7;
     }
+
     100% {
         opacity: 1;
     }
 }
-

@@ -25,6 +25,9 @@ var elapsedTime = shieldRegenInterval / 1000;
 var regenerationAmount = regenerationSpeed * elapsedTime;
 var flyingTowardEnemy = false;
 
+let starSpawnInterval;
+const stars = []; // Store references to the created stars
+let starCounter = 0; // Counter to track the number of stars created
 
 
 var gameOver = false;
@@ -64,18 +67,19 @@ const level2button = document.getElementById('level2button');
 const startLevelButton = document.getElementById('startLevel');
 const notificationBox1 = document.getElementById('notificationBox1');
 const notificationBox2 = document.getElementById('notificationBox2');
-
+const commsBox = document.getElementById('comms-box');
 
 const shipElement = document.querySelector('.ship');
 const shieldElement = document.querySelector('.shield');
 const thrustersElement = document.querySelector('.thrusters');
 const enemyVisualElement = document.getElementById('enemyVisual');
 
+
 //#endregion
 
 //#region Buttons and Controls
-document.addEventListener('keydown', function(event) {
-    switch(event.key) {
+document.addEventListener('keydown', function (event) {
+    switch (event.key) {
         case 'o':
             increaseEngineButton.click();
             break;
@@ -102,29 +106,31 @@ document.addEventListener('keydown', function(event) {
 
 
 
-increaseEngineButton.onclick = function() {
-    if(availablePower > 0){
+increaseEngineButton.onclick = function () {
+    if (availablePower > 0) {
         enginePower = increase(enginePower, 1, "engine");
         updateStarSpeed(enginePower + 0.1);
+        showCommsMessage("Engineer", " We're going to need more power to catch up to the enemy. Try increasing engine power to maximum levels!", "orange");
         document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
     }
 };
 
-increaseWeaponButton.onclick = function() {
-    if(availablePower > 0){
+increaseWeaponButton.onclick = function () {
+    if (availablePower > 0) {
+        showCommsMessage("Weapons Specialist", " Not quite as long of a line.");
         weaponPower = increase(weaponPower, 1, "weapon");
     }
 };
 
-increaseShieldButton.onclick = function() {
-    if(availablePower > 0){
+increaseShieldButton.onclick = function () {
+    if (availablePower > 0) {
         shieldPower = increase(shieldPower, 1, "shield");
         document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
     }
 };
 
 decreaseEngineButton.onclick = function () {
-    if(availablePower <= maxAvailablePower){
+    if (availablePower <= maxAvailablePower) {
         enginePower = decrease(enginePower, 1, "engine");
         updateStarSpeed(enginePower + 0.1);
         document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
@@ -132,24 +138,24 @@ decreaseEngineButton.onclick = function () {
 };
 
 decreaseWeaponButton.onclick = function () {
-    if(availablePower <= maxAvailablePower){
+    if (availablePower <= maxAvailablePower) {
         weaponPower = decrease(weaponPower, 1, "weapon");
     }
 };
 
 decreaseShieldButton.onclick = function () {
-    if(availablePower <= maxAvailablePower){
+    if (availablePower <= maxAvailablePower) {
         shieldPower = decrease(shieldPower, 1, "shield");
         document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
     }
 };
 
-flyTowardEnemyButton.onclick = function() {
+flyTowardEnemyButton.onclick = function () {
     flyingTowardEnemy = true;
     showNotification("Flying toward the enemy!", "neutral");
 };
 
-flyAwayEnemyButton.onclick = function() {
+flyAwayEnemyButton.onclick = function () {
     flyingTowardEnemy = false;
     showNotification("Flying away from the enemy!", "neutral");
 };
@@ -157,11 +163,7 @@ flyAwayEnemyButton.onclick = function() {
 //#endregion
 
 
-//Start game
-//Start game
-let starSpawnInterval;
-const stars = []; // Store references to the created stars
-let starCounter = 0; // Counter to track the number of stars created
+
 
 
 function startDivertGame() {
@@ -175,7 +177,7 @@ function startDivertGame() {
     document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
 
     starSpawnInterval = setInterval(() => {
-        if (starCounter < 150) {
+        if (starCounter < 250) {
             createStar(enginePower + 0.1);
             starCounter++;
         } else {
@@ -194,7 +196,7 @@ function createStar(speed) {
     star.style.left = `${xPos}px`;
     star.style.top = `${yPos}px`;
 
-    const size = Math.random() + 1;
+    const size = Math.random() + 0.5;
 
     star.style.width = size + 'px';
     star.style.height = size + 'px';
@@ -248,7 +250,7 @@ function updateStarSpeed(enginePower) {
 
 
 //Update all meters
-function updateAllMeters(){
+function updateAllMeters() {
 
     if (gameOver) {
         return;
@@ -272,12 +274,12 @@ function runLevel(level) {
 }
 
 //Start the selected level
-function startLevel(level){
-    if(level == 1){
+function startLevel(level) {
+    if (level == 1) {
         spawnEnemy(20, 20, "laser", 6000, 20);
-        
+
     }
-    else if(level == 2){
+    else if (level == 2) {
         spawnEnemy(30, 30, "plasma", 6000);
     }
 
@@ -286,28 +288,28 @@ function startLevel(level){
 
 
 //Increase a meter by amount
-function increase(increasingMeter, amount, meterType){
+function increase(increasingMeter, amount, meterType) {
 
     if (gameOver) {
         return;
     }
 
-    var maxPower; 
-    if(meterType == "available"){
+    var maxPower;
+    if (meterType == "available") {
         maxPower = 20;
     }
-    else if(meterType == "engine" || meterType == "weapon" || meterType == "shield"){
+    else if (meterType == "engine" || meterType == "weapon" || meterType == "shield") {
         maxPower = 10;
     }
-    else if(meterType == "shieldHealth" || meterType == "hullHealth"){
+    else if (meterType == "shieldHealth" || meterType == "hullHealth") {
         maxPower = 100;
     }
 
 
-    if((increasingMeter + amount) <= maxPower){
+    if ((increasingMeter + amount) <= maxPower) {
         increasingMeter = increasingMeter + amount;
         updateMeter(increasingMeter, meterType);
-        if(meterType == "engine" || meterType == "weapon" || meterType == "shield"){
+        if (meterType == "engine" || meterType == "weapon" || meterType == "shield") {
             availablePower = decrease(availablePower, 1, "available");
         }
     }
@@ -325,10 +327,10 @@ function decrease(decreasingMeter, amount, meterType) {
     if (decreasingMeter - amount >= 0) {
         decreasingMeter = decreasingMeter - amount;
         updateMeter(decreasingMeter, meterType);
-        if(meterType == "engine" || meterType == "weapon" || meterType == "shield"){
+        if (meterType == "engine" || meterType == "weapon" || meterType == "shield") {
             availablePower = increase(availablePower, 1, "available");
         }
-        
+
     }
     return decreasingMeter;
 }
@@ -349,7 +351,7 @@ function regenerateShield() {
 
                 // Update shieldHealth
                 shieldHealth = increase(shieldHealth, Math.min(maxShieldHealth - shieldHealth, regenerationAmount), "shieldHealth");
-    
+
                 // Wait for a bit before updating the meter
                 await new Promise(resolve => setTimeout(resolve, 100)); // Adjust the delay as needed
                 updateMeter(shieldHealth, "shieldHealth");
@@ -359,24 +361,24 @@ function regenerateShield() {
                 setTimeout(async () => {
                     // Reset shieldHealth to starting value
                     shieldHealth = increase(shieldHealth, Math.min(maxShieldHealth - shieldHealth, regenerationAmount), "shieldHealth");
-                    
+
                     // Wait for a bit before updating the meter
                     await new Promise(resolve => setTimeout(resolve, 100)); // Adjust the delay as needed
                     updateMeter(shieldHealth, "shieldHealth");
-                    
+
                     // Enable normal regeneration
                     isRegenerating = true;
                 }, regenDelay); // Delay in milliseconds // if shieldPower is 10, it should take 5 seconds to recharge. If shieldPower is 5, it should take 10 seconds to recharge. if shieldPower is 1, it should take 50 seconds to recharge. If shieldPower is 0, it should not recharge.
-            } 
+            }
         }
     }, shieldRegenInterval);
 }
 
 //Run core-temperature
-function initializeCoreTemperature(){
+function initializeCoreTemperature() {
     setInterval(() => {
         updateCoreTemperature();
-    }, 500); 
+    }, 500);
     checkCoreTemperature();
 }
 function updateCoreTemperature() {
@@ -411,7 +413,7 @@ function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate, 
     updateMeter(enemyHullHealth, "enemyHullHealth");
 
     let damageInterval = setInterval(() => {
-        if(enemyHullHealth > 0 && !gameOver){
+        if (enemyHullHealth > 0 && !gameOver) {
             damage(damageType, damageAmount);
         } else {
             clearInterval(damageInterval);
@@ -419,7 +421,7 @@ function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damageRate, 
     }, damageRate);
 
     let attackInterval = setInterval(() => {
-        if(enemyHullHealth > 0 && !gameOver){
+        if (enemyHullHealth > 0 && !gameOver) {
             attack("laser", weaponPower);
         } else {
             clearInterval(attackInterval);
@@ -491,7 +493,7 @@ function calculateDistanceModifier() {
     // Assuming a linear relationship between distance and damage
     const distanceRange = maxDistance - minDistance;
     distanceModifier = 1 - ((enemyDistance - minDistance) / distanceRange);
-    
+
     // Ensure the modifier is within bounds (0 to 1)
     return Math.max(0, Math.min(distanceModifier, 1));
 }
@@ -522,21 +524,21 @@ function damage(damageType, amount) {
             damage = Math.round((amount - (0.8 * shieldPower - 0.3 * enginePower)) * distanceModifier);
         }
     }
-    else if (damageType === "missile"){
+    else if (damageType === "missile") {
         damageMessage = "missile";
-        if(shieldHealth <= 0){
+        if (shieldHealth <= 0) {
             damage = Math.round((amount - 0.8 * enginePower) * distanceModifier);
         }
-        else if(shieldHealth > 0){
+        else if (shieldHealth > 0) {
             damage = Math.round((amount - (0.3 * shieldPower - 0.8 * enginePower)) * distanceModifier);
         }
     }
-    else if (damageType === "railgun"){
+    else if (damageType === "railgun") {
         damageMessage = "railgun shot";
-        if(shieldHealth <= 0){
+        if (shieldHealth <= 0) {
             damage = Math.round((amount - 0.5 * enginePower) * distanceModifier);
         }
-        else if(shieldHealth > 0){
+        else if (shieldHealth > 0) {
             damage = Math.round((amount - (0.5 * shieldPower - 0.5 * enginePower)) * distanceModifier);
         }
     }
@@ -544,8 +546,8 @@ function damage(damageType, amount) {
 
     //Damaging the ship
     showNotification(`The enemy has fired a ${damageMessage} of <b>${amount}</b> strength!`, "enemy", 2);
-    setTimeout(function() {
-    document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
+    setTimeout(function () {
+        document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
 
         if (damage > 0) {
             if (shieldHealth > 0) {
@@ -563,7 +565,7 @@ function damage(damageType, amount) {
                     showNotification(`Your hull took <b>${damage}</b> points of damage.`, "enemy");
                 }
             }
-        } else if (damage <= 0) {   
+        } else if (damage <= 0) {
             showNotification("You avoided all damage!", "enemy");
         }
     }, 1500);
@@ -585,18 +587,18 @@ function attack(attackType, amount) {
         attackMessage = "plasma projectile";
         attack = Math.round((amount + 0.3 * weaponPower) * distanceModifier);
     }
-    else if (attackType === "missile"){
+    else if (attackType === "missile") {
         attackMessage = "missile";
         attack = Math.round((amount + 0.8 * weaponPower) * distanceModifier);
     }
-    else if (attackType === "railgun"){
+    else if (attackType === "railgun") {
         attackMessage = "railgun shot";
         attack = Math.round((amount + 0.5 * weaponPower) * distanceModifier);
     }
+    if (amount > 0) {
+        showNotification(`You have fired a ${attackMessage} of <b>${amount}</b> strength!`, "player");
 
-    showNotification(`You have fired a ${attackMessage} of <b>${amount}</b> strength!`, "player");
-    setTimeout(function() {
-        if (attack > 0) {
+        setTimeout(function () {
             if (enemyShieldHealth > 0) {
                 if (attack >= enemyShieldHealth) {
                     attack = enemyShieldHealth;
@@ -615,11 +617,18 @@ function attack(attackType, amount) {
                     showNotification(`The enemy's hull took <b>${attack}</b> points of damage.`, "player", 2);
                 }
             }
-        } else if (attack <= 0) {
-            showNotification("All damage was avoided by the enemy!", "enemy", 2);
-        }
-    }, 1500);
+            else if (attack <= 0) {
+                showNotification("All damage was avoided by the enemy!", "enemy", 2);
+            }
+        }, 1500);
+
+    }
+    else if (amount <= 0) {
+        showNotification("Your weapons didn't fire!", "enemy", 1);
+    }
+
 }
+
 
 //Check core temperature for overheating
 function checkCoreTemperature() {
@@ -635,19 +644,19 @@ function checkCoreTemperature() {
                 showNotification("The ship has overheated!", "neutral");
                 death();
             }
-        } else if (overheatingTime >= 1000){
+        } else if (overheatingTime >= 1000) {
             console.log('overheatingTime decreased');
             overheatingTime -= 1000; // Decrease overheating time if temperature is below threshold
         }
 
-        if(overheatingTime == 0){
+        if (overheatingTime == 0) {
             temperatureElement.style.color = "white";
         }
-        if(overheatingTime > 0 && overheatingTime < 5000){
+        if (overheatingTime > 0 && overheatingTime < 5000) {
             showNotification("WARNING: Core temperature above operating limits!", "neutral");
             temperatureElement.style.color = "orange";
         }
-        else if(overheatingTime >= 5000){
+        else if (overheatingTime >= 5000) {
             showNotification("WARNING: Core temperature has been above maximum level for too long, explosion imminent!", "enemy");
             temperatureElement.style.color = "red";
         }
@@ -671,11 +680,11 @@ function scaleEnemySize() {
 
 
 
- 
+
 
 function calculateEnemyDistance() {
     const distanceChangeRate = 5; // Adjust the rate at which the enemyDistance changes
-    
+
 
     if (flyingTowardEnemy) {
         // Decrease enemyDistance when flying toward the enemy
@@ -706,7 +715,7 @@ function endGame() {
 
 
 //Player ship destruction
-function death(){
+function death() {
     showNotification("Your ship has been destroyed!", "enemy");
     hullHealth = 0;
     shieldHealth = 0;
@@ -725,7 +734,7 @@ function showNotification(message, type = 'neutral', box = 1) {
     if (gameOver) {
         return;
     }
-    
+
     const notification = document.createElement('div');
     notification.classList.add('notification');
     notification.innerHTML = message;
@@ -743,13 +752,13 @@ function showNotification(message, type = 'neutral', box = 1) {
             break;
     }
 
-    if(box == 1){
+    if (box == 1) {
         notificationBox1.prepend(notification);
     }
-    else{
+    else {
         notificationBox2.prepend(notification);
     }
-    
+
 
     // Remove the notification after 7 seconds
     setTimeout(() => {
@@ -757,8 +766,97 @@ function showNotification(message, type = 'neutral', box = 1) {
     }, 7000);
 }
 
+// Full console log:
+// console.log("Message count: " + messageCount);
+// console.log("Line count" + lines);
+// console.log("Message length" + message.length);
+
+//Display a new comms message
+const maxLines = 4; // Adjust this value to set the maximum number of lines
+const maxCharsPerLine = 35; // Adjust this value to set the maximum number of characters per line
+
+function showCommsMessage(name, message, color) {
+    // Create a new message element
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('comms-message');
+
+    // Initialize the content of the message element to an empty string
+    messageElement.textContent = '';
+
+    // Create a new name element
+    const nameElement = document.createElement('span');
+    nameElement.classList.add('comms-name');
+    nameElement.textContent = `${name}: `;
+    nameElement.style.color = color; // Set the color of the name element
+
+    // Prepend the name element to the message element
+    messageElement.prepend(nameElement);
+
+    // Prepend the message element to the comms-box
+    commsBox.prepend(messageElement);
+
+    // Calculate the number of lines the message will take up
+    const lines = Math.ceil(message.length / maxCharsPerLine);
+    messageElement.dataset.lines = lines; // Store the number of lines in a data attribute
+
+    // Create a typing effect
+    let i = 0;
+    const typingEffect = setInterval(() => {
+        if (i < message.length) {
+            messageElement.textContent += message.charAt(i);
+            console.log("Message during loop: " + messageElement.textContent);
+
+            i++;
+        } else {
+            console.log("Message before loop ends: " + messageElement.textContent);
+
+            clearInterval(typingEffect);
+        }
+    }, 25); // Adjust the speed of typing here
+
+    console.log("Message after loop: " + messageElement.textContent);
+    
+    // Set a timeout to remove the message after 15 seconds
+    setTimeout(() => {
+        // Check if the message is still in the commsBox
+        if (commsBox.contains(messageElement)) {
+            // Remove the message element
+            messageElement.remove();
+            // Subtract the number of lines in the removed message from the totalLines
+            totalLines -= lines;
+        }
+    }, 15000);
+
+    // Update the total number of lines in the commsBox
+    let totalLines = Array.from(commsBox.getElementsByClassName('comms-message'))
+        .reduce((total, message) => total + Number(message.dataset.lines), 0);
+
+    // If the maximum number of lines is reached, remove the oldest messages
+    while (totalLines > maxLines) {
+        // Get all the message elements
+        const messages = commsBox.getElementsByClassName('comms-message');
+        // If there are no messages, exit the loop
+        if (messages.length === 0) break;
+        // Subtract the number of lines in the oldest message from the total
+        totalLines -= Number(messages[messages.length - 1].dataset.lines);
+        // Remove the oldest message
+        messages[messages.length - 1].remove();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 //Reset the game
-function resetGame(){
+function resetGame() {
     availablePower = 20;
     enginePower = 0;
     weaponPower = 0;
@@ -784,6 +882,6 @@ function resetGame(){
 // Usage example:
 showNotification('Notification box initialized.');
 
-    
+
 startDivertGame();
 
