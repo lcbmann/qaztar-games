@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="divertstyles.css" rel="stylesheet">
     <script defer src="divert.js"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -23,6 +22,7 @@
             color: white;
             font-family: monospace;
             margin: 0;
+            overflow: hidden; /* Hide overflow to prevent scroll bars */
         }
 
         .title {
@@ -36,7 +36,7 @@
             border: 1px solid #555;
             padding: 20px;
             margin: 10px;
-            width: 300px;
+            max-width: 300px; /* Changed width to max-width */
             text-align: center;
             font-size: 16px;
         }
@@ -53,6 +53,17 @@
             to {
                 opacity: 0.3;
             }
+        }
+
+        /* Added style for back button */
+        .back-button {
+            background-color: #1f1f1f;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px; /* Adjusted margin */
         }
     </style>
     <title>Inventory</title>
@@ -76,6 +87,9 @@
         <p id="shieldName">None</p>
     </div>
 
+    <!-- Back button -->
+    <button class="back-button" onclick="goToLevelSelector()">Back to Level Selector</button>
+
     <script>
         // Example JavaScript to dynamically update inventory
         function updateInventory(itemType, itemName) {
@@ -89,6 +103,28 @@
         updateInventory('currentWeapon', 'Laser Blaster');
         updateInventory('currentEngine', 'Hyperdrive');
         updateInventory('currentShield', 'Titanium Shield');
+
+        function goToLevelSelector() {
+            // Redirect to the level selector page
+            window.location.href = 'divertlevelselector.html';
+        }
+
+        const numStars = 300;
+        for (let i = 0; i < numStars; i++) {
+            createStar();
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'stars';
+            const xPos = Math.random() * window.innerWidth;
+            const yPos = Math.random() * window.innerHeight;
+            const duration = Math.random() * 5 + 0.5;
+            star.style.left = `${xPos}px`;
+            star.style.top = `${yPos}px`;
+            star.style.animationDuration = `${duration}s`;
+            document.body.appendChild(star);
+        }
     </script>
 
     <div class="stars"></div>

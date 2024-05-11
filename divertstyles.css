@@ -67,28 +67,28 @@ body {
 
 .status {
     width: 25%;
-    height: 15%;
+    height: 18%;
     top: 3%;
     left: 1%;
 }
 
 .reactorControls {
     width: 15%;
-    height: 35%;
-    top: 20%;
+    height: 40%;
+    top: 23%;
     left: 1%;
 }
 
 .flightControls {
     width: 15%;
     height: 12%;
-    top: 57%;
+    top: 64%;
     left: 1%;
 }
 
 #coreTemperature,
 #enemyDistance {
-    font-size: x-large;
+    font-size: large;
     font-style: bold;
     margin-top: 5px;
 }
@@ -110,14 +110,14 @@ body {
 
 .enemies {
     width: 25%;
-    height: 18.5%;
+    height: 23%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-end;
     position: absolute;
     top: 3%;
-    right: 1%;
+    right: 2%;
     z-index: 1;
     background-color: black;
     overflow: hidden;
@@ -133,7 +133,7 @@ body {
 
 .enemy-meter-label,
 .meter-label {
-    margin-top: 5px;
+    margin-top: 6px;
     font-size: small;
 }
 
@@ -152,8 +152,8 @@ body {
     position: absolute;
     background-color: black;
     z-index: 4;
-    top: 50vh; /* Change top to 50% of the viewport height */
-    right: 0%;
+    top: 40%; 
+    right: 2%;
 }
 
 .enemy-visual-label {
@@ -171,9 +171,8 @@ body {
     margin-top: 30px;
 }
 
-.btn,
-#level1button,
-#level2button,
+
+.levelbutton,
 #continueButton {
     font-family: monospace;
     font-size: 14px;
@@ -185,6 +184,21 @@ body {
     color: #ccc;
     border: none;
     border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn{
+    font-family: monospace;
+    font-size: 12px;
+    font-style: bolder;
+    padding: 6px 12px;
+    margin-right: 2px;
+    margin-top: 6px;
+    background-color: #222;
+    color: #ccc;
+    border: none;
+    border-radius: 2px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
 }
@@ -212,12 +226,12 @@ body {
 .meter {
     /* Your meter styles */
     font-size:small;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .meter-label {
     /* Your meter styles */
-    margin-top: 10px;
+    margin-top: 6px;
     font-size:small;
 }
 
@@ -346,8 +360,8 @@ body {
     flex-direction: column;
     gap: 10px;
     text-align: right;
-    width: 21%;
-    right: 0%;
+    width: 18%;
+    right: 2%;
     z-index: 4; 
     background-color:black;
     font-size:large;
@@ -356,7 +370,7 @@ body {
 
 #comms-box {
     position: absolute;
-    bottom: 10%;
+    bottom: 4%;
     padding: 10px;
     padding-top: 50px; /* Adjust this value to create enough space for the label */
     color: white;
@@ -367,7 +381,7 @@ body {
     gap: 10px;
     text-align: left;
     width: 21%;
-    height: 20%;
+    height: 18%;
     left: 1%;
     z-index: 1;
     background-color: black;
@@ -392,7 +406,7 @@ body {
     overflow: hidden;
     margin-top: 5px;
     z-index: 2;
-    font-size: 0.7vw;
+    font-size: 0.75vw;
     font-style: italic;
 
 }

@@ -45,16 +45,24 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             background-color: black;
             color: white;
             font-family: monospace;
             margin: 0;
+            height: 100vh;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 50px; /* Adjusted margin */
+            margin-bottom: 20px; /* Adjusted margin */
         }
 
         .level-selector {
             text-align: center;
-            margin-top: 50px;
+            margin-top: 20px; /* Adjusted margin */
         }
 
         .level-selector h2 {
@@ -65,41 +73,51 @@
             list-style: none;
             padding: 0;
             margin: 0;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping */
+            justify-content: center; /* Center horizontally */
         }
 
         .level-selector li {
-            margin-bottom: 10px;
+            margin: 10px; /* Adjusted margin */
+            flex-basis: 20%; /* Each button takes up 20% of the container width */
         }
 
         .level-selector button {
             background-color: #1f1f1f;
             color: white;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 30px;
+            font-size: 18px;
             border: none;
             cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: monospace; /* Consistent font */
+            width: 100%; /* Make sure buttons fill their container */
         }
 
-        button#startLevel {
-            position: absolute;
-            top: 300px;
+        .level-selector button:hover {
+            background-color: #333; /* Darken on hover */
+        }
+
+        .button-container {
+            margin-top: 20px; /* Adjusted margin */
+            display: flex;
+            gap: 20px;
+        }
+
+        .button-container button {
             background-color: #1f1f1f;
             color: white;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 30px;
+            font-size: 18px;
             border: none;
             cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: monospace; /* Consistent font */
         }
 
-        .container {
-            /* Your existing container styles */
-        }
-
-        .title {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 10%;
-            margin-top: 10%;
+        .button-container button:hover {
+            background-color: #333; /* Darken on hover */
         }
     </style>
 
@@ -111,22 +129,30 @@
     <div class="level-selector">
         <h2>Select a Level</h2>
         <ul>
-            <li><button id="tutorialbutton" onclick="runLevel(0)">Tutorial</button></li>
-            <li><button id="level1button" onclick="runLevel(1)">Level 1</button></li>
-            <li><button id="level2button" onclick="runLevel(2)">Level 2</button></li>
+            <li><button class="levelbutton" id="tutorialbutton" onclick="runLevel(0)">Tutorial</button></li>
+            <li><button class="levelbutton" id="level1button" onclick="runLevel(1)">Level 1</button></li>
+            <li><button class="levelbutton" id="level2button" onclick="runLevel(2)">Level 2</button></li>
+            <li><button class="levelbutton" id="level3button" onclick="runLevel(3)">Level 3</button></li>
+            <li><button class="levelbutton" id="level4button" onclick="runLevel(4)">Level 4</button></li>
+            <li><button class="levelbutton" id="level5button" onclick="runLevel(5)">Level 5</button></li>
+            <li><button class="levelbutton" id="level6button" onclick="runLevel(6)">Level 6</button></li>
+            <li><button class="levelbutton" id="level7button" onclick="runLevel(7)">Level 7</button></li>
+            <li><button class="levelbutton" id="level8button" onclick="runLevel(8)">Level 8</button></li>
+            <li><button class="levelbutton" id="level9button" onclick="runLevel(9)">Level 9</button></li>
             <!-- Add more level buttons as needed -->
         </ul>
     </div>
 
-    
+    <div class="button-container">
+        <button onclick="location.href='divertinventory.html'">Go to Inventory</button>
+        <button onclick="location.href='divertshop.html'">Go to Shop</button>
+    </div>
 
     <div class="container">
         <!-- Your existing content -->
     </div>
 
     <script>
-    
-
         const numStars = 300;
 
         for (let i = 0; i < numStars; i++) {

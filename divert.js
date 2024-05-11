@@ -28,7 +28,7 @@ var flyingTowardEnemy = false;
 let starSpawnInterval;
 const stars = []; // Store references to the created stars
 let starCounter = 0; // Counter to track the number of stars created
-var playerCredits; 
+var playerCredits = 10; 
 
 
 
@@ -72,7 +72,7 @@ const level2button = document.getElementById('level2button');
 const startLevelButton = document.getElementById('startLevel');
 const notificationBox1 = document.getElementById('notificationBox1');
 const notificationBox2 = document.getElementById('notificationBox2');
-const commsBox = document.getElementById('comms-box');
+const commsBoxElement = document.getElementById('comms-box');
 
 const shipElement = document.querySelector('.ship');
 const shieldElement = document.querySelector('.shield');
@@ -86,6 +86,8 @@ const reactorControlsElement = document.getElementById('reactorControls');
 const flightControlsElement = document.getElementById('flightControls');
 const continueButtonElement = document.getElementById('continueButton');
 continueButtonElement.style.display = 'none';
+const creditsDisplay = document.getElementById('creditsAmount');
+
 
 
 //#endregion
@@ -134,14 +136,12 @@ increaseEngineButton.onclick = function () {
     if (availablePower > 0) {
         enginePower = increase(enginePower, 1, "engine");
         updateStarSpeed(enginePower + 0.1);
-        showCommsMessage("Engineer", " We're going to need more power to catch up to the enemy. Try increasing engine power to maximum levels!", "orange");
         document.documentElement.style.setProperty('--scale-factor', (enginePower / 10.5).toString());
     }
 };
 
 increaseWeaponButton.onclick = function () {
     if (availablePower > 0) {
-        showCommsMessage("Weapons Specialist", " Not quite as long of a line.");
         weaponPower = increase(weaponPower, 1, "weapon");
     }
 };
@@ -176,7 +176,6 @@ decreaseShieldButton.onclick = function () {
 
 flyTowardEnemyButton.onclick = function () {
     flyingTowardEnemy = true;
-    showNotification("Flying toward the enemy!", "neutral");
 };
 
 flyAwayEnemyButton.onclick = function () {
@@ -298,7 +297,7 @@ function runLevel(level) {
 }
 
 //Start the selected level
-function startLevel(level){
+async function startLevel(level){
     continueButtonElement.style.display = 'none';
     if(level == 0){
         maxTemperature = 10000;
@@ -307,7 +306,9 @@ function startLevel(level){
     else if(level == 1){
         maxTemperature = 1000;
         spawnEnemy(20, 20, "laser", 6000, 20);
-
+        showCommsMessage("Command", "Enemy ship detected! Destroy it before it escapes!", "white");
+        await delay(2000);
+        showCommsMessage("Hostile", "You can't stop us! We will escape!", "red");
     }
     else if(level == 2){
         maxTemperature = 1000;
@@ -329,6 +330,7 @@ async function runTutorial() {
     reactorControlsElement.style.display = 'none';
     flightControlsElement.style.display = 'none';
     enemyVisualElement.style.display = 'none';
+    commsBoxElement.style.display = 'none';
     continueButtonElement.style.display = '';
 
     showNotification("Welcome to the tutorial! Click Continue or press Enter to continue.", "neutral", 1, 10000);
@@ -336,75 +338,83 @@ async function runTutorial() {
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("Piloting your spaceship requires knowledge of its systems. Let's walk through those now.", "neutral", 1, 5000);
+    showNotification("Piloting your spaceship requires knowledge of its systems. Let's walk through those now.", "neutral", 1, 9000);
 
-    await delay(6000);
-    showNotification("Here is your ship.", "neutral", 1, 2000);
+    await delay(9000);
+    showNotification("Here is your ship.", "neutral", 1, 4000);
     playAreaElement.style.display = '';
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("You can keep track of your ship's shields and health here.", "neutral", 1, 5000);
+    showNotification("You can keep track of your ship's shields and health here.", "neutral", 1, 7000);
     statusElement.style.display = '';
 
-    await delay(6000);
+    await delay(7000);
     showNotification("Be aware: shields can recharge, but health is gone for good until you return to base.");
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
     
-    showNotification("Your primary job is to divert power between the three primary systems: Engines, Weapons, and Shields.", "neutral", 1, 5000);
+    showNotification("Your primary job is to divert power between the three primary systems: Engines, Weapons, and Shields.", "neutral", 1, 7000);
     reactorControlsElement.style.display = '';
 
 
-    await delay(6000);
-    showNotification("You can adjust your ship's power levels here. Each system has a maximum power level, and when you run out of Available Power, you can't increase them further.", "neutral", 1, 6000);
+    await delay(7000);
+    showNotification("You can adjust your ship's power levels here. Each system has a maximum power level, and when you run out of Available Power, you can't increase them further.", "neutral", 1, 8000);
+
+    await delay(8000);
+    showNotification("You also must keep track of the reactor Core Temperature. If it gets too high for too long, the ship will explode.", "neutral", 1, 7000);
 
     await delay(7000);
-    showNotification("You also must keep track of the reactor Core Temperature. If it gets too high for too long, the ship will explode.", "neutral", 1, 5000);
-
-    await delay(6000);
-    showNotification("Try adjusting the power to each system by clicking the + and - buttons. To continue, increase the Weapon Power to 1.", "neutral", 1, 8000);
+    showNotification("Try adjusting the power to each system by clicking the + and - buttons. To continue, increase the Weapon Power to 1.", "neutral", 1, 10000);
 
     await waitForButtonClick(increaseWeaponButton);
 
-    showNotification("You can also adjust power using the keyboard (I and O for Engines, J and K for Weapons, and N and M for Shields.)", "neutral", 1, 8000);
+    showNotification("You can also adjust power using the keyboard (I and O for Engines, J and K for Weapons, and N and M for Shields.)", "neutral", 1, 10000);
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("Here is the enemy ship. Your goal is to destroy it before it escapes.", "neutral", 1, 4000);
+    showNotification("Here is the enemy ship. Your goal is to destroy it before it escapes.", "neutral", 1, 6000);
     enemyStatusElement.style.display = '';
     enemyVisualElement.style.display = '';
 
-    await delay(5000);
+    await delay(6000);
     showNotification("You can see the enemy's shields and hull health here.");
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("You can also adjust your ship's speed by flying toward or away from the enemy.", "neutral", 1, 4000);
+    showNotification("You can also adjust your ship's speed by flying toward or away from the enemy.", "neutral", 1, 6000);
     flightControlsElement.style.display = '';
 
 
-    await delay(5000);
-    showNotification("Try flying toward the enemy by clicking the 'Fly Toward Enemy' button.");
+    await delay(6000);
+    showNotification("Try flying toward the enemy by clicking the 'Towards Enemy' button in your Flight Controls.");
     await waitForButtonClick(flyTowardEnemyButton);
-    showNotification("Flying toward the enemy will make your and their weapons more effective.", "neutral", 1, 3000);
-    await delay(4000);
+    showNotification("Flying toward the enemy will make your and their weapons more effective.", "neutral", 1, 5000);
+    await delay(5000);
     showNotification("Make sure they don't get too far away, or they'll escape!");
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     continueButtonElement.style.display = 'none';
 
-    showNotification("Status updates will appear here when they're about your ship,", "neutral", 1, 6000)
-    showNotification("and here when they're about the enemy.", "neutral", 2, 6000);
+    showNotification("Status updates will appear here when they're about your ship,", "neutral", 1, 8000)
+    showNotification("and here when they're about the enemy.", "neutral", 2, 8000);
+
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    continueButtonElement.style.display = 'none';
+
+    showNotification("You will also receive communications from your crew and other vessels in the Communications box.", "neutral", 1, 8000);
+    commsBoxElement.style.display = '';
+    showCommsMessage("Tutorial", "This is an incoming communication!", "white");
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
@@ -692,14 +702,14 @@ function damage(damageType, amount) {
                     damage = shieldHealth;
                 }
                 shieldHealth = decrease(shieldHealth, damage, "shieldHealth");
-                showNotification(`Your shields took <b>${damage}</b> points of damage.`, "enemy");
+                showNotification(`Your shields took <b>${Math.round(damage)}</b> points of damage.`, "enemy");
             } else if (shieldHealth <= 0) {
                 if (damage >= hullHealth) {
                     death();
                 }
                 else {
                     hullHealth = decrease(hullHealth, damage, "hullHealth");
-                    showNotification(`Your hull took <b>${damage}</b> points of damage.`, "enemy");
+                    showNotification(`Your hull took <b>${Math.round(damage)}</b> points of damage.`, "enemy");
                 }
             }
         } else if (damage <= 0) {
@@ -741,10 +751,10 @@ function attack(attackType, amount) {
                     attack = enemyShieldHealth;
                 }
                 enemyShieldHealth = decrease(enemyShieldHealth, attack, "enemyShieldHealth");
-                showNotification(`The enemy's shields took <b>${attack}</b> points of damage.`, "player", 2);
+                showNotification(`The enemy's shields took <b>${Math.round(attack)}</b> points of damage.`, "player", 2);
             } else if (enemyShieldHealth <= 0) {
                 if (attack >= enemyHullHealth) {
-                    showNotification("The enemy ship has been destroyed!", "player", 2);
+                    showCommsMessage("Command", "Enemy ship destroyed! Well done!", "white");
                     enemyHullHealth = 0;
                     updateMeter(enemyHullHealth, "enemyHullHealth");
                     enemyVisualElement.classList.add('explode');
@@ -752,7 +762,7 @@ function attack(attackType, amount) {
                 }
                 else {
                     enemyHullHealth = decrease(enemyHullHealth, attack, "enemyHullHealth");
-                    showNotification(`The enemy's hull took <b>${attack}</b> points of damage.`, "player", 2);
+                    showNotification(`The enemy's hull took <b>${Math.round(attack)}</b> points of damage.`, "player", 2);
                 }
             }
             else if (attack <= 0) {
@@ -844,17 +854,20 @@ function calculateEnemyDistance() {
 }
 
 //End the game
-function endGame() {
+async function endGame() {
     gameOver = true;
-    setTimeout(() => {
-        window.location.href = `divertlevelselector.html`;
-    }, 6000);
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    window.location.href = `divertlevelselector.html`;
+
+    continueButtonElement.style.display = 'none';
+
 }
 
 
 //Player ship destruction
-function death() {
-    showNotification("Your ship has been destroyed!", "enemy");
+async function death() {
+    showNotification("Your ship has been destroyed!", "enemy", 1, 20000);
     hullHealth = 0;
     shieldHealth = 0;
     updateMeter(hullHealth, "hullHealth");
@@ -863,6 +876,10 @@ function death() {
     shipElement.classList.add('explode');
     shieldElement.classList.add('explode');
     thrustersElement.classList.add('explode');
+
+
+
+
     endGame();
 }
 
@@ -897,11 +914,13 @@ function showNotification(message, type = 'neutral', box = 1, duration = 7000) {
         notificationBox2.prepend(notification);
     }
 
+    // Set the animation duration
+    notification.style.animationDuration = `${duration}ms`;
 
-    // Remove the notification after 7 seconds
+    // Remove the notification after the specified duration
     setTimeout(() => {
         notification.remove();
-    }, (duration * 1000));
+    }, duration);
 }
 
 // Full console log:
@@ -918,20 +937,21 @@ function showCommsMessage(name, message, color) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('comms-message');
 
-    // Initialize the content of the message element to an empty string
-    messageElement.textContent = '';
-
     // Create a new name element
     const nameElement = document.createElement('span');
     nameElement.classList.add('comms-name');
     nameElement.textContent = `${name}: `;
     nameElement.style.color = color; // Set the color of the name element
 
-    // Prepend the name element to the message element
-    messageElement.prepend(nameElement);
+    // Create a new text element for the message content
+    const textElement = document.createElement('span');
+    textElement.classList.add('comms-text');
+
+    // Append the name and text elements to the message element
+    messageElement.append(nameElement, textElement);
 
     // Prepend the message element to the comms-box
-    commsBox.prepend(messageElement);
+    commsBoxElement.prepend(messageElement);
 
     // Calculate the number of lines the message will take up
     const lines = Math.ceil(message.length / maxCharsPerLine);
@@ -941,23 +961,20 @@ function showCommsMessage(name, message, color) {
     let i = 0;
     const typingEffect = setInterval(() => {
         if (i < message.length) {
-            messageElement.textContent += message.charAt(i);
-            console.log("Message during loop: " + messageElement.textContent);
-
+            textElement.textContent += message.charAt(i);
             i++;
         } else {
-            console.log("Message before loop ends: " + messageElement.textContent);
-
             clearInterval(typingEffect);
         }
     }, 25); // Adjust the speed of typing here
+
 
     console.log("Message after loop: " + messageElement.textContent);
     
     // Set a timeout to remove the message after 15 seconds
     setTimeout(() => {
         // Check if the message is still in the commsBox
-        if (commsBox.contains(messageElement)) {
+        if (commsBoxElement.contains(messageElement)) {
             // Remove the message element
             messageElement.remove();
             // Subtract the number of lines in the removed message from the totalLines
@@ -966,13 +983,13 @@ function showCommsMessage(name, message, color) {
     }, 15000);
 
     // Update the total number of lines in the commsBox
-    let totalLines = Array.from(commsBox.getElementsByClassName('comms-message'))
+    let totalLines = Array.from(commsBoxElement.getElementsByClassName('comms-message'))
         .reduce((total, message) => total + Number(message.dataset.lines), 0);
 
     // If the maximum number of lines is reached, remove the oldest messages
     while (totalLines > maxLines) {
         // Get all the message elements
-        const messages = commsBox.getElementsByClassName('comms-message');
+        const messages = commsBoxElement.getElementsByClassName('comms-message');
         // If there are no messages, exit the loop
         if (messages.length === 0) break;
         // Subtract the number of lines in the oldest message from the total
@@ -980,6 +997,10 @@ function showCommsMessage(name, message, color) {
         // Remove the oldest message
         messages[messages.length - 1].remove();
     }
+}
+
+function updateCreditsDisplay() {
+    creditsDisplay.textContent = playerCredits; // Make sure this variable is defined in your linked JS file
 }
 
 

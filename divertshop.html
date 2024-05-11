@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="divertstyles.css" rel="stylesheet">
+    
     <script defer src="divert.js"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -12,18 +12,19 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
-
     <style>
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1% 4.5%;
+            padding: 0; /* Adjusted padding */
+            margin: 0; /* Adjusted margin */
             background-color: black;
             color: white;
             font-family: monospace;
-            margin: 0;
+            height: 100vh;
+            overflow: hidden; /* Hide overflow to remove scrolling bars */
         }
 
         .title {
@@ -85,6 +86,17 @@
                 opacity: 0.3;
             }
         }
+
+        /* Added style for back button */
+        .back-button {
+            background-color: #1f1f1f;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px; /* Adjusted margin */
+        }
     </style>
     <title>Shop</title>
 </head>
@@ -125,7 +137,18 @@
         </div>
     </div>
 
+    <!-- Back button -->
+    <button class="back-button" onclick="goToLevelSelector()">Back to Level Selector</button>
+
     <script>
+        // Assuming 'playerCredits' is a global variable updated elsewhere
+        
+
+        function goToLevelSelector() {
+            // Redirect to the level selector page
+            window.location.href = 'divertlevelselector.html';
+        }
+
         const numStars = 300;
         for (let i = 0; i < numStars; i++) {
             createStar();
@@ -142,14 +165,6 @@
             star.style.animationDuration = `${duration}s`;
             document.body.appendChild(star);
         }
-
-        // Assuming 'playerCredits' is a global variable updated elsewhere
-        function updateCreditsDisplay() {
-            const creditsDisplay = document.getElementById('creditsAmount');
-            creditsDisplay.textContent = playerCredits; // Make sure this variable is defined in your linked JS file
-        }
-
-        updateCreditsDisplay();
     </script>
 </body>
 </html>
