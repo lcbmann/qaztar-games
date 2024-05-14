@@ -306,7 +306,7 @@ async function startLevel(level){
     else if(level == 1){
         maxTemperature = 1000;
         spawnEnemy(20, 20, "laser", 6000, 20);
-        showCommsMessage("Command", "Enemy ship detected! Destroy it before it escapes!", "white");
+        showCommsMessage("Command", "Enemy ship detected! Destroy it before it escapes!", "blue");
         await delay(2000);
         showCommsMessage("Hostile", "You can't stop us! We will escape!", "red");
     }

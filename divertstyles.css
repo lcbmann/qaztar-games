@@ -352,7 +352,7 @@ body {
 
 #notificationBox2 {
     position: absolute;
-    top: 400px;
+    top: 60%;
     padding: 10px;
     color: white;
     border-radius: 5px;
