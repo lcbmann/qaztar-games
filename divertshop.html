@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <script defer src="divert.js"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -141,8 +140,13 @@
     <button class="back-button" onclick="goToLevelSelector()">Back to Level Selector</button>
 
     <script>
-        // Assuming 'playerCredits' is a global variable updated elsewhere
-        
+        //Update the current credits
+        function updateCreditsDisplay() {
+            console.log("Credits: " + playerCredits);
+            document.getElementById("creditsAmount").textContent = playerCredits;
+    
+        }
+
 
         function goToLevelSelector() {
             // Redirect to the level selector page
@@ -165,6 +169,10 @@
             star.style.animationDuration = `${duration}s`;
             document.body.appendChild(star);
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            updateCreditsDisplay();
+        });
     </script>
 </body>
 </html>

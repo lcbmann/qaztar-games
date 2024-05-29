@@ -28,7 +28,7 @@ var flyingTowardEnemy = false;
 let starSpawnInterval;
 const stars = []; // Store references to the created stars
 let starCounter = 0; // Counter to track the number of stars created
-var playerCredits = 10; 
+window.playerCredits = 10; 
 
 
 
@@ -87,6 +87,11 @@ const flightControlsElement = document.getElementById('flightControls');
 const continueButtonElement = document.getElementById('continueButton');
 continueButtonElement.style.display = 'none';
 const creditsDisplay = document.getElementById('creditsAmount');
+
+const inventoryButtonElement = document.getElementById('inventorybutton');
+const shopButtonElement = document.getElementById('shopbutton');
+
+
 
 
 
@@ -182,6 +187,8 @@ flyAwayEnemyButton.onclick = function () {
     flyingTowardEnemy = false;
     showNotification("Flying away from the enemy!", "neutral");
 };
+
+
 
 //#endregion
 
@@ -817,7 +824,7 @@ function updateEnemyDistance() {
     scaleEnemySize();
 }
 
-
+//Scale the size of the enemy ship visual
 function scaleEnemySize() {
     const startingSize = 120; // Adjust the starting font size as needed
     const minSize = 10; // Minimum font size when enemyDistance is maxDistance
@@ -829,7 +836,7 @@ function scaleEnemySize() {
 
 
 
-
+//Calculate the current distance to the enemy
 function calculateEnemyDistance() {
     const distanceChangeRate = 5; // Adjust the rate at which the enemyDistance changes
 
@@ -932,6 +939,7 @@ function showNotification(message, type = 'neutral', box = 1, duration = 7000) {
 const maxLines = 4; // Adjust this value to set the maximum number of lines
 const maxCharsPerLine = 35; // Adjust this value to set the maximum number of characters per line
 
+//Display a comms message
 function showCommsMessage(name, message, color) {
     // Create a new message element
     const messageElement = document.createElement('div');
@@ -998,17 +1006,6 @@ function showCommsMessage(name, message, color) {
         messages[messages.length - 1].remove();
     }
 }
-
-function updateCreditsDisplay() {
-    creditsDisplay.textContent = playerCredits; // Make sure this variable is defined in your linked JS file
-}
-
-
-
-
-
-
-
 
 
 

@@ -87,6 +87,10 @@
         <p id="shieldName">None</p>
     </div>
 
+    <div class="credits-display" id="playerCreditsDisplay">
+        Credits: <span id="creditsAmount">0</span>
+    </div>
+
     <!-- Back button -->
     <button class="back-button" onclick="goToLevelSelector()">Back to Level Selector</button>
 
@@ -103,6 +107,12 @@
         updateInventory('currentWeapon', 'Laser Blaster');
         updateInventory('currentEngine', 'Hyperdrive');
         updateInventory('currentShield', 'Titanium Shield');
+
+        function updateCreditsDisplay() {
+            console.log("Credits: " + playerCredits);
+            document.getElementById("creditsAmount").textContent = playerCredits;
+    
+        }
 
         function goToLevelSelector() {
             // Redirect to the level selector page
@@ -125,6 +135,10 @@
             star.style.animationDuration = `${duration}s`;
             document.body.appendChild(star);
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            updateCreditsDisplay();
+        });
     </script>
 
     <div class="stars"></div>
