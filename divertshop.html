@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="divert.js"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -13,89 +12,89 @@
     <meta name="theme-color" content="#ffffff">
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0; /* Adjusted padding */
-            margin: 0; /* Adjusted margin */
-            background-color: black;
-            color: white;
-            font-family: monospace;
-            height: 100vh;
-            overflow: hidden; /* Hide overflow to remove scrolling bars */
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Adjusted padding */
+    margin: 0; /* Adjusted margin */
+    background-color: black;
+    color: white;
+    font-family: monospace;
+    height: 100vh;
+    overflow: hidden; /* Hide overflow to remove scrolling bars */
+}
 
-        .title {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 20px;
-        }
+.title {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 20px;
+}
 
-        .item-selectors {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
+.item-selectors {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
 
-        .item-selector {
-            text-align: center;
-            margin: 10px;
-            flex: 1;
-        }
+.item-selector {
+    text-align: center;
+    margin: 10px;
+    flex: 1;
+}
 
-        .item-selector h2 {
-            margin-bottom: 20px;
-        }
+.item-selector h2 {
+    margin-bottom: 20px;
+}
 
-        .item-selector ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+.item-selector ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
-        .item-selector li {
-            margin-bottom: 10px;
-        }
+.item-selector li {
+    margin-bottom: 10px;
+}
 
-        .item-selector button {
-            background-color: #1f1f1f;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-        }
+.item-selector button {
+    background-color: #1f1f1f;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
 
-        .credits-display {
-            font-size: 24px;
-            margin: 20px;
-        }
+.credits-display {
+    font-size: 24px;
+    margin: 20px;
+}
 
-        .stars {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            background-color: #fff;
-            animation: twinkle 1s infinite alternate;
-        }
+.stars {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background-color: #fff;
+    animation: twinkle 1s infinite alternate;
+}
 
-        @keyframes twinkle {
-            to {
-                opacity: 0.3;
-            }
-        }
+@keyframes twinkle {
+    to {
+        opacity: 0.3;
+    }
+}
 
-        /* Added style for back button */
-        .back-button {
-            background-color: #1f1f1f;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px; /* Adjusted margin */
-        }
+/* Added style for back button */
+.back-button {
+    background-color: #1f1f1f;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px; /* Adjusted margin */
+}
     </style>
     <title>Shop</title>
 </head>
@@ -111,66 +110,38 @@
         <div class="item-selector">
             <h2>Select an Engine</h2>
             <ul>
-                <li><button id="engine1button">Engine 1</button></li>
-                <li><button id="engine2button">Engine 2</button></li>
-                <li><button id="engine3button">Engine 3</button></li>
+                <li><button onclick="purchaseItem('Engine 1', 50, 'Engines', { speedMultiplier: 1.1, dodgeMultiplier: 1.1 })">Engine 1 - 50 Credits</button></li>
+                <li><button onclick="purchaseItem('Engine 2', 100, 'Engines', { speedMultiplier: 1.3, dodgeMultiplier: 1.2 })">Engine 2 - 100 Credits</button></li>
+                <li><button onclick="purchaseItem('Engine 3', 150, 'Engines', { speedMultiplier: 1.5, dodgeMultiplier: 1.3 })">Engine 3 - 150 Credits</button></li>
             </ul>
         </div>
-
+    
         <div class="item-selector">
             <h2>Select a Weapon</h2>
             <ul>
-                <li><button id="weapon1button">Weapon 1</button></li>
-                <li><button id="weapon2button">Weapon 2</button></li>
-                <li><button id="weapon3button">Weapon 3</button></li>
+                <li><button onclick="purchaseItem('Weapon 1', 75, 'Weapons', { damageMultiplier: 1.2 })">Weapon 1 - 75 Credits</button></li>
+                <li><button onclick="purchaseItem('Weapon 2', 125, 'Weapons', { damageMultiplier: 1.5 })">Weapon 2 - 125 Credits</button></li>
+                <li><button onclick="purchaseItem('Weapon 3', 200, 'Weapons', { damageMultiplier: 2.0 })">Weapon 3 - 200 Credits</button></li>
             </ul>
         </div>
-
+    
         <div class="item-selector">
             <h2>Select a Shield</h2>
             <ul>
-                <li><button id="shield1button">Shield 1</button></li>
-                <li><button id="shield2button">Shield 2</button></li>
-                <li><button id="shield3button">Shield 3</button></li>
+                <li><button onclick="purchaseItem('Shield 1', 60, 'Shields', { shieldHealth: 20, regenSpeedMultiplier: 1.1 })">Shield 1 - 60 Credits</button></li>
+                <li><button onclick="purchaseItem('Shield 2', 110, 'Shields', { shieldHealth: 30, regenSpeedMultiplier: 1.3 })">Shield 2 - 110 Credits</button></li>
+                <li><button onclick="purchaseItem('Shield 3', 170, 'Shields', { shieldHealth: 50, regenSpeedMultiplier: 1.5 })">Shield 3 - 170 Credits</button></li>
             </ul>
         </div>
     </div>
+    
 
     <!-- Back button -->
     <button class="back-button" onclick="goToLevelSelector()">Back to Level Selector</button>
 
     <script>
-        //Update the current credits
-        function updateCreditsDisplay() {
-            console.log("Credits: " + playerCredits);
-            document.getElementById("creditsAmount").textContent = playerCredits;
-    
-        }
-
-
-        function goToLevelSelector() {
-            // Redirect to the level selector page
-            window.location.href = 'divertlevelselector.html';
-        }
-
-        const numStars = 300;
-        for (let i = 0; i < numStars; i++) {
-            createStar();
-        }
-
-        function createStar() {
-            const star = document.createElement('div');
-            star.className = 'stars';
-            const xPos = Math.random() * window.innerWidth;
-            const yPos = Math.random() * window.innerHeight;
-            const duration = Math.random() * 5 + 0.5;
-            star.style.left = `${xPos}px`;
-            star.style.top = `${yPos}px`;
-            star.style.animationDuration = `${duration}s`;
-            document.body.appendChild(star);
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
+            initializeGameData();
             updateCreditsDisplay();
         });
     </script>

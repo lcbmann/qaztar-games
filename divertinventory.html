@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="divert.js"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -65,6 +64,16 @@
             cursor: pointer;
             margin-top: 20px; /* Adjusted margin */
         }
+
+        .reset-button {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px; /* Adjusted margin */
+        }
     </style>
     <title>Inventory</title>
 </head>
@@ -72,14 +81,15 @@
 <body>
     <div class="title">Current Inventory</div>
 
-    <div class="inventory-item" id="currentWeapon">
-        <h2>Weapon Installed</h2>
-        <p id="weaponName">None</p>
-    </div>
-
+    <!-- Engine section moved to the top -->
     <div class="inventory-item" id="currentEngine">
         <h2>Engine Installed</h2>
         <p id="engineName">None</p>
+    </div>
+
+    <div class="inventory-item" id="currentWeapon">
+        <h2>Weapon Installed</h2>
+        <p id="weaponName">None</p>
     </div>
 
     <div class="inventory-item" id="currentShield">
@@ -94,53 +104,15 @@
     <!-- Back button -->
     <button class="back-button" onclick="goToLevelSelector()">Back to Level Selector</button>
 
+    <!-- Reset button for testing -->
+    <button class="reset-button" onclick="resetGameData()">Reset Game</button>
+
     <script>
-        // Example JavaScript to dynamically update inventory
-        function updateInventory(itemType, itemName) {
-            const element = document.getElementById(itemType);
-            if (element) {
-                element.querySelector('p').textContent = itemName;
-            }
-        }
-
-        // Simulating inventory updates
-        updateInventory('currentWeapon', 'Laser Blaster');
-        updateInventory('currentEngine', 'Hyperdrive');
-        updateInventory('currentShield', 'Titanium Shield');
-
-        function updateCreditsDisplay() {
-            console.log("Credits: " + playerCredits);
-            document.getElementById("creditsAmount").textContent = playerCredits;
-    
-        }
-
-        function goToLevelSelector() {
-            // Redirect to the level selector page
-            window.location.href = 'divertlevelselector.html';
-        }
-
-        const numStars = 300;
-        for (let i = 0; i < numStars; i++) {
-            createStar();
-        }
-
-        function createStar() {
-            const star = document.createElement('div');
-            star.className = 'stars';
-            const xPos = Math.random() * window.innerWidth;
-            const yPos = Math.random() * window.innerHeight;
-            const duration = Math.random() * 5 + 0.5;
-            star.style.left = `${xPos}px`;
-            star.style.top = `${yPos}px`;
-            star.style.animationDuration = `${duration}s`;
-            document.body.appendChild(star);
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
+            initializeGameData();
             updateCreditsDisplay();
+            displayInventory();
         });
     </script>
-
-    <div class="stars"></div>
 </body>
 </html>
