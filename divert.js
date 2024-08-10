@@ -1,16 +1,5 @@
-// Game Variables
-// Game Variables
-let availablePower = 20;
-const maxAvailablePower = 20;
-let enginePower = 0;
-let weaponPower = 0;
-let shieldPower = 0;
-let shieldHealth = 50;
-let hullHealth = 50;
-let coreTemperature = 0;
-let maxTemperature = 1000;
-
-
+// #region Game Variables
+let currentLevel = 0;
 
 let enemyCount = 0;
 let enemyShieldHealth = 20;
@@ -19,11 +8,21 @@ let enemyDistance = 100;
 const minDistance = 100;
 const maxDistance = 30000;
 
-let maxShieldHealth = 50; // This will be modified by upgrades
+let maxShieldHealth = 50; 
 let shieldRegenInterval = 500;
 let regenDelay = 8000;
 let isRegenerating = true;
 let flyingTowardEnemy = false;
+
+let availablePower = 20;
+const maxAvailablePower = 20;
+let enginePower = 0;
+let weaponPower = 0;
+let shieldPower = 0;
+let shieldHealth = maxShieldHealth;
+let hullHealth = 50;
+let coreTemperature = 0;
+let maxTemperature = 1000;
 
 let starSpawnInterval;
 const stars = []; // Store references to the created stars
@@ -31,7 +30,33 @@ let starCounter = 0; // Counter to track the number of stars created
 
 let gameOver = false;
 
-// Page Elements
+const shopItems = {
+    weapons: {
+        'Weapon 1': { cost: 75, effect: { damageMultiplier: 1.2 } },
+        'Weapon 2': { cost: 125, effect: { damageMultiplier: 1.5 } },
+        'Weapon 3': { cost: 200, effect: { damageMultiplier: 2.0 } }
+    },
+    shields: {
+        'Shield 1': { cost: 60, effect: { shieldHealth: 20, regenSpeedMultiplier: 1.1 } },
+        'Shield 2': { cost: 110, effect: { shieldHealth: 30, regenSpeedMultiplier: 1.3 } },
+        'Shield 3': { cost: 170, effect: { shieldHealth: 50, regenSpeedMultiplier: 1.5 } }
+    },
+    engines: {
+        'Engine 1': { cost: 50, effect: { speedMultiplier: 1.1, dodgeMultiplier: 1.1 } },
+        'Engine 2': { cost: 100, effect: { speedMultiplier: 1.3, dodgeMultiplier: 1.2 } },
+        'Engine 3': { cost: 150, effect: { speedMultiplier: 1.5, dodgeMultiplier: 1.3 } }
+    }
+}
+
+const levelCreditRewards = {
+    1: 100, // Level 1 awards 100 credits
+    2: 200, // Level 2 awards 200 credits
+    3: 300, // Level 3 awards 300 credits
+};
+
+//#endregion
+
+// #region Page Elements
 const availablePowerElement = document.getElementById('availablePowerID');
 const enginePowerElement = document.getElementById('enginePowerID');
 const weaponPowerElement = document.getElementById('weaponPowerID');
@@ -80,23 +105,9 @@ const creditsDisplay = document.getElementById('creditsAmount');
 const inventoryButtonElement = document.getElementById('inventorybutton');
 const shopButtonElement = document.getElementById('shopbutton');
 
-const shopItems = {
-    weapons: {
-        'Weapon 1': { cost: 75, effect: { damageMultiplier: 1.2 } },
-        'Weapon 2': { cost: 125, effect: { damageMultiplier: 1.5 } },
-        'Weapon 3': { cost: 200, effect: { damageMultiplier: 2.0 } }
-    },
-    shields: {
-        'Shield 1': { cost: 60, effect: { shieldHealth: 20, regenSpeedMultiplier: 1.1 } },
-        'Shield 2': { cost: 110, effect: { shieldHealth: 30, regenSpeedMultiplier: 1.3 } },
-        'Shield 3': { cost: 170, effect: { shieldHealth: 50, regenSpeedMultiplier: 1.5 } }
-    },
-    engines: {
-        'Engine 1': { cost: 50, effect: { speedMultiplier: 1.1, dodgeMultiplier: 1.1 } },
-        'Engine 2': { cost: 100, effect: { speedMultiplier: 1.3, dodgeMultiplier: 1.2 } },
-        'Engine 3': { cost: 150, effect: { speedMultiplier: 1.5, dodgeMultiplier: 1.3 } }
-    }
-}
+//#endregion
+
+// #region Item Management
 
 
 // Local Storage and Game Data Initialization
@@ -153,21 +164,68 @@ function purchaseItem(item, cost, category, upgradeEffect) {
     if (window.playerCredits >= cost) {
         updateCredits(-cost);
 
-        // Update inventory by category
-        if (!window.playerInventory[category]) {
-            window.playerInventory[category] = [];
-        }
-        window.playerInventory[category].push({ name: item, effect: upgradeEffect });
+        // Replace the item in the category with the new one
+        window.playerInventory[category] = [{ name: item, effect: upgradeEffect }];
 
         localStorage.setItem('playerInventory', JSON.stringify(window.playerInventory));
         console.log(`Purchased ${item}. Updated Inventory:`, window.playerInventory);
-        alert(`${item} purchased!`);
+        showNotification("Item purchased successfully!", "positive", 1, 4000);
+        // Disable or gray out the purchased item and inferior items in the shop
+        grayOutPurchasedItems();
     } else {
-        alert(`Not enough credits to purchase ${item}.`);
+        showNotification("Not enough credits to purchase this item.", "neutral", 1, 4000);
     }
 }
 
+function grayOutPurchasedItems() {
+    const categories = ['Weapons', 'Engines', 'Shields'];
 
+    // Define the hierarchy of items within each category
+    const hierarchy = {
+        Weapons: ['Weapon 1', 'Weapon 2', 'Weapon 3'],
+        Engines: ['Engine 1', 'Engine 2', 'Engine 3'],
+        Shields: ['Shield 1', 'Shield 2', 'Shield 3']
+    };
+
+    categories.forEach(category => {
+        const purchasedItemIndex = findPurchasedItemIndex(category, hierarchy[category]);
+
+        if (purchasedItemIndex !== -1) {
+            // Loop through all items in the category and gray out the inferior ones
+            hierarchy[category].forEach((itemName, index) => {
+                if (index <= purchasedItemIndex) {
+                    const button = document.querySelector(`button[onclick*="${itemName}"]`);
+                    if (button) {
+                        button.disabled = true; // Disable the button
+                        button.style.backgroundColor = '#555'; // Gray out the button
+                        button.style.cursor = 'not-allowed';
+                    }
+                }
+            });
+        }
+    });
+}
+
+function findPurchasedItemIndex(category, itemList) {
+    if (!window.playerInventory[category]) return -1;
+
+    for (let i = itemList.length - 1; i >= 0; i--) {
+        if (window.playerInventory[category].some(item => item.name === itemList[i])) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+function isItemInInventory(itemName) {
+    for (let category in window.playerInventory) {
+        if (window.playerInventory[category].some(item => item.name === itemName)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 // Function to display inventory items
 function displayInventory() {
@@ -175,22 +233,38 @@ function displayInventory() {
     const engineNameElement = document.getElementById('engineName');
     const shieldNameElement = document.getElementById('shieldName');
 
+    const weaponEffectElement = document.getElementById('weaponEffect');
+    const engineEffectElement = document.getElementById('engineEffect');
+    const shieldEffectElement = document.getElementById('shieldEffect');
+
+    // Display the currently equipped weapon
     if (window.playerInventory['Weapons'] && weaponNameElement) {
-        weaponNameElement.textContent = window.playerInventory['Weapons']
-            .map(weapon => weapon.name)
-            .join(', ');
+        const weapon = window.playerInventory['Weapons'][0];
+        weaponNameElement.textContent = weapon.name;
+        weaponEffectElement.textContent = `Damage Multiplier: x${weapon.effect.damageMultiplier}`;
+    } else {
+        weaponNameElement.textContent = 'None';
+        weaponEffectElement.textContent = 'No effects';
     }
 
+    // Display the currently equipped engine
     if (window.playerInventory['Engines'] && engineNameElement) {
-        engineNameElement.textContent = window.playerInventory['Engines']
-            .map(engine => engine.name)
-            .join(', ');
+        const engine = window.playerInventory['Engines'][0];
+        engineNameElement.textContent = engine.name;
+        engineEffectElement.textContent = `Speed Multiplier: x${engine.effect.speedMultiplier}, Dodge Multiplier: x${engine.effect.dodgeMultiplier}`;
+    } else {
+        engineNameElement.textContent = 'None';
+        engineEffectElement.textContent = 'No effects';
     }
 
+    // Display the currently equipped shield
     if (window.playerInventory['Shields'] && shieldNameElement) {
-        shieldNameElement.textContent = window.playerInventory['Shields']
-            .map(shield => shield.name)
-            .join(', ');
+        const shield = window.playerInventory['Shields'][0];
+        shieldNameElement.textContent = shield.name;
+        shieldEffectElement.textContent = `Shield Health Bonus: +${shield.effect.shieldHealth}, Regen Speed Multiplier: x${shield.effect.regenSpeedMultiplier}`;
+    } else {
+        shieldNameElement.textContent = 'None';
+        shieldEffectElement.textContent = 'No effects';
     }
 }
 
@@ -205,8 +279,9 @@ document.addEventListener('DOMContentLoaded', function() {
         inventoryButtonElement.addEventListener('click', displayInventory);
     }
 });
+//#endregion
 
-// Game Controls and Mechanics
+// #region Game Controls and Mechanics
 document.addEventListener('keydown', function (event) {
     if (continueButtonElement && event.key === 'Enter') {
         continueButtonElement.click();
@@ -289,7 +364,9 @@ flyAwayEnemyButton.onclick = function () {
     showNotification("Flying away from the enemy!", "neutral");
 };
 
+//#endregion
 
+// #region Game Initialization
 function startDivertGame() {
     updateAllMeters();
     applyUpgrades();
@@ -372,19 +449,6 @@ function updateStarSpeed(enginePower) {
     });
 }
 
-// Meter Updates
-function updateAllMeters() {
-    if (gameOver) return;
-
-    updateMeter(availablePower, "available");
-    updateMeter(enginePower, "engine");
-    updateMeter(weaponPower, "weapon");
-    updateMeter(shieldPower, "shield");
-    updateMeter(shieldHealth, "shieldHealth");
-    updateMeter(hullHealth, "hullHealth");
-    updateMeter(enemyShieldHealth, "enemyShieldHealth");
-    updateMeter(enemyHullHealth, "enemyHullHealth");
-}
 
 // Level and Tutorial Functions
 function runLevel(level) {
@@ -392,21 +456,35 @@ function runLevel(level) {
 }
 
 
+
 async function startLevel(level) {
-    applyUpgrades;
+    applyUpgrades(); // Ensure upgrades are applied before starting the level
+
+    // Set the initial shield health based on maxShieldHealth + bonus
+    shieldHealth = Math.min(maxShieldHealth + maxShieldHealthBonus, maxShieldHealth + maxShieldHealthBonus);
+    
+    // Update the shield health meter to reflect the correct starting value
+    updateMeter(shieldHealth, "shieldHealth");
+
     continueButtonElement.style.display = 'none';
+
     if (level === 0) {
-        maxTemperature = 10000;  // Reassigning value is now allowed
+        maxTemperature = 10000;  // Set the max temperature for tutorial
         runTutorial();
+        currentLevel = 0;
     } else if (level === 1) {
-        maxTemperature = 1000;  // Reassigning value is now allowed
+        maxTemperature = 1000;  // Set the max temperature for level 1
         spawnEnemy(20, 20, "laser", 6000, 20);
         showCommsMessage("Command", "Enemy ship detected! Destroy it before it escapes!", "blue");
         await delay(2000);
         showCommsMessage("Hostile", "You can't stop us! We will escape!", "red");
+        currentLevel = 1;
+
     } else if (level === 2) {
-        maxTemperature = 1000;  // Reassigning value is now allowed
+        maxTemperature = 1000;  // Set the max temperature for level 2
         spawnEnemy(30, 30, "plasma", 6000);
+        currentLevel = 2;
+
     }
 }
 
@@ -474,15 +552,12 @@ function applyUpgrades() {
     console.log("Final Damage Multiplier:", window.damageMultiplier);
 }
 
-
-
-
-
 // Call `applyUpgrades` at the start of the game or level
 applyUpgrades();
 
+//#endregion
 
-
+// #region Primary Game Functionality
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -589,7 +664,19 @@ async function runTutorial() {
     runLevel(1);
 }
 
+// Meter Updates
+function updateAllMeters() {
+    if (gameOver) return;
 
+    updateMeter(availablePower, "available");
+    updateMeter(enginePower, "engine");
+    updateMeter(weaponPower, "weapon");
+    updateMeter(shieldPower, "shield");
+    updateMeter(shieldHealth, "shieldHealth");
+    updateMeter(hullHealth, "hullHealth");
+    updateMeter(enemyShieldHealth, "enemyShieldHealth");
+    updateMeter(enemyHullHealth, "enemyHullHealth");
+}
 
 //Increase a meter by amount
 function increase(increasingMeter, amount, meterType) {
@@ -737,7 +824,7 @@ async function spawnEnemy(enemyHullHealth, enemyShieldHealth, damageType, damage
 }
 
 
-//#region Update meter visuals
+// Update meter visuals
 function updateMeter(meter, meterType) {
     const meterElements = {
         available: availablePowerElement,
@@ -752,12 +839,87 @@ function updateMeter(meter, meterType) {
         maxCoreTemperature: maxTemperatureElement
     };
 
+    const valueElements = {
+        shieldHealth: document.getElementById('shieldHealthValue'),
+        hullHealth: document.getElementById('hullHealthValue'),
+        enemyHullHealth: document.getElementById('enemyHealthValue'),
+        enemyShieldHealth: document.getElementById('enemyShieldValue')
+    };
+
     const updatingElement = meterElements[meterType];
+    const valueElement = valueElements[meterType];
+
     if (updatingElement) {
-        if (meterType == "coreTemperature") {
+        if (meterType === "coreTemperature") {
             updatingElement.textContent = `${Math.round(meter)}°C`;
         } else {
-            updateMeterText(updatingElement, meter);
+            // Ensure proportional scaling of the meter, keeping default settings intact
+            const maxMeterLength = 10; // Keep default at 10 "▄" characters
+            const scaledLength = Math.round((meter / 10) * maxMeterLength);
+            updateMeterText(updatingElement, scaledLength);
+
+            // If it's a health meter, update the numeric value as well
+            if (valueElement) {
+                valueElement.textContent = `${Math.round(meter)}`;
+            }
+        }
+    }
+}
+
+function updateMeter(meter, meterType) {
+    const meterElements = {
+        available: availablePowerElement,
+        engine: enginePowerElement,
+        weapon: weaponPowerElement,
+        shield: shieldPowerElement,
+        shieldHealth: shieldHealthElement,
+        hullHealth: hullHealthElement,
+        enemyHullHealth: enemyHealthElement,
+        enemyShieldHealth: enemyShieldElement,
+        coreTemperature: temperatureElement,
+        maxCoreTemperature: maxTemperatureElement
+    };
+
+    const valueElements = {
+        shieldHealth: document.getElementById('shieldHealthValue'),
+        hullHealth: document.getElementById('hullHealthValue'),
+        enemyHullHealth: document.getElementById('enemyHealthValue'),
+        enemyShieldHealth: document.getElementById('enemyShieldValue')
+    };
+
+    const updatingElement = meterElements[meterType];
+    const valueElement = valueElements[meterType];
+
+    if (updatingElement) {
+        if (meterType === "coreTemperature") {
+            updatingElement.textContent = `${Math.round(meter)}°C`;
+        } else {
+            let maxValue;
+            let maxMeterLength = 15; // Default max meter length in "▄" characters
+
+            // Define maximum values for scaling
+            switch (meterType) {
+                case "shieldHealth":
+                case "enemyShieldHealth":
+                    maxValue = 100; // Maximum shield health, for example
+                    break;
+                case "hullHealth":
+                case "enemyHullHealth":
+                    maxValue = 100; // Maximum hull health, for example
+                    break;
+                default:
+                    maxValue = 10; // For engine, weapon, shield power, etc.
+                    break;
+            }
+
+            // Calculate scaled meter length
+            const scaledLength = Math.round((meter / maxValue) * maxMeterLength);
+            updateMeterText(updatingElement, scaledLength);
+
+            // If it's a health meter (shield or hull), update the numeric value as well
+            if (valueElement) {
+                valueElement.textContent = `${Math.round(meter)}`;
+            }
         }
     }
 }
@@ -766,36 +928,35 @@ function updateMeterText(element, targetLength) {
     if (!element) return;
 
     const currentLength = element.textContent.length;
-    const delay = 30; // Adjust the delay between characters as needed
 
+    // Remove jitter by canceling ongoing animations
+    clearTimeout(element.updateTimeout);
+
+    // Smoothly adjust the meter length
     if (targetLength > currentLength) {
-        // If the target length is greater, add characters one by one
-        addCharacters(element, targetLength, currentLength, delay);
+        addCharacters(element, targetLength, currentLength);
     } else if (targetLength < currentLength) {
-        // If the target length is smaller, remove characters one by one
-        removeCharacters(element, targetLength, currentLength, delay);
+        removeCharacters(element, targetLength, currentLength);
     }
 }
 
-
-function addCharacters(element, targetLength, currentLength, delay) {
+function addCharacters(element, targetLength, currentLength) {
     if (currentLength < targetLength) {
         element.textContent += "▄";
-        setTimeout(() => {
-            addCharacters(element, targetLength, currentLength + 1, delay);
-        }, delay);
+        element.updateTimeout = setTimeout(() => {
+            addCharacters(element, targetLength, currentLength + 1);
+        }, 30);
     }
 }
 
-function removeCharacters(element, targetLength, currentLength, delay) {
+function removeCharacters(element, targetLength, currentLength) {
     if (currentLength > targetLength) {
         element.textContent = element.textContent.slice(0, -1);
-        setTimeout(() => {
-            removeCharacters(element, targetLength, currentLength - 1, delay);
-        }, delay);
+        element.updateTimeout = setTimeout(() => {
+            removeCharacters(element, targetLength, currentLength - 1);
+        }, 30);
     }
 }
-//#endregion
 
 //Calculate distance modifier for damage and attacks
 function calculateDistanceModifier() {
@@ -918,7 +1079,7 @@ function attack(attackType, baseAmount) {
                 showNotification(`The enemy's shields took <b>${Math.round(attack)}</b> points of damage.`, "player", 2);
             } else if (enemyShieldHealth <= 0) {
                 if (attack >= enemyHullHealth) {
-                    showCommsMessage("Command", "Enemy ship destroyed! Well done!", "white");
+                    showCommsMessage("Command", "Enemy ship destroyed! Well done!", "blue");
                     enemyHullHealth = 0;
                     updateMeter(enemyHullHealth, "enemyHullHealth");
                     enemyVisualElement.classList.add('explode');
@@ -1017,22 +1178,33 @@ function calculateEnemyDistance() {
     updateEnemyDistance();
 }
 
+//#endregion
 
-//End the game
+// #region Level Ending and Game Over
 async function endGame() {
     gameOver = true;
+    // Award credits based on the level
+    if (levelCreditRewards[currentLevel]) {
+        console.log(`Awarding ${levelCreditRewards[currentLevel]} credits for completing Level ${currentLevel}`);
+        const reward = levelCreditRewards[currentLevel];
+        updateCredits(reward);
+        await delay(2000);
+        showCommsMessage("Command", `Well done! You've earned ${reward} credits for completing Level ${currentLevel}!`, "blue");
+    }
+
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
     window.location.href = `divertlevelselector.html`;
 
     continueButtonElement.style.display = 'none';
-
 }
 
 
 //Player ship destruction
 async function death() {
     showNotification("Your ship has been destroyed!", "enemy", 1, 20000);
+    showCommsMessage("Command", "Agh, the ship's going down! Retreat!", "blue");
+
     hullHealth = 0;
     shieldHealth = 0;
     updateMeter(hullHealth, "hullHealth");
@@ -1045,10 +1217,17 @@ async function death() {
 
 
 
-    endGame();
+    gameOver = true;
+    continueButtonElement.style.display = '';
+    await waitForButtonClick(continueButtonElement);
+    window.location.href = `divertlevelselector.html`;
+
+    continueButtonElement.style.display = 'none';
 }
 
-//Display a notification
+//#endregion
+
+// #region Displaying notifications and comms messages
 function showNotification(message, type = 'neutral', box = 1, duration = 7000) {
 
     if (gameOver) {
@@ -1165,17 +1344,15 @@ function showCommsMessage(name, message, color) {
     }
 }
 
+//#endregion
 
-
-
-
-//Reset the game
+// #region Resetting the game
 function resetGame() {
     availablePower = 20;
     enginePower = 0;
     weaponPower = 0;
     shieldPower = 0;
-    shieldHealth = 50;
+    shieldHealth = maxShieldHealth;
     hullHealth = 50;
     enemyCount = 0;
     enemyShieldHealth = 20;
@@ -1208,3 +1385,4 @@ function resetGameData() {
     // Optionally, you could reload the page to refresh the display
     window.location.reload();
 }
+//#endregion

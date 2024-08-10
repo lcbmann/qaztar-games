@@ -85,16 +85,19 @@
     <div class="inventory-item" id="currentEngine">
         <h2>Engine Installed</h2>
         <p id="engineName">None</p>
+        <p id="engineEffect">No effects</p> <!-- To display engine effects -->
     </div>
 
     <div class="inventory-item" id="currentWeapon">
         <h2>Weapon Installed</h2>
         <p id="weaponName">None</p>
+        <p id="weaponEffect">No effects</p> <!-- To display weapon effects -->
     </div>
 
     <div class="inventory-item" id="currentShield">
         <h2>Shield Installed</h2>
         <p id="shieldName">None</p>
+        <p id="shieldEffect">No effects</p> <!-- To display shield effects -->
     </div>
 
     <div class="credits-display" id="playerCreditsDisplay">
@@ -113,6 +116,27 @@
             updateCreditsDisplay();
             displayInventory();
         });
+
+        const numStars = 300;
+
+        for (let i = 0; i < numStars; i++) {
+            createStar();
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'stars';
+
+            const xPos = Math.random() * window.innerWidth;
+            const yPos = Math.random() * window.innerHeight;
+            const duration = Math.random() * 5 + 0.5;
+
+            star.style.left = `${xPos}px`;
+            star.style.top = `${yPos}px`;
+            star.style.animationDuration = `${duration}s`;
+
+            document.body.appendChild(star);
+        }
     </script>
 </body>
 </html>

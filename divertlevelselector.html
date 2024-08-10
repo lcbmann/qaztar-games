@@ -119,6 +119,11 @@
         .button-container button:hover {
             background-color: #333; /* Darken on hover */
         }
+
+        .credits-display {
+    font-size: 24px;
+    margin: 20px;
+}
     </style>
 
     <title>Divert</title>
@@ -126,7 +131,6 @@
 <body>
     <div class="title">Divert</div>
     <button class="reset-button" onclick="resetGameData()">Reset Game</button>
-
 
     <div class="level-selector">
         <h2>Select a Level</h2>
@@ -150,11 +154,18 @@
         <button id="shopbutton" onclick="location.href='divertshop.html'">Go to Shop</button>
     </div>
 
-    <div class="container">
-        <!-- Your existing content -->
+    <div class="credits-display" id="playerCreditsDisplay">
+        Credits: <span id="creditsAmount">0</span>
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            initializeGameData();
+            updateCreditsDisplay();
+            displayInventory();
+        });
+
+
         const numStars = 300;
 
         for (let i = 0; i < numStars; i++) {

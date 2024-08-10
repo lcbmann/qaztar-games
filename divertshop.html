@@ -101,6 +101,7 @@
 
 <body>
     <div class="title">Shop</div>
+    <div id="notificationBox1"></div>
 
     <div class="credits-display" id="playerCreditsDisplay">
         Credits: <span id="creditsAmount">0</span>
@@ -143,7 +144,29 @@
         document.addEventListener("DOMContentLoaded", function() {
             initializeGameData();
             updateCreditsDisplay();
+            grayOutPurchasedItems();
         });
+
+        const numStars = 300;
+
+        for (let i = 0; i < numStars; i++) {
+            createStar();
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'stars';
+
+            const xPos = Math.random() * window.innerWidth;
+            const yPos = Math.random() * window.innerHeight;
+            const duration = Math.random() * 5 + 0.5;
+
+            star.style.left = `${xPos}px`;
+            star.style.top = `${yPos}px`;
+            star.style.animationDuration = `${duration}s`;
+
+            document.body.appendChild(star);
+        }
     </script>
 </body>
 </html>
