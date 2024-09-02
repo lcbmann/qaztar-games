@@ -49,9 +49,14 @@ const shopItems = {
 }
 
 const levelCreditRewards = {
-    1: 100, // Level 1 awards 100 credits
-    2: 200, // Level 2 awards 200 credits
-    3: 300, // Level 3 awards 300 credits
+    1: 100, 
+    2: 100, 
+    3: 150, 
+    4: 150,
+    5: 200,
+    6: 200,
+    7: 250,
+    8: 250
 };
 
 //#endregion
@@ -107,13 +112,38 @@ const shopButtonElement = document.getElementById('shopbutton');
 
 //#endregion
 
-// #region Item Management
+// #region Local Storage and Level Selector
 
+function lockLevels() {
+    const maxLevel = parseInt(localStorage.getItem('maxLevel')) || 0;
+
+    for (let i = 1; i <= 9; i++) {
+        const levelButton = document.getElementById(`level${i}button`);
+        if (i > maxLevel + 1) {
+            levelButton.disabled = true;
+            levelButton.style.backgroundColor = '#2f2d2d';
+        }
+    }
+}
+
+function unlockNextLevel(completedLevel) {
+    const maxLevel = parseInt(localStorage.getItem('maxLevel')) || 0;
+
+    if (completedLevel > maxLevel) {
+        localStorage.setItem('maxLevel', completedLevel);
+    }
+}
+
+function completeLevel(level) {
+    unlockNextLevel(level);
+    window.location.href = 'divertlevelselector.html';
+}
 
 // Local Storage and Game Data Initialization
 function goToLevelSelector() {
     window.location.href = 'divertlevelselector.html';
 }
+
 
 // Load player credits and inventory from localStorage, or set default values
 window.playerCredits = parseInt(localStorage.getItem('playerCredits'));
@@ -272,7 +302,7 @@ function displayInventory() {
 // Event listeners setup
 document.addEventListener('DOMContentLoaded', function() {
     initializeGameData();
-    displayInventory();
+    
 
     const inventoryButtonElement = document.getElementById('inventorybutton');
     if (inventoryButtonElement) {
@@ -474,7 +504,7 @@ async function startLevel(level) {
         currentLevel = 0;
     } else if (level === 1) {
         maxTemperature = 1000;  // Set the max temperature for level 1
-        spawnEnemy(20, 20, "laser", 6000, 20);
+        spawnEnemy(40, 40, "laser", 6000, 15);
         showCommsMessage("Command", "Enemy ship detected! Destroy it before it escapes!", "blue");
         await delay(2000);
         showCommsMessage("Hostile", "You can't stop us! We will escape!", "red");
@@ -483,10 +513,27 @@ async function startLevel(level) {
     } else if (level === 2) {
         maxTemperature = 1000;  // Set the max temperature for level 2
         spawnEnemy(30, 30, "plasma", 6000);
+        showCommsMessage("Command", "A new target has appeared on the radar, Captain. Destroy it!", "blue");
+        await delay(2500);
+        showCommsMessage("Hostile", "Conglomerate ship detected, evasive maneuvers.", "red");
         currentLevel = 2;
-
+    } else if (level === 3) {
+        maxTemperature = 1000;
+        spawnEnemy(60, 60, "laser", 5000, 15);
+        showCommsMessage("Command", "Large enemy cruiser detected, Captain. Take it down!", "blue");
+        await delay(2500);
+        showCommsMessage("Hostile", "Detecting a Conglomerate starship. Firing all weapons.", "red");
+        currentLevel = 3;
+    } else if (level === 4) {
+        maxTemperature = 800;
+        spawnEnemy(50, 50, "plasma", 5000, 20);
+        showCommsMessage("Command", "Entering a high solar energy zone Captain, keep those reactor temps low!", "blue")
+        await delay(2500);
+        showCommsMessage("Hostile", "You're in our territory now, prepare to be destroyed!", "red");
+        currentLevel = 4;
     }
 }
+
 
 function loadUpgrades() {
     window.damageMultiplier = parseFloat(localStorage.getItem('damageMultiplier')) || 1;
@@ -1194,6 +1241,7 @@ async function endGame() {
 
     continueButtonElement.style.display = '';
     await waitForButtonClick(continueButtonElement);
+    completeLevel(currentLevel);
     window.location.href = `divertlevelselector.html`;
 
     continueButtonElement.style.display = 'none';
@@ -1381,6 +1429,7 @@ function resetGameData() {
     window.playerInventory = {}; // Clear the inventory
     localStorage.setItem('playerCredits', window.playerCredits);
     localStorage.setItem('playerInventory', JSON.stringify(window.playerInventory));
+    localStorage.setItem('maxLevel', 0);
     alert("Game reset!");
     // Optionally, you could reload the page to refresh the display
     window.location.reload();

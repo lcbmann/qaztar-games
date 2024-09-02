@@ -12,8 +12,9 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
-
-    <!-- Background -->
+    <title>Divert</title>
+    
+    <!-- Background and Styles -->
     <style>
         body::before {
             content: "";
@@ -54,15 +55,15 @@
         }
 
         .title {
-            font-size: 36px;
+            font-size: 70px;
             font-weight: bold;
-            margin-top: 50px; /* Adjusted margin */
-            margin-bottom: 20px; /* Adjusted margin */
+            margin-top: 50px; 
+            margin-bottom: 20px; 
         }
 
         .level-selector {
             text-align: center;
-            margin-top: 20px; /* Adjusted margin */
+            margin-top: 20px; 
         }
 
         .level-selector h2 {
@@ -74,33 +75,38 @@
             padding: 0;
             margin: 0;
             display: flex;
-            flex-wrap: wrap; /* Allow wrapping */
-            justify-content: center; /* Center horizontally */
+            flex-wrap: wrap; 
+            justify-content: center; 
         }
 
         .level-selector li {
-            margin: 10px; /* Adjusted margin */
-            flex-basis: 20%; /* Each button takes up 20% of the container width */
+            margin: 10px; 
+            flex-basis: 20%; 
         }
 
         .level-selector button {
-            background-color: #1f1f1f;
+            background-color: #5f5d5d;
             color: white;
             padding: 15px 30px;
             font-size: 18px;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s;
-            font-family: monospace; /* Consistent font */
-            width: 100%; /* Make sure buttons fill their container */
+            font-family: monospace; 
+            width: 100%; 
         }
 
-        .level-selector button:hover {
-            background-color: #333; /* Darken on hover */
+        .level-selector button:disabled {
+            background-color: #555; /* Gray out unavailable levels */
+            cursor: not-allowed;
+        }
+
+        .level-selector button:hover:enabled {
+            background-color: #333; 
         }
 
         .button-container {
-            margin-top: 20px; /* Adjusted margin */
+            margin-top: 20px;
             display: flex;
             gap: 20px;
         }
@@ -113,20 +119,18 @@
             border: none;
             cursor: pointer;
             transition: background-color 0.3s;
-            font-family: monospace; /* Consistent font */
+            font-family: monospace; 
         }
 
         .button-container button:hover {
-            background-color: #333; /* Darken on hover */
+            background-color: #333; 
         }
 
         .credits-display {
-    font-size: 24px;
-    margin: 20px;
-}
+            font-size: 24px;
+            margin: 20px;
+        }
     </style>
-
-    <title>Divert</title>
 </head>
 <body>
     <div class="title">Divert</div>
@@ -160,11 +164,12 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            initializeGameData();
-            updateCreditsDisplay();
-            displayInventory();
-        });
+        console.log("DOM fully loaded and parsed");  // Add this log
+        initializeGameData();
+        updateCreditsDisplay();
 
+        // Lock levels based on progress
+        lockLevels();
 
         const numStars = 300;
 
@@ -186,6 +191,8 @@
 
             document.body.appendChild(star);
         }
+    });
     </script>
+
 </body>
 </html>
