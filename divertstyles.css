@@ -242,7 +242,7 @@ body {
 
 .thrusters {
     position: absolute;
-    bottom: 0;
+    bottom: 10%;
     left: 50%;
     transform: translateX(-50%);
     font-family: monospace;
@@ -260,13 +260,13 @@ body {
 .thrusters .fire1 {
     position: relative;
     left: -55px;
-    bottom: 20px;
+    bottom: 30px;
 }
 
 .thrusters .fire2 {
     position: relative;
     left: 55px;
-    bottom: 20px;
+    bottom: 30px;
 }
 
 @keyframes fireAnimation {
@@ -312,6 +312,7 @@ body {
             /* Blue component */
             calc(0.1 + var(--shield-power) * 0.05));
     animation: shieldAnimation 3s infinite linear;
+    z-index: 3;
 }
 
 
@@ -504,12 +505,14 @@ body {
 }
 
 .ship {
+    position: relative; /* Ensure the ship is positioned */
     font-family: monospace;
     white-space: pre-wrap;
     font-weight: bold;
-    background-color: black;
+    /* background-color: black; */ /* Comment out or remove this line */
     z-index: 1;
 }
+
 
 @keyframes explode {
     0% {
@@ -585,3 +588,69 @@ body::before {
         opacity: 1;
     }
 }
+.playarea, .ship, .weapons {
+    overflow: visible;
+}
+.weapons, .ship, .playarea {
+    margin: 0;
+    padding: 0;
+}
+
+
+
+.laserEffect {
+    position: absolute;
+    bottom: 0;
+    width: 3px; /* Adjust width for better visibility */
+    height: 0;
+    background-color: rgba(255, 0, 0, 0.9); /* Bright red */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.7); /* Add a glow effect */
+    /* Remove transition for instant effect */
+    /* transition: height 0.2s linear; */
+    z-index: 5; /* Ensure lasers are above other elements */
+    animation: laserFire 0.2s ease-out;
+
+}
+
+@keyframes laserFire {
+    0% {
+        height: 0;
+        opacity: 1;
+    }
+    10% {
+        height: 500px; /* Match distanceToTop */
+        opacity: 1;
+    }
+    100% {
+        height: 0;
+        opacity: 0;
+    }
+}
+
+
+
+.weapons {
+    position: absolute;
+    bottom: 55%;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 2;
+    background: none; /* Ensure no background is applied */
+    width: 0; /* Ensure no unintended width */
+    height: 0; /* Ensure no unintended height */
+}
+
+
+
+
+.leftLaser {
+    left: 50px; /* Adjust this value to align with the left side of your ship */
+}
+
+.rightLaser {
+    right: 50px; /* Adjust this value to align with the right side of your ship */
+}
+
+
+

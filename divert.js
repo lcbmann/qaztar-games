@@ -14,6 +14,20 @@ let regenDelay = 8000;
 let isRegenerating = true;
 let flyingTowardEnemy = false;
 
+let laserAnimationInterval;
+const laserFrames = [
+    '',
+    '   |\n',
+    '   |\n   |\n',
+    '   |\n   |\n   |\n',
+    '   |\n   |\n   |\n   |\n',
+    '   |\n   |\n   |\n   |\n   |\n',
+    '   |\n   |\n   |\n   |\n   |\n   |\n',
+    '   |\n   |\n   |\n   |\n   |\n   |\n   |\n',
+];
+const laserColors = ['#550000', '#aa0000', '#ff0000']; // Dark to bright red
+
+
 let availablePower = 20;
 const maxAvailablePower = 20;
 let enginePower = 0;
@@ -354,6 +368,8 @@ increaseEngineButton.onclick = function () {
 increaseWeaponButton.onclick = function () {
     if (availablePower > 0) {
         weaponPower = increase(weaponPower, 1, "weapon");
+        updateWeaponAnimation();
+
     }
 };
 
@@ -375,6 +391,7 @@ decreaseEngineButton.onclick = function () {
 decreaseWeaponButton.onclick = function () {
     if (availablePower <= maxAvailablePower) {
         weaponPower = decrease(weaponPower, 1, "weapon");
+        updateWeaponAnimation();
     }
 };
 
@@ -401,12 +418,14 @@ function startDivertGame() {
     updateAllMeters();
     applyUpgrades();
     regenerateShield();
+    updateWeaponAnimation();
     initializeCoreTemperature();
     setInterval(calculateEnemyDistance, 100);
     gameOver = false;
     document.documentElement.style.setProperty('--scale-factor', enginePower.toString());
     document.documentElement.style.setProperty('--shield-health', shieldHealth.toString());
     document.documentElement.style.setProperty('--shield-power', shieldPower.toString());
+
 
     starSpawnInterval = setInterval(() => {
         if (starCounter < 250) {
@@ -417,6 +436,74 @@ function startDivertGame() {
         }
     }, 50);
 }
+
+function updateWeaponAnimation() {
+    const laserEffectElements = document.querySelectorAll('.laserEffect');
+    if (laserEffectElements.length === 0) return;
+
+    // Clear existing interval if any
+    if (laserAnimationInterval) {
+        clearInterval(laserAnimationInterval);
+    }
+
+    if (weaponPower > 0) {
+        const maxWeaponPower = 10;
+        const minFiringInterval = 200; // Fastest firing rate in ms
+        const maxFiringInterval = 1000; // Slowest firing rate in ms
+
+        // Calculate firing interval based on weaponPower
+        let firingInterval = maxFiringInterval - ((weaponPower / maxWeaponPower) * (maxFiringInterval - minFiringInterval));
+
+        laserAnimationInterval = setInterval(() => {
+            laserEffectElements.forEach(laserEffectElement => {
+                animateLaser(laserEffectElement);
+            });
+        }, firingInterval);
+    } else {
+        // Weapon power is zero, ensure laser is not visible and clear interval
+        laserEffectElements.forEach(laserEffectElement => {
+            laserEffectElement.style.height = '0';
+            laserEffectElement.style.backgroundColor = 'transparent';
+        });
+        if (laserAnimationInterval) {
+            clearInterval(laserAnimationInterval);
+        }
+    }
+}
+
+
+
+function animateLaser(laserEffectElement) {
+    const shipRect = shipElement.getBoundingClientRect();
+    const distanceToTop = 1000;
+
+    laserEffectElement.style.animation = 'none';
+    void laserEffectElement.offsetWidth; // Trigger reflow
+    laserEffectElement.style.animation = 'laserFire 0.2s ease-out';
+
+    // Reset the height and trigger reflow
+    laserEffectElement.style.height = '0';
+    laserEffectElement.offsetHeight; // Trigger reflow
+
+    // Set the laser height dynamically (increase this value for longer lasers)
+    const laserLength = Math.max(100, distanceToTop - shipRect.bottom);
+    laserEffectElement.style.height = `${laserLength}px`;
+
+    // Adjust the transition duration for faster laser animations
+    const minTransitionDuration = 0.05; // Faster duration
+    const maxTransitionDuration = 0.15;  // Snappier duration
+    const transitionDuration = maxTransitionDuration - ((weaponPower / 10) * (maxTransitionDuration - minTransitionDuration));
+    laserEffectElement.style.transitionDuration = `${transitionDuration}s`;
+
+    // After firing, retract the laser quickly
+    setTimeout(() => {
+        laserEffectElement.style.height = '0';
+    }, 50); // Adjust timing for retraction
+}
+
+
+
+
 
 // Star Creation and Animation
 function createStar(speed) {
