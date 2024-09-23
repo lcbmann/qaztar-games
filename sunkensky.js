@@ -106,6 +106,7 @@ function startGame() {
 
 
 // Function to update the location display
+// Function to update the location display
 function updateLocationDisplay() {
     const locationElement = document.getElementById('location');
     locationElement.innerHTML = ''; // Clear previous content
@@ -119,6 +120,11 @@ function updateLocationDisplay() {
         }
         locElement.onclick = () => switchLocation(loc);
         locationElement.appendChild(locElement);
+    });
+
+    // Trigger fade-in effect after appending the content
+    requestAnimationFrame(() => {
+        locationElement.classList.add('visible'); // Apply visible class for fade-in
     });
 }
 
@@ -828,7 +834,7 @@ function startMaxStaminaDecay() {
             if (gameState.maxStamina < 50) gameState.maxStamina = 50; // Ensure it doesn’t go below 50
             updateStaminaBar();
         }
-    }, 30000); // Decrease every 2 minutes
+    }, 60000); // Decrease every 1 minutes
 }
 
 

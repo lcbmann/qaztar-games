@@ -26,19 +26,29 @@ body {
 }
 
 #location {
-    font-size: 24px;
+    font-size: 20px; /* Slightly smaller */
     text-align: center;
     margin-bottom: 20px;
+    opacity: 0; /* Start hidden */
+    visibility: hidden; /* Start hidden */
+    transition: opacity 1s ease-in, visibility 1s ease-in; /* Fade-in transition */
+}
+
+#location.visible {
+    opacity: 1; /* Make visible */
+    visibility: visible;
 }
 
 .location-name {
     margin: 0 10px;
     cursor: pointer;
+    transition: color 1s ease-in; /* Smooth transition for underline and color */
 }
 
 .current-location {
     text-decoration: underline;
     font-weight: bold;
+    color: var(--text-color);
 }
 
 #game-content {
