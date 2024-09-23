@@ -1,0 +1,205 @@
+/* Define CSS variables for dynamic theming */
+:root {
+    --background-color: #000000;
+    --text-color: #ffffff;
+    --button-background-color: transparent;
+    --button-border-color: currentColor;
+    --button-text-color: currentColor;
+    --box-border-color: currentColor;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    transition: background-color 1s, color 1s;
+}
+
+/* Layout adjustments */
+#game-container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px;
+    position: relative;
+}
+
+#location {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.location-name {
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.current-location {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+#game-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+#messages-container {
+    width: 30%;
+}
+
+#game-area {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+}
+
+#messages {
+    position: relative;
+    width: 100%;
+}
+
+.message {
+    position: absolute;
+    width: 100%;
+    margin-bottom: 10px;
+    opacity: 0;
+    transition: top 0.3s, opacity 2s ease-in;
+}
+
+#stamina-bar {
+    margin-top: 20px;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease-in, visibility 1s ease-in;
+}
+
+#stamina-bar.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.stamina-container {
+    width: 150px;
+    height: 10px;
+    border: 1px solid var(--text-color);
+    background-color: transparent;
+    margin: 0 auto;
+}
+
+.stamina-fill {
+    height: 100%;
+    background-color: gray;
+}
+
+#actions-container {
+    width: 40%;
+    text-align: center;
+}
+
+#actions {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Action button container */
+.action-button-container {
+    margin-bottom: 10px;
+    opacity: 0; /* Start with opacity 0 */
+    visibility: hidden; /* Hide initially */
+    transition: opacity 1s ease-in-out, visibility 1s ease-in-out, color 1s, background-color 1s, border-color 1s;
+}
+
+/* Visible state for the action button container */
+.action-button-container.visible {
+    opacity: 1;
+    visibility: visible; /* Fade in and become visible */
+}
+
+/* Fade-in effect for buttons */
+.action-button-container button {
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    opacity: 0; /* Start hidden */
+    transform: translateY(20px); /* Initial position below */
+}
+
+.action-button-container.visible button {
+    opacity: 1; /* Fade in the button */
+    transform: translateY(0); /* Move to the final position */
+}
+
+
+.action-button-container button {
+    position: relative;
+    font-size: 1em;
+    font-family: 'Times New Roman', Times, serif;
+    padding: 10px 20px;
+    color: var(--button-text-color);
+    background-color: var(--button-background-color);
+    border: 1px solid var(--button-border-color);
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.3s, color 1s, border-color 1s;
+}
+
+.action-button-container button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.action-button-container .cost {
+    font-size: 0.9em;
+    color: var(--text-color);
+    margin-top: 5px;
+    transition: color 1s;
+}
+
+.cooldown-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: rgba(128, 128, 128, 0.5);
+    width: 0%;
+    opacity: 0;
+    pointer-events: none;
+    transition: width linear;
+}
+
+#inventory-container {
+    width: 30%;
+    text-align: right;
+}
+
+#inventory,
+#storage {
+    margin: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease-in, visibility 1s ease-in;
+}
+
+#inventory.visible,
+#storage.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.box {
+    border: 1px solid var(--box-border-color);
+    padding: 10px;
+    margin: 10px;
+    transition: border-color 1s;
+}
+
+#inventory p,
+#storage p {
+    margin: 5px 0;
+    color: var(--text-color);
+    transition: color 1s;
+}

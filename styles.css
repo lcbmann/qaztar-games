@@ -223,3 +223,22 @@ body {
     40% { opacity: 0; }
     100% { opacity: 1; }
 }
+
+/* Add this to your sunkenskystyles.css */
+#actions {
+    margin-top: 20px;
+}
+
+.action-button-container {
+    margin-bottom: 10px;
+}
+
+.action-button-container button {
+    font-size: 1em;
+    padding: 10px 20px;
+}
+
+.action-button-container .cost {
+    font-size: 0.9em;
+    color: #666;
+}
