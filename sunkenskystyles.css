@@ -92,6 +92,7 @@ body {
     visibility: visible;
 }
 
+
 .stamina-container {
     width: 150px;
     height: 10px;
@@ -181,6 +182,7 @@ body {
     transition: width linear;
 }
 
+
 #inventory-container {
     width: 30%;
     text-align: right;
@@ -212,4 +214,16 @@ body {
     margin: 5px 0;
     color: var(--text-color);
     transition: color 1s;
+}
+
+#nets-display {
+    margin-top: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease-in, visibility 1s ease-in;
+}
+
+#nets-display.visible {
+    opacity: 1;
+    visibility: visible;
 }
