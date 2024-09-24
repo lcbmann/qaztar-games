@@ -9,15 +9,15 @@ const costs = {
         rope: 10, // Fixed rope cost for rain barrel
     },
     raft: {
-        wood: 100, // Fixed wood cost for raft
-        rope: 50,  // Fixed rope cost for raft
+        wood: 20, // Fixed wood cost for raft
+        rope: 5,  // Fixed rope cost for raft
     },
     debrisNet: {
-        baseRope: 20, // Base rope cost for the first debris net
+        baseRope: 15, // Base rope cost for the first debris net
         additionalCostPerNet: 10, // Additional rope cost for subsequent nets
     },
     storageUpgrade: {
-        baseWood: 50, // Base wood cost for the first storage upgrade
+        baseWood: 25, // Base wood cost for the first storage upgrade
         additionalCostPerUpgrade: 50, // Additional wood cost for each storage upgrade
     }
 };
@@ -37,7 +37,7 @@ let gameState = {
     baseMaxInventory: 10, // Base max items player can carry
     maxInventory: 10, // Current max inventory, increases with buckets
     scavengeAttempts: 0, // Number of times scavenged
-    maxScavengeAttempts: 40, // Max scavenge attempts
+    maxScavengeAttempts: 25, // Max scavenge attempts
     inventoryVisible: false, // Inventory visibility flag
     storageVisible: false, // Storage visibility flag
     stamina: 30, // Player's starting stamina (out of 50)
@@ -49,17 +49,20 @@ let gameState = {
     netsCrafted: 0,
     netOptionAvailable: false,
     raftCrafted: false,
+    raftPrompted: false,
     storageUpgrades: 0,
+    storagePrompted: false,
     firstScavengeTime: null, // Time when player first scavenged
     thirstInterval: null, // Interval for decreasing stamina over time
     lightningInterval: null, // Interval for lightning effect
+    headacheActive: true,
 };
 
 const weatherOptions = ['windy', 'cloudy', 'rainy', 'stormy'];
 let currentWeatherIndex = 0;
 
 // Timed events
-let headacheInterval;
+let headacheInterval = null;
 let bucketHintTimeout;
 let rainBarrelHintTimeout;
 
@@ -101,11 +104,11 @@ const actions = {
         cooldown: 60, // Collect water every 60 seconds
         execute: collectWaterAction,
     },
-    'Craft debris net' : {
+    'Craft debris net': {
         cooldown: 0,
         execute: craftDebrisNetAction,
     },
-    'Upgrade storage' : {
+    'Upgrade storage': {
         cooldown: 0,
         execute: upgradeStorageAction,
     },
@@ -113,14 +116,19 @@ const actions = {
         cooldown: 10, // Add a cooldown if desired
         execute: scavengeAtSeaAction, // Define the action here
     },
+    'Craft raft': { // Ensure this is included
+        cooldown: 0,
+        execute: craftRaftAction,
+    },
 };
+
 
 // Initialize the game
 function startGame() {
     updateLocationDisplay();
     startWeatherCycle();
     updateStylesBasedOnWeather();
-    scheduleHeadacheMessage();
+    startHeadacheMessage();
     startStaminaRegeneration();
     startMaxStaminaDecay(); // Start the decay for max stamina
     setTimeout(() => addMessage('Your head is pounding.', true), 2000);
@@ -130,7 +138,6 @@ function startGame() {
 }
 
 
-// Function to update the location display
 // Function to update the location display
 function updateLocationDisplay() {
     const locationElement = document.getElementById('location');
@@ -235,10 +242,11 @@ function displayWeatherMessage() {
 }
 
 // Function to start lightning effect during stormy weather
+// Function to start lightning effect during stormy weather
 function startLightningEffect() {
     const body = document.body;
 
-    // Clear any existing intervals
+    // Clear any existing intervals to prevent multiple intervals running
     if (gameState.lightningInterval) {
         clearInterval(gameState.lightningInterval);
     }
@@ -248,10 +256,12 @@ function startLightningEffect() {
         body.style.backgroundColor = '#ffffff';
 
         setTimeout(() => {
-            body.style.backgroundColor = '#1a1a1a'; // Back to dark gray
-        }, 100); // Flash duration
+            // Reset to the current background color based on CSS variables
+            body.style.backgroundColor = 'var(--background-color)';
+        }, 100); // Flash duration of 100ms
     }, Math.random() * 5000 + 2000); // Random interval between 2-7 seconds
 }
+
 
 // Function to stop lightning effect
 function stopLightningEffect() {
@@ -337,13 +347,6 @@ function addActionButton(actionName) {
     cooldownOverlay.style.width = '0%';
     button.appendChild(cooldownOverlay);
 
-    const debrisNetButton = document.querySelector('[data-action="Craft debris net"] .cost');
-if (debrisNetButton) {
-    const currentNetCost = costs.debrisNet.baseRope + (gameState.netsCrafted * costs.debrisNet.additionalCostPerNet);
-    debrisNetButton.textContent = `Cost: ${currentNetCost} rope`;
-}
-
-
     // Handle cost display if needed
     const costElement = document.createElement('div');
     costElement.className = 'cost';
@@ -355,8 +358,14 @@ if (debrisNetButton) {
         costElement.textContent = `Cost: ${costs.rainBarrel.wood} wood, ${costs.rainBarrel.rope} rope`;
     } else if (actionName === 'Craft raft') {
         costElement.textContent = `Cost: ${costs.raft.wood} wood, ${costs.raft.rope} rope`;
+    } else if (actionName === 'Craft debris net') {
+        const currentNetCost = costs.debrisNet.baseRope + (gameState.netsCrafted * costs.debrisNet.additionalCostPerNet);
+        costElement.textContent = `Cost: ${currentNetCost} rope`;
+    } else if (actionName === 'Upgrade storage') {
+        const currentUpgradeCost = costs.storageUpgrade.baseWood + (gameState.storageUpgrades * costs.storageUpgrade.additionalCostPerUpgrade);
+        costElement.textContent = `Cost: ${currentUpgradeCost} wood`;
     }
-    
+
     buttonContainer.appendChild(button);
     if (costElement.textContent) {
         buttonContainer.appendChild(costElement);
@@ -401,6 +410,7 @@ if (debrisNetButton) {
 
 
 
+
 function updateActionButtonCosts() {
     const bucketButton = document.querySelector('[data-action="Craft bucket"] .cost');
     if (bucketButton) {
@@ -415,16 +425,22 @@ function updateActionButtonCosts() {
 
     const debrisNetButton = document.querySelector('[data-action="Craft debris net"] .cost');
     if (debrisNetButton) {
-        const currentNetCost = 20 + (gameState.netsCrafted * 10);
-        debrisNetButton.textContent = `Cost: ${currentNetCost} rope`;
+        const currentNetCost = costs.debrisNet.baseRope + (gameState.netsCrafted * costs.debrisNet.additionalCostPerNet);
+        debrisNetButton.textContent = `Cost: ${currentNetCost} rope`; // Correct calculation
     }
 
     const storageUpgradeButton = document.querySelector('[data-action="Upgrade storage"] .cost');
     if (storageUpgradeButton) {
-        const currentUpgradeCost = 50 + (gameState.storageUpgrades * 50);
+        const currentUpgradeCost = costs.storageUpgrade.baseWood + (gameState.storageUpgrades * costs.storageUpgrade.additionalCostPerUpgrade);
         storageUpgradeButton.textContent = `Cost: ${currentUpgradeCost} wood`;
     }
+
+    const raftButton = document.querySelector('[data-action="Craft raft"] .cost');
+    if (raftButton) {
+        raftButton.textContent = `Cost: ${costs.raft.wood} wood, ${costs.raft.rope} rope`;
+    }
 }
+
 
 
 
@@ -469,21 +485,78 @@ function clearActionButtons() {
     actionsContainer.innerHTML = '';
 }
 
-// Schedule the "Your head is throbbing" message every few minutes
-function scheduleHeadacheMessage() {
-    if (headacheInterval) clearInterval(headacheInterval);
-    headacheInterval = setInterval(() => {
-        addMessage('Your head is throbbing.');
-    }, 180000); // Every 3 minutes
+function startHeadacheMessage() {
+    // Prevent multiple intervals
+    if (headacheInterval) return;
+    
+    // Only schedule if headacheActive is true
+    if (gameState.headacheActive) {
+        headacheInterval = setInterval(() => {
+            addMessage('Your head is throbbing.');
+        }, 180000); // Every 3 minutes
+    }
 }
+
+function stopHeadacheMessage() {
+    if (headacheInterval) {
+        clearInterval(headacheInterval);
+        headacheInterval = null;
+    }
+    gameState.headacheActive = false;
+}
+
+// Function to show an alert
+function showAlert(message, buttons = []) {
+    const alertModal = document.getElementById('alert-modal');
+    const alertMessage = document.getElementById('alert-message');
+    const alertButtonsContainer = document.getElementById('alert-buttons');
+
+    // Set the alert message using innerHTML to allow HTML formatting
+    alertMessage.innerHTML = message;
+
+    // Clear existing buttons
+    alertButtonsContainer.innerHTML = '';
+
+    // Create buttons
+    buttons.forEach(button => {
+        const btn = document.createElement('button');
+        btn.textContent = button.text;
+        btn.onclick = () => {
+            // Execute the callback
+            if (button.callback && typeof button.callback === 'function') {
+                button.callback();
+            }
+            // Hide the alert after clicking a button
+            hideAlert();
+        };
+        alertButtonsContainer.appendChild(btn);
+    });
+
+    // Show the alert modal
+    alertModal.classList.remove('hidden');
+    alertModal.classList.add('visible');
+
+    // Prevent background scroll
+    document.body.classList.add('no-scroll');
+}
+
+function hideAlert() {
+    const alertModal = document.getElementById('alert-modal');
+    alertModal.classList.remove('visible');
+    alertModal.classList.add('hidden');
+
+    // Allow background scroll
+    document.body.classList.remove('no-scroll');
+}
+
 
 // Function to start stamina regeneration
 function startStaminaRegeneration() {
     setInterval(() => {
         if (gameState.stamina < gameState.maxStamina) {
-            changeStamina(1); 
+            changeStamina(1);
         }
-    }, 30000); // Every 10 seconds
+    }, 20000); // 
 }
 
 // Action implementations
@@ -513,7 +586,7 @@ function climbStairsAction() {
 
     updateLocationDisplay();
     updateStylesBasedOnWeather();
-    displayWeatherMessage();
+    setTimeout(() => displayWeatherMessage(), 1000);
     clearActionButtons();
 
     // Add "Assess the situation" action
@@ -544,8 +617,17 @@ function assessSituationAction() {
 function scavengeDebrisAction() {
     if (gameState.scavengeAttempts >= gameState.maxScavengeAttempts) {
         addMessage('The deck is now clean. There is no more debris to scavenge.', true);
-        addMessage('There is more debris floating in the sea surrounding the ship. You will need to craft a raft to reach it.', true);
+        setTimeout(() => addMessage('There is more debris floating in the sea surrounding the ship. You will need to craft a raft to reach it.', true), 2000);
         addActionButton('Craft raft');
+        gameState.raftPrompted = true;
+
+        // **Remove "Scavenge debris" button**
+        const actionsContainer = document.getElementById('actions');
+        const scavengeButton = actionsContainer.querySelector('[data-action="Scavenge debris"]');
+        if (scavengeButton) {
+            scavengeButton.remove();
+        }
+
         return;
     }
 
@@ -570,7 +652,7 @@ function scavengeDebrisAction() {
     // Record first scavenge time, and set up bucket hint if not already set
     if (!gameState.firstScavengeTime) {
         gameState.firstScavengeTime = Date.now();
-        
+
         // Schedule bucket hint after 1 minute of scavenging
         bucketHintTimeout = setTimeout(() => {
             addMessage('A bucket could be useful. It would help you carry more items.', true);
@@ -605,6 +687,18 @@ function scavengeDebrisAction() {
         addMessage('You found debris but cannot carry more items. Deposit items below deck.');
     }
 
+    const findNoteChance = 0.2; // 20% probability
+    if (Math.random() < findNoteChance) {
+        showAlert('You find a mysterious note partially buried in the debris.<br><br>"Beware the storm<br>that approaches<br>the horizon..."', [
+            {
+                text: 'Close',
+                callback: () => {
+                    addMessage('You decide to leave the note undisturbed.');
+                }
+            }
+        ]);
+    }
+
     updateInventoryDisplay();
 
     if (gameState.scavengeAttempts >= gameState.maxScavengeAttempts) {
@@ -634,9 +728,9 @@ function scavengeAtSeaAction() {
     changeStamina(-15); // Subtract 15 stamina for scavenging at sea
 
     // Random amounts between 3 and 6 for wood, 2 to 4 for rope, 1 to 3 for food
-    const woodFound = Math.floor(Math.random() * 4) + 3;
-    const ropeFound = Math.floor(Math.random() * 3) + 2;
-    const foodFound = Math.floor(Math.random() * 3) + 1;
+    const woodFound = Math.floor(Math.random() * 4) + 8;
+    const ropeFound = Math.floor(Math.random() * 3) + 4;
+    const foodFound = Math.floor(Math.random() * 3) + 0;
 
     // Adjust items to fit inventory space
     const proportions = distributeItems([woodFound, ropeFound, foodFound], spaceLeft);
@@ -676,20 +770,31 @@ function depositItemsAction() {
 
     if (storageSpaceLeft <= 0) {
         addMessage('Your storage is full. You cannot deposit more items.');
+        promptUpgradeStorage(); // **Add a function to prompt storage upgrade**
         return;
     }
 
     // Adjust amounts if storage limit is exceeded
     if (totalInventory > storageSpaceLeft) {
         const scale = storageSpaceLeft / totalInventory;
-        gameState.storage.wood += Math.floor(gameState.inventory.wood * scale);
-        gameState.storage.rope += Math.floor(gameState.inventory.rope * scale);
-        gameState.storage.food += Math.floor(gameState.inventory.food * scale);
+        const distributed = distributeItems([gameState.inventory.wood, gameState.inventory.rope, gameState.inventory.food], storageSpaceLeft);
+
+        const depositedWood = distributed[0];
+        const depositedRope = distributed[1];
+        const depositedFood = distributed[2];
+
+        gameState.storage.wood += depositedWood;
+        gameState.storage.rope += depositedRope;
+        gameState.storage.food += depositedFood;
+
         // Reduce inventory accordingly
-        gameState.inventory.wood -= Math.floor(gameState.inventory.wood * scale);
-        gameState.inventory.rope -= Math.floor(gameState.inventory.rope * scale);
-        gameState.inventory.food -= Math.floor(gameState.inventory.food * scale);
+        gameState.inventory.wood -= depositedWood;
+        gameState.inventory.rope -= depositedRope;
+        gameState.inventory.food -= depositedFood;
+
         addMessage('Your storage is full. You could only deposit some items.');
+
+        promptUpgradeStorage(); // **Prompt to upgrade after partial deposit**
     } else {
         // Move all items from inventory to storage
         gameState.storage.wood += gameState.inventory.wood;
@@ -703,7 +808,23 @@ function depositItemsAction() {
 
     updateInventoryDisplay();
     updateStorageDisplay();
+
+    // After depositing, check if storage is nearly full and suggest upgrade
+    if (gameState.maxStorage - getTotalItems(gameState.storage) < 5) { // Threshold can be adjusted
+        addMessage('Your storage is almost full. Consider upgrading your storage to hold more items.', true);
+        addActionButton('Upgrade storage'); // **Automatically add the upgrade option**
+    }
 }
+
+// **Add this helper function to prompt storage upgrade**
+function promptUpgradeStorage() {
+    const storageSpaceLeft = gameState.maxStorage - getTotalItems(gameState.storage);
+    if (storageSpaceLeft < 5 && !document.querySelector('[data-action="Upgrade storage"]')) { // Prevent multiple prompts
+        addMessage('Your storage is almost full. Consider upgrading your storage to hold more items.', true);
+        addActionButton('Upgrade storage');
+    }
+}
+
 
 function eatFoodAction() {
     // Check if stamina is at maximum
@@ -758,7 +879,7 @@ function craftBucketAction() {
         updateInventoryDisplay();
         updateStorageDisplay();
         updateActionButtonCosts(); // Update cost after crafting
-        
+
         // Check if the player can now craft a rain barrel
         if (gameState.bucketCrafted >= 1 && !gameState.rainBarrelCrafted) {
             setTimeout(() => addMessage('With enough wood and rope, you could craft a rain barrel to gather water.', true), 2000);
@@ -830,6 +951,16 @@ function craftRaftAction() {
         if (gameState.location === 'Above Deck') {
             addActionButton('Scavenge at sea');
         }
+
+        // **Reset the raftPrompted flag**
+        gameState.raftPrompted = false;
+
+        // Remove the "Craft raft" button after crafting
+        const actionsContainer = document.getElementById('actions');
+        const raftButton = actionsContainer.querySelector('[data-action="Craft raft"]');
+        if (raftButton) {
+            raftButton.remove();
+        }
     } else {
         addMessage("You don't have enough materials to craft a raft.");
     }
@@ -837,14 +968,19 @@ function craftRaftAction() {
 
 
 
+
+
+
 function craftDebrisNetAction() {
-    const currentNetCost = 15 + (gameState.netsCrafted * 10); // Increases by 10 for each net
+    const currentNetCost = 15 + (gameState.netsCrafted * 10); // Adjusted to match the dynamic cost
 
     if (gameState.storage.rope >= currentNetCost) {
         gameState.storage.rope -= currentNetCost;
         gameState.netsCrafted += 1; // Increment nets crafted
         addMessage(`You craft a debris net using ${currentNetCost} rope. It will now collect resources automatically.`, true);
         updateStorageDisplay();
+        updateNetsDisplay(); 
+        updateActionButtonCosts();
 
         // If there are no more nets to craft (based on some limit), remove the action button
         if (gameState.netsCrafted < 5) {
@@ -858,10 +994,11 @@ function craftDebrisNetAction() {
     }
 }
 
+
 // Function to update the nets display when Above Deck
 function updateNetsDisplay() {
     const netsElement = document.getElementById('nets-display');
-    if (!netsElement) return; // Make sure there's an element to update
+    if (!netsElement) return; // Ensure the element exists
 
     if (gameState.netOptionAvailable && gameState.location === 'Above Deck') {
         netsElement.innerHTML = `
@@ -876,6 +1013,7 @@ function updateNetsDisplay() {
         netsElement.classList.remove('visible');
     }
 }
+
 
 
 function upgradeStorageAction() {
@@ -901,14 +1039,52 @@ function upgradeStorageAction() {
 function startDebrisNetCollection() {
     setInterval(() => {
         if (gameState.netsCrafted > 0) {
-            // Increase resources based on number of nets crafted
-            gameState.storage.wood += gameState.netsCrafted;
-            gameState.storage.rope += gameState.netsCrafted;
-            gameState.storage.food += gameState.netsCrafted;
+            let spaceLeft = gameState.maxStorage - getTotalItems(gameState.storage);
+            if (spaceLeft <= 0) {
+                // Storage is full, do not collect
+                return;
+            }
 
-            // Send a message about the collection
-            addMessage(`Your debris nets collected ${gameState.netsCrafted} wood, ${gameState.netsCrafted} rope, and ${gameState.netsCrafted} food.`);
-            
+            let totalWoodAdded = 0;
+            let totalRopeAdded = 0;
+            let totalFoodAdded = 0;
+
+            for (let i = 0; i < gameState.netsCrafted; i++) {
+                if (spaceLeft <= 0) break;
+
+                // Add wood
+                if (spaceLeft > 0) {
+                    gameState.storage.wood += 1;
+                    totalWoodAdded += 1;
+                    spaceLeft -= 1;
+                }
+
+                // Add rope
+                if (spaceLeft > 0) {
+                    gameState.storage.rope += 1;
+                    totalRopeAdded += 1;
+                    spaceLeft -= 1;
+                }
+
+                // Add food
+                if (spaceLeft > 0) {
+                    gameState.storage.food += 1;
+                    totalFoodAdded += 1;
+                    spaceLeft -= 1;
+                }
+            }
+
+            // Generate dynamic collection message
+            let collectedItems = [];
+            if (totalWoodAdded > 0) collectedItems.push(`${totalWoodAdded} wood`);
+            if (totalRopeAdded > 0) collectedItems.push(`${totalRopeAdded} rope`);
+            if (totalFoodAdded > 0) collectedItems.push(`${totalFoodAdded} food`);
+
+            if (collectedItems.length > 0) {
+                let message = `Your debris nets collected ${collectedItems.join(', ')}.`;
+                addMessage(message);
+            }
+
             updateStorageDisplay();
             updateNetsDisplay(); // Update the nets display when collection happens
         }
@@ -922,7 +1098,7 @@ function collectWaterAction() {
         addMessage("Your stamina is at its maximum capacity. You don't need more water right now.");
         return;
     }
-    
+
     addMessage('You collect fresh water from the rain barrel. Your maximum stamina recovers.');
     gameState.maxStamina += 10; // Increase max stamina by 10 each time
     if (gameState.maxStamina > 150) gameState.maxStamina = 150; // Cap the max stamina at 150
@@ -1086,6 +1262,7 @@ function distributeItems(items, spaceLeft) {
 
 // Switch location when location name is clicked
 function switchLocation(targetLocation) {
+
     if (gameState.location !== targetLocation) {
         gameState.location = targetLocation;
         updateLocationDisplay();
@@ -1103,7 +1280,7 @@ function switchLocation(targetLocation) {
 
         updateInventoryDisplay();
         updateStorageDisplay();
-        updateNetsDisplay(); // Add this call to update the nets display
+        updateNetsDisplay(); // Update the nets display
 
         // Add actions based on the new location
         if (gameState.location === 'Above Deck') {
@@ -1129,6 +1306,15 @@ function switchLocation(targetLocation) {
                 addActionButton('Craft debris net');
             }
 
+            // **Add "Craft raft" button if prompted and raft not yet crafted**
+            if (gameState.raftPrompted && !gameState.raftCrafted) {
+                addActionButton('Craft raft');
+                const raftButtonExists = document.querySelector('[data-action="Craft raft"]');
+                if (!raftButtonExists) {
+                    addActionButton('Craft raft');
+                }
+            }
+
         } else if (gameState.location === 'Below Deck') {
             // Add actions for Below Deck
             if (gameState.storageVisible) {
@@ -1144,8 +1330,9 @@ function switchLocation(targetLocation) {
                 addActionButton('Eat food');
 
                 // Show storage upgrade button if necessary
-                if (getTotalItems(gameState.storage) >= gameState.maxStorage) {
+                if (getTotalItems(gameState.storage) >= gameState.maxStorage || gameState.storagePrompted == true) {
                     addActionButton('Upgrade storage');
+                    storagePrompted = true;
                 }
             }
 
@@ -1156,6 +1343,7 @@ function switchLocation(targetLocation) {
         }
     }
 }
+
 
 
 
