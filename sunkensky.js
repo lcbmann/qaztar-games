@@ -19,6 +19,11 @@ const costs = {
     storageUpgrade: {
         baseWood: 25, // Base wood cost for the first storage upgrade
         additionalCostPerUpgrade: 50, // Additional wood cost for each storage upgrade
+    },
+    flag: {
+        wood: 50,
+        rope: 30,
+        fabric: 15,
     }
 };
 
@@ -31,22 +36,24 @@ let gameState = {
     discoveredLocations: ['Below Deck'], // Start with only 'Below Deck' discovered
     actionCooldowns: {}, // Store cooldowns for actions
     weather: 'windy', // Current weather
-    storage: { wood: 0, rope: 0, food: 0, bucket: 0 }, // Initial storage amounts, including buckets
+    storage: { wood: 2, rope: 2, food: 4, bucket: 0, fabric: 0 }, // Initial storage amounts, including buckets
     maxStorage: 150, // Maximum storage capacity
-    inventory: { wood: 0, rope: 0, food: 0 }, // Player's carry inventory
-    baseMaxInventory: 10, // Base max items player can carry
-    maxInventory: 10, // Current max inventory, increases with buckets
+    inventory: { wood: 0, rope: 0, food: 0, fabric: 0 }, // Player's carry inventory
+    discoveredResources: ['wood', 'rope', 'food'], // Initial resources discovered
+    baseMaxInventory: 15, // Base max items player can carry
+    maxInventory: 15, // Current max inventory, increases with buckets
     scavengeAttempts: 0, // Number of times scavenged
     maxScavengeAttempts: 25, // Max scavenge attempts
     inventoryVisible: false, // Inventory visibility flag
     storageVisible: false, // Storage visibility flag
-    stamina: 30, // Player's starting stamina (out of 50)
+    stamina: 100, // Player's starting stamina (out of 50)
     maxStamina: 100, // Current max stamina, increases with water
     staminaVisible: false, // Stamina bar visibility flag
     bucketCrafted: 0, // Number of buckets crafted
     bucketOptionAvailable: false, // Flag to show bucket crafting option
     rainBarrelCrafted: false, // Flag for rain barrel
     netsCrafted: 0,
+    maxNetsCrafted: 3,
     netOptionAvailable: false,
     raftCrafted: false,
     raftPrompted: false,
@@ -56,13 +63,25 @@ let gameState = {
     thirstInterval: null, // Interval for decreasing stamina over time
     lightningInterval: null, // Interval for lightning effect
     headacheActive: true,
+    letters: [
+        '<i>You find a fragment of paper stuck to the side of the net. It appears to be extremely old. Only a few words remain legible.</i><br><br>"…do not listen, don’t you understand? They do not see. For many years we warned, but they closed their eyes. The cloud will consume all. The sky will sink from above…"',
+        '<i>You find a fragment of paper stuck to the side of the net. It’s surprisingly intact, and appears almost embroidered with a golden filament.</i><br><br>"…expedition has been set to depart early next weekend. Captain Moresy has assured the Gazette that the mission is sure to be a success. As the path of artificial genetic variation has crumbled, only this option remains open to us. “Tragic, but necessary” declared Mayor Sinai as…"',
+        '<i>You find a flat of bright bark stuck to the side of the net. Etched into its surface are letters, barely legible.</i><br><br>"…Flot A. Flot B -> over full. Take wood & rope tie together. Inform Cpt. Mads. Return sun down. "',
+    ],
+    flagPrompted: false,
+    flagCrafted: false,
+    crew: [],
+    maxCrew: 5,
 };
 
+const resources = ['wood', 'rope', 'food', 'fabric'];
 const weatherOptions = ['windy', 'cloudy', 'rainy', 'stormy'];
 let currentWeatherIndex = 0;
 
 // Timed events
 let headacheInterval = null;
+let debrisNetInterval = null;
+
 let bucketHintTimeout;
 let rainBarrelHintTimeout;
 
@@ -81,7 +100,7 @@ const actions = {
         execute: assessSituationAction,
     },
     'Scavenge debris': {
-        cooldown: 5,
+        cooldown: 1,
         execute: scavengeDebrisAction,
     },
     'Deposit items into storage': {
@@ -113,13 +132,17 @@ const actions = {
         execute: upgradeStorageAction,
     },
     'Scavenge at sea': {
-        cooldown: 10, // Add a cooldown if desired
+        cooldown: 1, // Add a cooldown if desired
         execute: scavengeAtSeaAction, // Define the action here
     },
-    'Craft raft': { // Ensure this is included
+    'Craft raft': { 
         cooldown: 0,
         execute: craftRaftAction,
     },
+    'Craft flag' : {
+        cooldown: 0,
+        execute: craftFlagAction,
+    }
 };
 
 
@@ -329,6 +352,12 @@ function addActionButton(actionName) {
     const action = actions[actionName];
     if (!action) return;
 
+    // Check if the action should only be available above deck
+    const aboveDeckOnlyActions = ['Craft flag'];
+    if (aboveDeckOnlyActions.includes(actionName) && gameState.location !== 'Above Deck') {
+        return; // Do not add the button if not above deck
+    }
+
     const actionsContainer = document.getElementById('actions');
     const existingButton = Array.from(actionsContainer.children).find(
         (btnContainer) => btnContainer.getAttribute('data-action') === actionName
@@ -364,6 +393,8 @@ function addActionButton(actionName) {
     } else if (actionName === 'Upgrade storage') {
         const currentUpgradeCost = costs.storageUpgrade.baseWood + (gameState.storageUpgrades * costs.storageUpgrade.additionalCostPerUpgrade);
         costElement.textContent = `Cost: ${currentUpgradeCost} wood`;
+    } else if (actionName === 'Craft flag') { // Handle flag costs
+        costElement.textContent = `Cost: ${costs.flag.wood} wood, ${costs.flag.rope} rope, ${costs.flag.fabric} fabric`;
     }
 
     buttonContainer.appendChild(button);
@@ -411,11 +442,18 @@ function addActionButton(actionName) {
 
 
 
+
 function updateActionButtonCosts() {
     const bucketButton = document.querySelector('[data-action="Craft bucket"] .cost');
     if (bucketButton) {
-        const currentBucketCost = costs.bucket.baseWood + (gameState.bucketCrafted * costs.bucket.additionalCostPerBucket);
-        bucketButton.textContent = `Cost: ${currentBucketCost} wood`;
+        if(gameState.bucketCrafted >= 5) {
+            bucketButton.textContent = 'You cannot carry any more buckets.';
+            bucketButton.style.color = 'red';
+        }
+        else {
+            const currentBucketCost = costs.bucket.baseWood + (gameState.bucketCrafted * costs.bucket.additionalCostPerBucket);
+            bucketButton.textContent = `Cost: ${currentBucketCost} wood`;
+        }
     }
 
     const rainBarrelButton = document.querySelector('[data-action="Craft rain barrel"] .cost');
@@ -425,8 +463,14 @@ function updateActionButtonCosts() {
 
     const debrisNetButton = document.querySelector('[data-action="Craft debris net"] .cost');
     if (debrisNetButton) {
-        const currentNetCost = costs.debrisNet.baseRope + (gameState.netsCrafted * costs.debrisNet.additionalCostPerNet);
-        debrisNetButton.textContent = `Cost: ${currentNetCost} rope`; // Correct calculation
+        if(gameState.netsCrafted >= 3) {
+            debrisNetButton.textContent = 'You cannot carry any more nets.';
+            debrisNetButton.style.color = 'red';
+        }
+        else {
+            const currentNetCost = costs.debrisNet.baseRope + (gameState.netsCrafted * costs.debrisNet.additionalCostPerNet);
+            debrisNetButton.textContent = `Cost: ${currentNetCost} rope`; // Correct calculation
+        }
     }
 
     const storageUpgradeButton = document.querySelector('[data-action="Upgrade storage"] .cost');
@@ -442,7 +486,20 @@ function updateActionButtonCosts() {
 }
 
 
+function getRandomLetter() {
+    if (gameState.letters.length === 0) {
+        return null; // No letters left to find
+    }
 
+    // Generate a random index based on the current letters array length
+    const randomIndex = Math.floor(Math.random() * gameState.letters.length);
+    const selectedLetter = gameState.letters[randomIndex];
+
+    // Remove the selected letter from the array to prevent reuse
+    gameState.letters.splice(randomIndex, 1);
+
+    return selectedLetter;
+}
 
 
 
@@ -556,7 +613,7 @@ function startStaminaRegeneration() {
         if (gameState.stamina < gameState.maxStamina) {
             changeStamina(1);
         }
-    }, 20000); // 
+    }, 10000);  
 }
 
 // Action implementations
@@ -660,7 +717,7 @@ function scavengeDebrisAction() {
             if (gameState.location === 'Below Deck') {
                 addActionButton('Craft bucket');
             }
-        }, 40000); // After 40 secs
+        }, 30000); // After 30 secs
     }
 
     gameState.scavengeAttempts += 1;
@@ -687,16 +744,19 @@ function scavengeDebrisAction() {
         addMessage('You found debris but cannot carry more items. Deposit items below deck.');
     }
 
-    const findNoteChance = 0.2; // 20% probability
+    const findNoteChance = 0.05; // 5% probability
     if (Math.random() < findNoteChance) {
-        showAlert('You find a mysterious note partially buried in the debris.<br><br>"Beware the storm<br>that approaches<br>the horizon..."', [
-            {
-                text: 'Close',
-                callback: () => {
-                    addMessage('You decide to leave the note undisturbed.');
+        const letter = getRandomLetter();
+        if (letter) {
+            showAlert(`${letter}`, [
+                {
+                    text: 'Close',
+                    callback: () => {
+                        addMessage('You decide to leave the note undisturbed.');
+                    }
                 }
-            }
-        ]);
+            ]);
+        } 
     }
 
     updateInventoryDisplay();
@@ -705,6 +765,7 @@ function scavengeDebrisAction() {
         addMessage('The deck is now clean.', true);
         addMessage('There is more debris floating in the sea surrounding the ship. You will need to craft a raft to reach it.', true);
         addActionButton('Craft raft');
+        gameState.raftPrompted = true;
     }
 }
 
@@ -727,31 +788,74 @@ function scavengeAtSeaAction() {
     // Decrease stamina
     changeStamina(-15); // Subtract 15 stamina for scavenging at sea
 
-    // Random amounts between 3 and 6 for wood, 2 to 4 for rope, 1 to 3 for food
-    const woodFound = Math.floor(Math.random() * 4) + 8;
-    const ropeFound = Math.floor(Math.random() * 3) + 4;
-    const foodFound = Math.floor(Math.random() * 3) + 0;
+    // Random amounts
+    const woodFound = Math.floor(Math.random() * 4) + 8;  
+    const ropeFound = Math.floor(Math.random() * 3) + 4;  
+    const foodFound = Math.floor(Math.random() * 3) + 0;  
+    const fabricFound = Math.floor(Math.random() * 2) + 1; 
+
+    if(fabricFound > 0 && !gameState.flagPrompted && !gameState.flagCrafted) {
+        gameState.flagPrompted = true;
+        setTimeout(() => {
+            addMessage('Crafting a flag could help you communicate and find other sailors.', true);
+            // Only add the "Craft flag" button if the player is Above Deck
+            if (gameState.location === 'Above Deck') {
+                addActionButton('Craft flag');
+            }
+        }, 2000); // 2 seconds delay before prompting
+    }
 
     // Adjust items to fit inventory space
-    const proportions = distributeItems([woodFound, ropeFound, foodFound], spaceLeft);
+    const proportions = distributeItems([woodFound, ropeFound, foodFound, fabricFound], spaceLeft);
     const collectedWood = proportions[0];
     const collectedRope = proportions[1];
     const collectedFood = proportions[2];
+    const collectedFabric = proportions[3];
 
     // Add collected items to inventory
     gameState.inventory.wood += collectedWood;
     gameState.inventory.rope += collectedRope;
     gameState.inventory.food += collectedFood;
+    gameState.inventory.fabric += collectedFabric;
+
+    // If fabric is collected for the first time, add it to discoveredResources
+    if (collectedFabric > 0 && !gameState.discoveredResources.includes('fabric')) {
+        gameState.discoveredResources.push('fabric');
+        addMessage('High-quality fabric could be useful for crafting.', true);
+        updateInventoryDisplay();
+        updateStorageDisplay();
+    }
 
     // Display the collected message or notify if inventory is full
-    if (collectedWood > 0 || collectedRope > 0 || collectedFood > 0) {
-        addMessage(`You scavenge the sea and find ${collectedWood} wood, ${collectedRope} rope, and ${collectedFood} food.`);
+    if (collectedWood > 0 || collectedRope > 0 || collectedFood > 0 || collectedFabric > 0) {
+        let message = `You scavenge the sea and find ${collectedWood} wood, ${collectedRope} rope, ${collectedFood} food`;
+        if (collectedFabric > 0) message += `, and ${collectedFabric} fabric`;
+        message += '.';
+        addMessage(message);
     } else {
         addMessage('You found debris in the sea, but your inventory is full. Deposit items below deck.');
     }
 
+    const findNoteChance = 0.1; // 10% probability
+    if (Math.random() < findNoteChance) {
+        const letter = getRandomLetter();
+        if (letter) {
+            showAlert(`${letter}`, [
+                {
+                    text: 'Close',
+                    callback: () => {
+                        addMessage('You decide to leave the note undisturbed.');
+                    }
+                }
+            ]);
+        } 
+    }
+
     updateInventoryDisplay();
 }
+
+
+
 
 
 
@@ -774,35 +878,61 @@ function depositItemsAction() {
         return;
     }
 
+    // Determine which resources can be deposited (including fabric if discovered)
+    const resourcesToDeposit = ['wood', 'rope', 'food'];
+    if (gameState.discoveredResources.includes('fabric')) {
+        resourcesToDeposit.push('fabric');
+    }
+
+    // Extract current inventory amounts for the resources to deposit
+    const currentInventoryAmounts = resourcesToDeposit.map(resource => gameState.inventory[resource]);
+
     // Adjust amounts if storage limit is exceeded
     if (totalInventory > storageSpaceLeft) {
-        const scale = storageSpaceLeft / totalInventory;
-        const distributed = distributeItems([gameState.inventory.wood, gameState.inventory.rope, gameState.inventory.food], storageSpaceLeft);
+        const distributed = distributeItems(currentInventoryAmounts, storageSpaceLeft);
 
+        // Assign deposited amounts based on distribution
         const depositedWood = distributed[0];
         const depositedRope = distributed[1];
         const depositedFood = distributed[2];
+        let depositedFabric = 0;
+        if (resourcesToDeposit.includes('fabric')) {
+            depositedFabric = distributed[3] || 0;
+        }
 
+        // Update storage with deposited items
         gameState.storage.wood += depositedWood;
         gameState.storage.rope += depositedRope;
         gameState.storage.food += depositedFood;
+        if (depositedFabric > 0) {
+            gameState.storage.fabric += depositedFabric;
+        }
 
         // Reduce inventory accordingly
         gameState.inventory.wood -= depositedWood;
         gameState.inventory.rope -= depositedRope;
         gameState.inventory.food -= depositedFood;
+        if (depositedFabric > 0) {
+            gameState.inventory.fabric -= depositedFabric;
+        }
 
-        addMessage('Your storage is full. You could only deposit some items.');
+        // Construct deposit message
+        let depositMessage = 'You could only deposit some items: ';
+        const depositedItems = [];
+        if (depositedWood > 0) depositedItems.push(`${depositedWood} wood`);
+        if (depositedRope > 0) depositedItems.push(`${depositedRope} rope`);
+        if (depositedFood > 0) depositedItems.push(`${depositedFood} food`);
+        if (depositedFabric > 0) depositedItems.push(`${depositedFabric} fabric`);
+        depositMessage += depositedItems.join(', ') + '.';
+        addMessage(depositMessage);
 
         promptUpgradeStorage(); // **Prompt to upgrade after partial deposit**
     } else {
         // Move all items from inventory to storage
-        gameState.storage.wood += gameState.inventory.wood;
-        gameState.storage.rope += gameState.inventory.rope;
-        gameState.storage.food += gameState.inventory.food;
-        gameState.inventory.wood = 0;
-        gameState.inventory.rope = 0;
-        gameState.inventory.food = 0;
+        resourcesToDeposit.forEach(resource => {
+            gameState.storage[resource] += gameState.inventory[resource];
+            gameState.inventory[resource] = 0;
+        });
         addMessage('You deposit your items into storage.');
     }
 
@@ -815,6 +945,7 @@ function depositItemsAction() {
         addActionButton('Upgrade storage'); // **Automatically add the upgrade option**
     }
 }
+
 
 // **Add this helper function to prompt storage upgrade**
 function promptUpgradeStorage() {
@@ -972,47 +1103,40 @@ function craftRaftAction() {
 
 
 function craftDebrisNetAction() {
-    const currentNetCost = 15 + (gameState.netsCrafted * 10); // Adjusted to match the dynamic cost
-
+    const currentNetCost = costs.debrisNet.baseRope + (gameState.netsCrafted * costs.debrisNet.additionalCostPerNet);
+    
+    if (gameState.netsCrafted >= gameState.maxNetsCrafted) {
+        addMessage('You have reached the maximum number of debris nets.', true);
+        return;
+    }
+    
     if (gameState.storage.rope >= currentNetCost) {
         gameState.storage.rope -= currentNetCost;
         gameState.netsCrafted += 1; // Increment nets crafted
         addMessage(`You craft a debris net using ${currentNetCost} rope. It will now collect resources automatically.`, true);
         updateStorageDisplay();
-        updateNetsDisplay(); 
+        updateNetsAndCrewDisplay(); 
         updateActionButtonCosts();
 
-        // If there are no more nets to craft (based on some limit), remove the action button
-        if (gameState.netsCrafted < 5) {
-            addActionButton('Craft debris net'); // Add option for more nets if needed
+        // If this is the first debris net, start the collection interval
+        if (gameState.netsCrafted === 1) {
+            startDebrisNetCollection();
         }
 
-        // Start resource collection
-        startDebrisNetCollection();
+        // If there are nets left to craft, add the button again
+        if (gameState.netsCrafted < gameState.maxNetsCrafted) {
+            addActionButton('Craft debris net');
+        } else {
+            addMessage('You cannot craft any more debris nets at this time.', true);
+        }
     } else {
         addMessage(`You don't have enough rope to craft a debris net. You need ${currentNetCost} rope.`);
     }
 }
 
 
-// Function to update the nets display when Above Deck
-function updateNetsDisplay() {
-    const netsElement = document.getElementById('nets-display');
-    if (!netsElement) return; // Ensure the element exists
 
-    if (gameState.netOptionAvailable && gameState.location === 'Above Deck') {
-        netsElement.innerHTML = `
-            <div class="box">
-                <p><strong>Debris Nets:</strong></p>
-                <p>You have ${gameState.netsCrafted} debris net(s) collecting resources.</p>
-                <p>Each net collects 1 wood, 1 rope, and 1 food every 20 seconds.</p>
-            </div>
-        `;
-        netsElement.classList.add('visible');
-    } else {
-        netsElement.classList.remove('visible');
-    }
-}
+
 
 
 
@@ -1033,11 +1157,17 @@ function upgradeStorageAction() {
     } else {
         addMessage(`You don't have enough wood to upgrade storage. You need ${currentUpgradeCost} wood.`);
     }
+    updateActionButtonCosts();
 }
 
 
 function startDebrisNetCollection() {
-    setInterval(() => {
+    // Clear any existing debris net collection interval to prevent duplication
+    if (gameState.debrisNetInterval) {
+        clearInterval(gameState.debrisNetInterval);
+    }
+
+    gameState.debrisNetInterval = setInterval(() => {
         if (gameState.netsCrafted > 0) {
             let spaceLeft = gameState.maxStorage - getTotalItems(gameState.storage);
             if (spaceLeft <= 0) {
@@ -1045,51 +1175,29 @@ function startDebrisNetCollection() {
                 return;
             }
 
-            let totalWoodAdded = 0;
-            let totalRopeAdded = 0;
-            let totalFoodAdded = 0;
+            const nets = gameState.netsCrafted;
+            const woodToAdd = Math.min(nets, spaceLeft);
+            gameState.storage.wood += woodToAdd;
+            spaceLeft -= woodToAdd;
 
-            for (let i = 0; i < gameState.netsCrafted; i++) {
-                if (spaceLeft <= 0) break;
+            const ropeToAdd = Math.min(nets, spaceLeft);
+            gameState.storage.rope += ropeToAdd;
+            spaceLeft -= ropeToAdd;
 
-                // Add wood
-                if (spaceLeft > 0) {
-                    gameState.storage.wood += 1;
-                    totalWoodAdded += 1;
-                    spaceLeft -= 1;
-                }
+            const foodToAdd = Math.min(nets, spaceLeft);
+            gameState.storage.food += foodToAdd;
+            spaceLeft -= foodToAdd;
 
-                // Add rope
-                if (spaceLeft > 0) {
-                    gameState.storage.rope += 1;
-                    totalRopeAdded += 1;
-                    spaceLeft -= 1;
-                }
-
-                // Add food
-                if (spaceLeft > 0) {
-                    gameState.storage.food += 1;
-                    totalFoodAdded += 1;
-                    spaceLeft -= 1;
-                }
-            }
-
-            // Generate dynamic collection message
-            let collectedItems = [];
-            if (totalWoodAdded > 0) collectedItems.push(`${totalWoodAdded} wood`);
-            if (totalRopeAdded > 0) collectedItems.push(`${totalRopeAdded} rope`);
-            if (totalFoodAdded > 0) collectedItems.push(`${totalFoodAdded} food`);
-
-            if (collectedItems.length > 0) {
-                let message = `Your debris nets collected ${collectedItems.join(', ')}.`;
-                addMessage(message);
-            }
+            let message = `Your ${nets} debris net(s) collected ${woodToAdd} wood, ${ropeToAdd} rope, and ${foodToAdd} food.`;
+            addMessage(message);
 
             updateStorageDisplay();
-            updateNetsDisplay(); // Update the nets display when collection happens
+            updateNetsAndCrewDisplay(); // Update combined display
         }
     }, 20000); // Collect resources every 20 seconds
 }
+
+
 
 
 
@@ -1105,6 +1213,173 @@ function collectWaterAction() {
     updateStaminaBar();
 }
 
+function craftFlagAction() {
+    const requiredWood = costs.flag.wood;
+    const requiredRope = costs.flag.rope;
+    const requiredFabric = costs.flag.fabric;
+
+    // Check if player has enough resources
+    if (
+        gameState.storage.wood >= requiredWood &&
+        gameState.storage.rope >= requiredRope &&
+        gameState.storage.fabric >= requiredFabric
+    ) {
+        // Deduct resources
+        gameState.storage.wood -= requiredWood;
+        gameState.storage.rope -= requiredRope;
+        gameState.storage.fabric -= requiredFabric;
+
+        // Update game state
+        gameState.flagCrafted = true;
+
+        addMessage(`You craft a flag using ${requiredWood} wood, ${requiredRope} rope, and ${requiredFabric} fabric.`);
+        setTimeout(() => addMessage('Hopefully passing sailors will be curious.'), 2000);
+
+        updateStorageDisplay();
+
+        // Remove the "Craft flag" button
+        const actionsContainer = document.getElementById('actions');
+        const flagButton = actionsContainer.querySelector('[data-action="Craft flag"]');
+        if (flagButton) {
+            flagButton.remove();
+        }
+
+        // Trigger sailor encounter after 10 seconds
+        setTimeout(() => {
+            spawnSailor();
+        }, 10000); // 10,000 milliseconds = 10 seconds
+
+    } else {
+        addMessage(`You don't have enough resources to craft a flag. You need ${requiredWood} wood, ${requiredRope} rope, and ${requiredFabric} fabric.`);
+    }
+}
+
+
+// Function to spawn a stranded sailor
+function spawnSailor() {
+    // Check if max crew size is reached
+    if (gameState.crew.length >= 5) {
+        addMessage('You have reached the maximum number of crew members.');
+        return;
+    }
+
+    // Define sailor options
+    const message = 'A stranded sailor has been found. Do you want to accept them as a crewmate for 20 food?';
+    showAlert(message, [
+        {
+            text: 'Accept',
+            callback: () => {
+                if (gameState.storage.food >= 20) {
+                    gameState.storage.food -= 20;
+                    const newSailor = { id: Date.now(), name: `Sailor ${gameState.crew.length + 1}` };
+                    gameState.crew.push(newSailor);
+                    addMessage('You have accepted a new crewmate.');
+                    updateNetsAndCrewDisplay(); // Use the combined display
+
+                    // Start fabric collection if this is the first crew member
+                    if (gameState.crew.length === 1 && !crewInterval) {
+                        startcrewCollection();
+                    }
+                } else {
+                    addMessage('You do not have enough food to accept the sailor.');
+                }
+            }
+        },
+        {
+            text: 'Turn Away',
+            callback: () => {
+                addMessage('You have turned away the stranded sailor.');
+            }
+        }
+    ]);
+
+    // Schedule the next sailor encounter
+    scheduleNextSailorEncounter();
+}
+
+
+// Function to schedule the next sailor encounter
+function scheduleNextSailorEncounter() {
+    // Schedule the next sailor encounter after a random time between 3 and 5 minutes
+    const minMinutes = 3;
+    const maxMinutes = 5;
+    const delay = (Math.floor(Math.random() * (maxMinutes - minMinutes + 1)) + minMinutes) * 60000; // in milliseconds
+
+    setTimeout(() => {
+        spawnSailor();
+    }, delay);
+}
+
+
+// Variable to hold the interval for crew fabric collection
+let crewInterval = null;
+
+// Function to start automatic fabric collection by crew members
+function startcrewCollection() {
+    if (crewInterval) return; // Prevent multiple intervals
+
+    crewInterval = setInterval(() => {
+        if (gameState.crew.length > 0) {
+            let spaceLeft = gameState.maxStorage - getTotalItems(gameState.storage);
+            if (spaceLeft <= 0) {
+                // Storage is full, do not collect
+                return;
+            }
+
+            const totalFabricCollected = gameState.crew.length; // 1 fabric per crew member
+
+            const fabricToCollect = Math.min(totalFabricCollected, spaceLeft);
+
+            if (fabricToCollect > 0) {
+                gameState.storage.fabric += fabricToCollect;
+                addMessage(`Your crew has collected ${fabricToCollect} fabric.`);
+                updateStorageDisplay();
+                updateNetsAndCrewDisplay(); // Update combined display
+            }
+        }
+    }, 20000); // Every 20 seconds
+}
+
+
+function updateNetsAndCrewDisplay() {
+    const displayElement = document.getElementById('nets-and-crew-display');
+    if (!displayElement) return; // Ensure the element exists
+
+    // Only display when Above Deck and either debris nets or crew exist
+    if (gameState.location === 'Above Deck' && (gameState.netsCrafted > 0 || gameState.crew.length > 0)) {
+        let displayContent = '';
+
+        // Debris Nets Section
+        if (gameState.netsCrafted > 0) {
+            displayContent += `
+                <div class="section nets-info">
+                    <p><strong>Debris Nets (${gameState.netsCrafted}/${gameState.maxNetsCrafted}:</strong></p>
+                    <p>You have ${gameState.netsCrafted} debris net(s) collecting resources.</p>
+                    <p>Total Collected Every 20 Seconds: ${gameState.netsCrafted} wood, ${gameState.netsCrafted} rope, ${gameState.netsCrafted} food.</p>
+                </div>
+            `;
+        }
+
+        // Crew Section
+        if (gameState.crew.length > 0) {
+            displayContent += `
+                <div class="section crew-info">
+                    <p><strong>Crew (${gameState.crew.length}/${gameState.maxCrew}):</strong></p>
+                    <p>Your crew is collecting ${gameState.crew.length} fabric every 20 seconds.</p>
+                </div>
+            `;
+        }
+
+        displayElement.innerHTML = displayContent;
+        displayElement.classList.add('visible');
+    } else {
+        displayElement.classList.remove('visible');
+        displayElement.innerHTML = '';
+    }
+}
+
+
+
 
 
 // Function to update the inventory display
@@ -1113,14 +1388,20 @@ function updateInventoryDisplay() {
     const totalInventory = getTotalItems(gameState.inventory);
 
     if (gameState.inventoryVisible) {
-        inventoryElement.innerHTML = `
+        let inventoryContent = `
             <div class="box">
                 <p><strong>Inventory (${totalInventory}/${gameState.maxInventory}):</strong></p>
-                <p>Wood: ${gameState.inventory.wood}</p>
-                <p>Rope: ${gameState.inventory.rope}</p>
-                <p>Food: ${gameState.inventory.food}</p>
-            </div>
         `;
+
+        // Iterate over discovered resources to display them
+        resources.forEach(resource => {
+            if (gameState.discoveredResources.includes(resource)) {
+                inventoryContent += `<p>${capitalize(resource)}: ${gameState.inventory[resource]}</p>`;
+            }
+        });
+
+        inventoryContent += '</div>';
+        inventoryElement.innerHTML = inventoryContent;
 
         // Add 'visible' class to trigger fade-in
         requestAnimationFrame(() => {
@@ -1131,6 +1412,7 @@ function updateInventoryDisplay() {
     }
 }
 
+
 // Function to update the storage display
 function updateStorageDisplay() {
     const storageElement = document.getElementById('storage');
@@ -1140,10 +1422,14 @@ function updateStorageDisplay() {
         let storageContent = `
             <div class="box">
                 <p><strong>Storage (${totalStorage}/${gameState.maxStorage}):</strong></p>
-                <p>Wood: ${gameState.storage.wood}</p>
-                <p>Rope: ${gameState.storage.rope}</p>
-                <p>Food: ${gameState.storage.food}</p>
         `;
+
+        // Iterate over discovered resources to display them
+        resources.forEach(resource => {
+            if (gameState.discoveredResources.includes(resource)) {
+                storageContent += `<p>${capitalize(resource)}: ${gameState.storage[resource]}</p>`;
+            }
+        });
 
         if (gameState.storage.bucket > 0) {
             storageContent += `<p>Buckets: ${gameState.storage.bucket}</p>`;
@@ -1160,6 +1446,7 @@ function updateStorageDisplay() {
         storageElement.classList.remove('visible');
     }
 }
+
 
 // Function to update the stamina bar
 function updateStaminaBar() {
@@ -1213,12 +1500,13 @@ function startMaxStaminaDecay() {
 // Utility function to get total items
 function getTotalItems(obj) {
     return Object.keys(obj).reduce((total, key) => {
-        if (key !== 'bucket') {
-            return total + obj[key];
+        if (key !== 'bucket') { // Assuming 'bucket' is treated separately
+            return total + (gameState.discoveredResources.includes(key) ? obj[key] : 0);
         }
         return total;
     }, 0);
 }
+
 
 // Utility function to distribute items proportionally
 function distributeItems(items, spaceLeft) {
@@ -1260,6 +1548,7 @@ function distributeItems(items, spaceLeft) {
     return distributed;
 }
 
+
 // Switch location when location name is clicked
 function switchLocation(targetLocation) {
 
@@ -1280,7 +1569,7 @@ function switchLocation(targetLocation) {
 
         updateInventoryDisplay();
         updateStorageDisplay();
-        updateNetsDisplay(); // Update the nets display
+        updateNetsAndCrewDisplay(); // Ensure the nets and crew display always updates
 
         // Add actions based on the new location
         if (gameState.location === 'Above Deck') {
@@ -1306,12 +1595,21 @@ function switchLocation(targetLocation) {
                 addActionButton('Craft debris net');
             }
 
-            // **Add "Craft raft" button if prompted and raft not yet crafted**
+            // Add "Craft raft" button if prompted and raft not yet crafted
             if (gameState.raftPrompted && !gameState.raftCrafted) {
                 addActionButton('Craft raft');
                 const raftButtonExists = document.querySelector('[data-action="Craft raft"]');
                 if (!raftButtonExists) {
                     addActionButton('Craft raft');
+                }
+            }
+
+            // Add "Craft flag" button if prompted and flag not yet crafted
+            if (gameState.flagPrompted && !gameState.flagCrafted) {
+                addActionButton('Craft flag');
+                const flagButtonExists = document.querySelector('[data-action="Craft flag"]');
+                if (!flagButtonExists) {
+                    addActionButton('Craft flag');
                 }
             }
 
@@ -1332,7 +1630,7 @@ function switchLocation(targetLocation) {
                 // Show storage upgrade button if necessary
                 if (getTotalItems(gameState.storage) >= gameState.maxStorage || gameState.storagePrompted == true) {
                     addActionButton('Upgrade storage');
-                    storagePrompted = true;
+                    gameState.storagePrompted = true;
                 }
             }
 
@@ -1342,9 +1640,17 @@ function switchLocation(targetLocation) {
             }
         }
     }
+
+    // Always update nets and crew display, regardless of location
+    updateNetsAndCrewDisplay();
 }
 
 
+
+
+function capitalize(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}
 
 
 
