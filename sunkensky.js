@@ -1355,7 +1355,7 @@ function updateNetsAndCrewDisplay() {
                 <div class="section nets-info">
                     <p><strong>Debris Nets (${gameState.netsCrafted}/${gameState.maxNetsCrafted}:</strong></p>
                     <p>You have ${gameState.netsCrafted} debris net(s) collecting resources.</p>
-                    <p>Total Collected Every 20 Seconds: ${gameState.netsCrafted} wood, ${gameState.netsCrafted} rope, ${gameState.netsCrafted} food.</p>
+                    <p>Your nets are collecting: ${gameState.netsCrafted} wood, ${gameState.netsCrafted} rope, ${gameState.netsCrafted} food every 20 seconds.</p>
                 </div>
             `;
         }
