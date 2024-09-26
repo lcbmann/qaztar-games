@@ -1,6 +1,11 @@
-/* Define CSS variables for dynamic theming */
+/* Ensure html and body take full height */
+html, body {
+    height: 100%;
+}
+
+/* Root styles for dynamic theming with transparency */
 :root {
-    --background-color: #000000;
+    --background-tint: rgba(0, 0, 0, 0); /* Default transparent */
     --text-color: #ffffff;
     --button-background-color: transparent;
     --button-border-color: currentColor;
@@ -8,13 +13,74 @@
     --box-border-color: currentColor;
 }
 
+/* Base body styles with transition for smooth changes */
 body {
-    background-color: var(--background-color);
+    background-size: cover; /* Ensures the image covers the entire body */
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Removed background-blend-mode: multiply; as we handle tint via ::before */
     color: var(--text-color);
     font-family: 'Times New Roman', Times, serif;
     margin: 0;
     padding: 0;
-    transition: background-color 1s, color 1s;
+    transition: background-image 1s ease, color 1s;
+    min-height: 100vh; /* Ensure body covers full viewport height */
+    position: relative; /* To contain the ::before pseudo-element */
+}
+
+/* Above Deck: Dynamic tint based on weather */
+body.above-deck {
+    background-image: url('background3.png'); /* Replace with your Above Deck image */
+    --background-tint: rgba(0, 0, 0, 0.2); /* Slight dark tint by default */
+}
+
+/* Below Deck: Fixed dark tint with separate background image */
+body.below-deck {
+    background-image: url('background5.png'); /* Replace with your Below Deck image */
+    --background-tint: rgba(0, 0, 0, 0.8); /* Dark tint for Below Deck */
+}
+
+/* Apply the tint using a pseudo-element */
+body.above-deck::before,
+body.below-deck::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-tint);
+    pointer-events: none; /* Allows clicks to pass through */
+    transition: background-color 1s ease;
+    z-index: -1; /* Ensure it's behind all other content */
+}
+
+/* Background tints for different weather conditions when Above Deck */
+body.above-deck[data-weather="windy"]::before {
+    --background-tint: rgba(0, 0, 0, 0.2); /* Slight dark tint */
+}
+
+body.above-deck[data-weather="cloudy"]::before {
+    --background-tint: rgba(0, 0, 0, 0.4); /* Moderately dark tint */
+}
+
+body.above-deck[data-weather="rainy"]::before {
+    --background-tint: rgba(0, 0, 0, 0.6); /* Dark tint */
+}
+
+body.above-deck[data-weather="stormy"]::before {
+    --background-tint: rgba(0, 0, 0, 0.8); /* Very dark tint */
+}
+
+/* Below Deck: Fixed dark tint remains the same */
+body.below-deck::before {
+    --background-tint: rgba(0, 0, 0, 0.8); /* Dark tint for Below Deck */
+}
+
+/* Lightning Flash Effect */
+body.lightning-flash::before {
+    background-color: rgba(255, 255, 255, 0.8); /* Bright white flash */
+    transition: background-color 0.1s ease-in-out;
 }
 
 /* Layout adjustments */
@@ -92,7 +158,6 @@ body {
     visibility: visible;
 }
 
-
 .stamina-container {
     width: 150px;
     height: 10px;
@@ -144,7 +209,6 @@ body {
     transform: translateY(0); /* Move to the final position */
 }
 
-
 .action-button-container button {
     position: relative;
     font-size: 1em;
@@ -182,7 +246,6 @@ body {
     transition: width linear;
 }
 
-
 #inventory-container {
     width: 30%;
     text-align: right;
@@ -216,8 +279,6 @@ body {
     transition: color 1s;
 }
 
-
-
 /* Alert Modal Styles */
 #alert-modal.hidden {
     display: none;
@@ -240,7 +301,6 @@ body {
 #alert-modal.visible {
     opacity: 1;
 }
-
 
 .alert-overlay {
     position: absolute;
@@ -289,10 +349,8 @@ body {
 }
 
 .alert-buttons button:hover {
-    background-color: rgb(49, 49, 49)
+    background-color: rgb(49, 49, 49);
 }
-
-/* Add to your existing CSS */
 
 /* Combined Debris Nets and Crew Display Styles */
 #nets-and-crew-display {
@@ -315,4 +373,17 @@ body {
 
 #nets-and-crew-display .section p {
     margin: 5px 0;
+}
+
+/* Additional Styles for Full Screen Background */
+body::before {
+    /* Ensure the pseudo-element covers the entire viewport */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    content: '';
+    pointer-events: none;
+    z-index: -1;
 }

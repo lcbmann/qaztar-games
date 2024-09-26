@@ -212,16 +212,32 @@ const eventList = [
 
 // Initialize the game
 function startGame() {
+    // Apply the initial location class based on gameState.location
+    applyLocationClass(gameState.location);
+
     updateLocationDisplay();
     startWeatherCycle();
     updateStylesBasedOnWeather();
     startHeadacheMessage();
     startStaminaRegeneration();
     startMaxStaminaDecay(); // Start the decay for max stamina
+
     setTimeout(() => addMessage('Your head is pounding.', true), 2000);
     setTimeout(() => addMessage('The ship creaks.'), 6000);
 
     setTimeout(() => addActionButton('Stand up'), 8000);
+}
+
+// Helper function to apply location class to body
+function applyLocationClass(location) {
+    const body = document.body;
+    body.classList.remove('above-deck', 'below-deck'); // Remove existing classes
+
+    if (location === 'Above Deck') {
+        body.classList.add('above-deck');
+    } else if (location === 'Below Deck') {
+        body.classList.add('below-deck');
+    }
 }
 
 
@@ -249,10 +265,12 @@ function updateLocationDisplay() {
 
 // Function to update styles based on weather
 function updateStylesBasedOnWeather() {
-    const root = document.documentElement;
+    const body = document.body;
+
+    // Set the data attribute on the body based on the weather
+    body.setAttribute('data-weather', gameState.weather);
 
     if (gameState.location === 'Above Deck') {
-        // Apply styles based on the current weather
         switch (gameState.weather) {
             case 'windy':
             case 'cloudy':
@@ -263,43 +281,8 @@ function updateStylesBasedOnWeather() {
                 startLightningEffect(); // Enable lightning effect for stormy weather
                 break;
         }
-
-        // Set styles based on weather
-        if (gameState.weather === 'windy') {
-            root.style.setProperty('--background-color', '#f5f5f5'); // Very light gray
-            root.style.setProperty('--text-color', '#000000'); // Black text
-            root.style.setProperty('--button-text-color', '#000000');
-            root.style.setProperty('--button-border-color', '#000000');
-            root.style.setProperty('--box-border-color', '#000000');
-        } else if (gameState.weather === 'cloudy') {
-            root.style.setProperty('--background-color', '#dcdcdc'); // Gainsboro
-            root.style.setProperty('--text-color', '#000000'); // Black text
-            root.style.setProperty('--button-text-color', '#000000');
-            root.style.setProperty('--button-border-color', '#000000');
-            root.style.setProperty('--box-border-color', '#000000');
-        } else if (gameState.weather === 'rainy') {
-            root.style.setProperty('--background-color', '#a9a9a9'); // Dark gray
-            root.style.setProperty('--text-color', '#ffffff'); // White text
-            root.style.setProperty('--button-text-color', '#ffffff');
-            root.style.setProperty('--button-border-color', '#ffffff');
-            root.style.setProperty('--box-border-color', '#ffffff');
-        } else if (gameState.weather === 'stormy') {
-            root.style.setProperty('--background-color', '#1a1a1a'); // Darker gray
-            root.style.setProperty('--text-color', '#ffffff'); // White text
-            root.style.setProperty('--button-text-color', '#ffffff');
-            root.style.setProperty('--button-border-color', '#ffffff');
-            root.style.setProperty('--box-border-color', '#ffffff');
-        }
-    } else {
-        // Styles for Below Deck
-        root.style.setProperty('--background-color', '#000000'); // Black background
-        root.style.setProperty('--text-color', '#ffffff'); // White text
-        root.style.setProperty('--button-text-color', '#ffffff');
-        root.style.setProperty('--button-border-color', '#ffffff');
-        root.style.setProperty('--box-border-color', '#ffffff');
     }
 }
-
 
 
 // Function to start the weather cycle
@@ -329,7 +312,6 @@ function displayWeatherMessage() {
 }
 
 // Function to start lightning effect during stormy weather
-// Function to start lightning effect during stormy weather
 function startLightningEffect() {
     const body = document.body;
 
@@ -339,16 +321,15 @@ function startLightningEffect() {
     }
 
     gameState.lightningInterval = setInterval(() => {
-        // Flash the background color to white briefly
-        body.style.backgroundColor = '#ffffff';
+        // Add a temporary class to trigger the flash
+        body.classList.add('lightning-flash');
 
+        // Remove the class after the flash duration
         setTimeout(() => {
-            // Reset to the current background color based on CSS variables
-            body.style.backgroundColor = 'var(--background-color)';
+            body.classList.remove('lightning-flash');
         }, 100); // Flash duration of 100ms
     }, Math.random() * 5000 + 2000); // Random interval between 2-7 seconds
 }
-
 
 // Function to stop lightning effect
 function stopLightningEffect() {
@@ -357,6 +338,8 @@ function stopLightningEffect() {
         gameState.lightningInterval = null;
     }
 
+    // Ensure the lightning-flash class is removed
+    document.body.classList.remove('lightning-flash');
 }
 
 
@@ -728,19 +711,11 @@ function standUpAction() {
 
 function climbStairsAction() {
     addMessage('You slowly make your way up the stairs.');
-    gameState.location = 'Above Deck';
-
-    // Add 'Above Deck' to discovered locations if not already present
-    if (!gameState.discoveredLocations.includes('Above Deck')) {
-        gameState.discoveredLocations.push('Above Deck');
-    }
-
-    updateLocationDisplay();
-    updateStylesBasedOnWeather();
-    setTimeout(() => displayWeatherMessage(), 1000);
-    clearActionButtons();
-
-    // Add "Assess the situation" action
+    
+    // Use switchLocation to handle the location change
+    switchLocation('Above Deck');
+    
+    // Add "Assess the situation" action after 2 seconds
     setTimeout(() => addActionButton('Assess the situation'), 2000);
 }
 
@@ -1980,12 +1955,24 @@ function distributeItems(items, spaceLeft) {
 }
 
 
-// Switch location when location name is clicked
 function switchLocation(targetLocation) {
     if (gameState.location !== targetLocation) {
+        // Update the current location
         gameState.location = targetLocation;
+
+        // Add the target location to discoveredLocations if not already present
+        if (!gameState.discoveredLocations.includes(targetLocation)) {
+            gameState.discoveredLocations.push(targetLocation);
+        }
+
+        // Update the location display to reflect all discovered locations
         updateLocationDisplay();
+
+        // Update styles based on the new weather and location
         updateStylesBasedOnWeather();
+
+        // Apply the corresponding CSS class for the location
+        applyLocationClass(gameState.location);
 
         // Update messages for switching locations
         if (gameState.location === 'Above Deck') {
@@ -1995,10 +1982,14 @@ function switchLocation(targetLocation) {
             addMessage('You descend to the lower deck.');
         }
 
+        // Clear existing action buttons
         clearActionButtons();
 
+        // Update inventory and storage displays
         updateInventoryDisplay();
         updateStorageDisplay();
+
+        // Update the combined Debris Nets and Crew display
         updateNetsAndCrewDisplay(); // Ensure the nets and crew display always updates
 
         // Add actions based on the new location
@@ -2070,11 +2061,7 @@ function switchLocation(targetLocation) {
             }
         }
     }
-
-    // Always update nets and crew display, regardless of location
-    updateNetsAndCrewDisplay();
 }
-
 
 
 
