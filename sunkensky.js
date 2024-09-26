@@ -14,7 +14,7 @@ const costs = {
     },
     debrisNet: {
         baseRope: 15, // Base rope cost for the first debris net
-        additionalCostPerNet: 10, // Additional rope cost for subsequent nets
+        additionalCostPerNet: 15, // Additional rope cost for subsequent nets
     },
     storageUpgrade: {
         baseWood: 25, // Base wood cost for the first storage upgrade
@@ -22,9 +22,18 @@ const costs = {
     },
     flag: {
         wood: 50,
-        rope: 30,
+        rope: 35,
         fabric: 15,
-    }
+    },
+    mast: {
+        wood: 150,
+        rope: 60,
+    },
+    sails: {
+        wood: 50,
+        fabric: 30,
+    },
+
 };
 
 
@@ -67,11 +76,26 @@ let gameState = {
         '<i>You find a fragment of paper stuck to the side of the net. It appears to be extremely old. Only a few words remain legible.</i><br><br>"…do not listen, don’t you understand? They do not see. For many years we warned, but they closed their eyes. The cloud will consume all. The sky will sink from above…"',
         '<i>You find a fragment of paper stuck to the side of the net. It’s surprisingly intact, and appears almost embroidered with a golden filament.</i><br><br>"…expedition has been set to depart early next weekend. Captain Moresy has assured the Gazette that the mission is sure to be a success. As the path of artificial genetic variation has crumbled, only this option remains open to us. “Tragic, but necessary” declared Mayor Sinai as…"',
         '<i>You find a flat of bright bark stuck to the side of the net. Etched into its surface are letters, barely legible.</i><br><br>"…Flot A. Flot B -> over full. Take wood & rope tie together. Inform Cpt. Mads. Return sun down. "',
-    ],
+        '<i>You find a scrap of parchment stuck to the side of the net. Only one sentence remains legible.</i><br><br>"It\'s a world that God, if he exists, has created in anger."',
+        '<i>You find a brittle scrap of paper wedged between the debris. The ink is smudged, but a few lines remain legible.</i><br><br>"...they call it the Great Escape, but its only a matter of time before this city falters. No one below will remember us, but they will see the ruins when we fall. The sky will turn dark, and there will be no escape."',
+        '<i>A thin strip of tattered cloth, embroidered with silver thread, is tangled in the nets. Faint writing is woven into the fabric.</i><br><br>"..years we spent believing in the salvation above. Now, as the winds rise and our fleets scatter, the truth is clear. The sky was never meant for us. We should have stayed with the sea, where at least we could drown together."',
+        '<i>A soaked page, almost dissolving in your hand, a few words still visible beneath the grime.</i><br><br>"...another storm. Supplies are low. Sails damaged. Moresy won\'t admit it, but we\'re lost. We\'ve passed the point of no return. If only we could return."',
+        '<i>A scrap of parchment, unnaturally warm to the touch, flutters into your hands. The ink has faded, but a strange symbol remains at the top, and a few lines are still clear.</i><br><br>"...the cloud is alive. I felt it. A breath, a pulse."',
+        '<i>A small, ornate scroll, likely torn from a journal, is caught in the debris. The handwriting is neat and imprecise, as though written in haste.</i><br><br>"We\'re not the first to attempt this. The journals we found on the wreck suggest others sought the city long before us. Their paths end in silence, just like ours will."',
+        '<i>A small scroll of parchment, the edges singed, is caught in the net.</i><br><br>"Is the city real? Or nothing but a fanciful illusion, a dream? The answer has been lost to time."',
+    
+    
+    ], 
     flagPrompted: false,
     flagCrafted: false,
     crew: [],
     maxCrew: 5,
+    mastPrompted: false,
+    mastCrafted: false,
+    sailsPrompted: false,
+    sailsCrafted: false,
+    sailsAndMastCrafted: false,
+    uniqueEventsTriggered: [],
 };
 
 const resources = ['wood', 'rope', 'food', 'fabric'];
@@ -142,8 +166,48 @@ const actions = {
     'Craft flag' : {
         cooldown: 0,
         execute: craftFlagAction,
-    }
+    },
+    'Repair mast' : {
+        cooldown: 0,
+        execute: repairMastAction,
+    },
+    'Repair sails' : {
+        cooldown: 0,
+        execute: repairSailsAction,
+    },
 };
+
+const eventList = [
+    // Regular Events
+    {
+        name: 'Wandering Trader',
+        type: 'regular',
+        handler: wanderingTraderEvent,
+    },
+    {
+        name: 'Smoke Signal',
+        type: 'regular',
+        handler: smokeSignalEvent,
+    },
+    {
+        name: 'Shipwreck Found',
+        type: 'regular',
+        handler: shipwreckFoundEvent,
+    },
+    {
+        name: 'Rogue Wave',
+        type: 'regular',
+        handler: rogueWaveEvent,
+    },
+    
+    // Unique Events
+    {
+        name: 'Flotilla Encounter',
+        type: 'unique',
+        handler: flotillaEncounterEvent,
+    },
+];
+
 
 
 // Initialize the game
@@ -352,8 +416,8 @@ function addActionButton(actionName) {
     const action = actions[actionName];
     if (!action) return;
 
-    // Check if the action should only be available above deck
-    const aboveDeckOnlyActions = ['Craft flag'];
+    // Update the list of above-deck-only actions to include new crafting options
+    const aboveDeckOnlyActions = ['Craft flag', 'Repair Mast', 'Repair Sails'];
     if (aboveDeckOnlyActions.includes(actionName) && gameState.location !== 'Above Deck') {
         return; // Do not add the button if not above deck
     }
@@ -380,6 +444,7 @@ function addActionButton(actionName) {
     const costElement = document.createElement('div');
     costElement.className = 'cost';
 
+    // Define costs for each action
     if (actionName === 'Craft bucket') {
         const currentBucketCost = costs.bucket.baseWood + (gameState.bucketCrafted * costs.bucket.additionalCostPerBucket);
         costElement.textContent = `Cost: ${currentBucketCost} wood`;
@@ -395,6 +460,10 @@ function addActionButton(actionName) {
         costElement.textContent = `Cost: ${currentUpgradeCost} wood`;
     } else if (actionName === 'Craft flag') { // Handle flag costs
         costElement.textContent = `Cost: ${costs.flag.wood} wood, ${costs.flag.rope} rope, ${costs.flag.fabric} fabric`;
+    } else if (actionName === 'Repair mast') { // Handle Repair Mast costs
+        costElement.textContent = `Cost: ${costs.mast.wood} wood, ${costs.mast.rope} rope`;
+    } else if (actionName === 'Repair sails') { // Handle Repair Sails costs
+        costElement.textContent = `Cost: ${costs.sails.fabric} fabric, ${costs.sails.wood} wood`;
     }
 
     buttonContainer.appendChild(button);
@@ -443,47 +512,71 @@ function addActionButton(actionName) {
 
 
 
+
 function updateActionButtonCosts() {
+    // Craft Bucket
     const bucketButton = document.querySelector('[data-action="Craft bucket"] .cost');
     if (bucketButton) {
-        if(gameState.bucketCrafted >= 5) {
+        if (gameState.bucketCrafted >= 5) {
             bucketButton.textContent = 'You cannot carry any more buckets.';
             bucketButton.style.color = 'red';
-        }
-        else {
+        } else {
             const currentBucketCost = costs.bucket.baseWood + (gameState.bucketCrafted * costs.bucket.additionalCostPerBucket);
             bucketButton.textContent = `Cost: ${currentBucketCost} wood`;
         }
     }
 
+    // Craft Rain Barrel
     const rainBarrelButton = document.querySelector('[data-action="Craft rain barrel"] .cost');
     if (rainBarrelButton) {
         rainBarrelButton.textContent = `Cost: ${costs.rainBarrel.wood} wood, ${costs.rainBarrel.rope} rope`;
     }
 
+    // Craft Debris Net
     const debrisNetButton = document.querySelector('[data-action="Craft debris net"] .cost');
     if (debrisNetButton) {
-        if(gameState.netsCrafted >= 3) {
+        if (gameState.netsCrafted >= gameState.maxNetsCrafted) {
             debrisNetButton.textContent = 'You cannot carry any more nets.';
             debrisNetButton.style.color = 'red';
-        }
-        else {
+        } else {
             const currentNetCost = costs.debrisNet.baseRope + (gameState.netsCrafted * costs.debrisNet.additionalCostPerNet);
-            debrisNetButton.textContent = `Cost: ${currentNetCost} rope`; // Correct calculation
+            debrisNetButton.textContent = `Cost: ${currentNetCost} rope`;
         }
     }
 
+    // Upgrade Storage
     const storageUpgradeButton = document.querySelector('[data-action="Upgrade storage"] .cost');
     if (storageUpgradeButton) {
         const currentUpgradeCost = costs.storageUpgrade.baseWood + (gameState.storageUpgrades * costs.storageUpgrade.additionalCostPerUpgrade);
         storageUpgradeButton.textContent = `Cost: ${currentUpgradeCost} wood`;
     }
 
+    // Craft Raft
     const raftButton = document.querySelector('[data-action="Craft raft"] .cost');
     if (raftButton) {
         raftButton.textContent = `Cost: ${costs.raft.wood} wood, ${costs.raft.rope} rope`;
     }
+
+    // Craft Flag
+    const flagButton = document.querySelector('[data-action="Craft flag"] .cost');
+    if (flagButton) {
+        flagButton.textContent = `Cost: ${costs.flag.wood} wood, ${costs.flag.rope} rope, ${costs.flag.fabric} fabric`;
+    }
+
+    // Repair Mast
+    const repairMastButton = document.querySelector('[data-action="Repair mast"] .cost');
+    if (repairMastButton) {
+        repairMastButton.textContent = `Cost: ${costs.mast.wood} wood, ${costs.mast.rope} rope`;
+    }
+
+    // Repair Sails
+    const repairSailsButton = document.querySelector('[data-action="Repair sails"] .cost');
+    if (repairSailsButton) {
+        repairSailsButton.textContent = `Cost: ${costs.sails.fabric} fabric, ${costs.sails.wood} wood`;
+    }
 }
+
+
 
 
 function getRandomLetter() {
@@ -542,6 +635,7 @@ function clearActionButtons() {
     actionsContainer.innerHTML = '';
 }
 
+
 function startHeadacheMessage() {
     // Prevent multiple intervals
     if (headacheInterval) return;
@@ -549,7 +643,7 @@ function startHeadacheMessage() {
     // Only schedule if headacheActive is true
     if (gameState.headacheActive) {
         headacheInterval = setInterval(() => {
-            addMessage('Your head is throbbing.');
+            addMessage('Your head is pounding.');
         }, 180000); // Every 3 minutes
     }
 }
@@ -1141,7 +1235,7 @@ function craftDebrisNetAction() {
 
 
 function upgradeStorageAction() {
-    const currentUpgradeCost = 50 + (gameState.storageUpgrades * 50); // Each upgrade costs 50 wood more
+    const currentUpgradeCost = costs.storageUpgrade.baseWood + (gameState.storageUpgrades * 50); // Each upgrade costs 50 wood more
 
     if (gameState.storage.wood >= currentUpgradeCost) {
         gameState.storage.wood -= currentUpgradeCost;
@@ -1233,7 +1327,7 @@ function craftFlagAction() {
         gameState.flagCrafted = true;
 
         addMessage(`You craft a flag using ${requiredWood} wood, ${requiredRope} rope, and ${requiredFabric} fabric.`);
-        setTimeout(() => addMessage('Hopefully passing sailors will be curious.'), 2000);
+        setTimeout(() => addMessage('Hopefully passing sailors will be curious.', true), 2000);
 
         updateStorageDisplay();
 
@@ -1263,32 +1357,49 @@ function spawnSailor() {
         return;
     }
 
-    // Define sailor options
-    const message = 'A stranded sailor has been found. Do you want to accept them as a crewmate for 20 food?';
+    // List of potential sailor names (ensure this list is stored outside of the function to persist across calls)
+    if (!gameState.availableSailorNames || gameState.availableSailorNames.length === 0) {
+        gameState.availableSailorNames = ['Elias', 'Mira', 'Rafe', 'Suri', 'Cassian', 'Elara', 'Kris', 'Viktor', 'Lyra', 'Selene', 'Cleo', 'Jaxon', 'Ray'];
+    }
+
+    // Randomly choose a name from the list
+    const randomIndex = Math.floor(Math.random() * gameState.availableSailorNames.length);
+    const randomName = gameState.availableSailorNames[randomIndex];
+
+    // Remove the chosen name from the list
+    gameState.availableSailorNames.splice(randomIndex, 1);
+
+    // Define sailor options with the chosen name
+    const message = `A stranded sailor named ${randomName} pulls up next to your ship. They will join you, but ask for 20 food up front.`;
     showAlert(message, [
         {
             text: 'Accept',
             callback: () => {
                 if (gameState.storage.food >= 20) {
                     gameState.storage.food -= 20;
-                    const newSailor = { id: Date.now(), name: `Sailor ${gameState.crew.length + 1}` };
+                    const newSailor = { id: Date.now(), name: randomName }; // Use the chosen name for the new sailor
                     gameState.crew.push(newSailor);
-                    addMessage('You have accepted a new crewmate.');
+                    addMessage(`You have accepted ${randomName} as a new crewmate.`);
                     updateNetsAndCrewDisplay(); // Use the combined display
 
                     // Start fabric collection if this is the first crew member
                     if (gameState.crew.length === 1 && !crewInterval) {
                         startcrewCollection();
                     }
+
+                    // Prompt to repair mast and sails after adding the first crewmate
+                    if (gameState.crew.length === 1) {
+                        promptMastAndSails();
+                    }
                 } else {
-                    addMessage('You do not have enough food to accept the sailor.');
+                    addMessage(`You do not have enough food to accept ${randomName}.`);
                 }
             }
         },
         {
             text: 'Turn Away',
             callback: () => {
-                addMessage('You have turned away the stranded sailor.');
+                addMessage(`You have turned away ${randomName}.`);
             }
         }
     ]);
@@ -1296,6 +1407,98 @@ function spawnSailor() {
     // Schedule the next sailor encounter
     scheduleNextSailorEncounter();
 }
+
+
+
+// Function to prompt player to repair mast and sails
+function promptMastAndSails() {
+    if (!gameState.mastPrompted) {
+        gameState.mastPrompted = true;
+        addMessage('Repairing the mast could stabilize your ship.', true);
+        addActionButton('Repair mast');
+    }
+
+    if (!gameState.sailsPrompted) {
+        gameState.sailsPrompted = true;
+        addMessage('Repairing the sails could improve your navigation.', true);
+        addActionButton('Repair sails');
+    }
+}
+
+// Function to repair the mast
+function repairMastAction() {
+    const requiredWood = costs.mast.wood;
+    const requiredRope = costs.mast.rope;
+
+    if (gameState.storage.wood >= requiredWood && gameState.storage.rope >= requiredRope) {
+        // Deduct resources
+        gameState.storage.wood -= requiredWood;
+        gameState.storage.rope -= requiredRope;
+
+        // Update game state
+        gameState.mastCrafted = true;
+
+        addMessage(`You repair the mast using ${requiredWood} wood and ${requiredRope} rope. The ship feels sturdier now.`);
+
+        updateStorageDisplay();
+
+        // Remove the "Repair mast" button
+        const actionsContainer = document.getElementById('actions');
+        const mastButtonContainer = actionsContainer.querySelector('[data-action="Repair mast"]');
+        if (mastButtonContainer) {
+            mastButtonContainer.remove();
+        }
+
+        // Check if both mast and sails are crafted
+        checkBothCrafted();
+    } else {
+        addMessage(`You don't have enough resources to repair the mast. Required: ${requiredWood} wood and ${requiredRope} rope.`);
+    }
+}
+
+
+// Function to repair the sails
+function repairSailsAction() {
+    const requiredFabric = costs.sails.fabric;
+    const requiredWood = costs.sails.wood;
+
+    if (gameState.storage.fabric >= requiredFabric && gameState.storage.wood >= requiredWood) {
+        // Deduct resources
+        gameState.storage.fabric -= requiredFabric;
+        gameState.storage.wood -= requiredWood;
+
+        // Update game state
+        gameState.sailsCrafted = true;
+
+        addMessage(`You repair the sails using ${requiredFabric} fabric and ${requiredWood} wood. The sails are now in excellent condition.`);
+
+        updateStorageDisplay();
+
+        // Remove the "Repair sails" button
+        const actionsContainer = document.getElementById('actions');
+        const sailsButtonContainer = actionsContainer.querySelector('[data-action="Repair sails"]');
+        if (sailsButtonContainer) {
+            sailsButtonContainer.remove();
+        }
+
+        // Check if both mast and sails are crafted
+        checkBothCrafted();
+    } else {
+        addMessage(`You don't have enough resources to repair the sails. Required: ${requiredFabric} fabric and ${requiredWood} wood.`);
+    }
+}
+
+
+// Function to check if both mast and sails have been crafted
+function checkBothCrafted() {
+    if (gameState.mastCrafted && gameState.sailsCrafted && !gameState.sailsAndMastCrafted) {
+        gameState.sailsAndMastCrafted = true;
+        addMessage('With both the mast and sails repaired, your ship is now fully functional. New opportunities await.', true);
+        
+        startEventLoop(); // Start the event loop after both are crafted
+    }
+}
+
 
 
 // Function to schedule the next sailor encounter
@@ -1345,15 +1548,15 @@ function updateNetsAndCrewDisplay() {
     const displayElement = document.getElementById('nets-and-crew-display');
     if (!displayElement) return; // Ensure the element exists
 
-    // Only display when Above Deck and either debris nets or crew exist
-    if (gameState.location === 'Above Deck' && (gameState.netsCrafted > 0 || gameState.crew.length > 0)) {
+    // Display when there are debris nets or crew, regardless of location
+    if (gameState.netsCrafted > 0 || gameState.crew.length > 0) {
         let displayContent = '';
 
         // Debris Nets Section
         if (gameState.netsCrafted > 0) {
             displayContent += `
                 <div class="section nets-info">
-                    <p><strong>Debris Nets (${gameState.netsCrafted}/${gameState.maxNetsCrafted}:</strong></p>
+                    <p><strong>Debris Nets (${gameState.netsCrafted}/${gameState.maxNetsCrafted}):</strong></p>
                     <p>You have ${gameState.netsCrafted} debris net(s) collecting resources.</p>
                     <p>Your nets are collecting: ${gameState.netsCrafted} wood, ${gameState.netsCrafted} rope, ${gameState.netsCrafted} food every 20 seconds.</p>
                 </div>
@@ -1379,6 +1582,234 @@ function updateNetsAndCrewDisplay() {
 }
 
 
+
+function startEventLoop() {
+    scheduleNextEvent();
+}
+
+function scheduleNextEvent() {
+    // Random delay between 2 to 5 minutes (120,000 to 300,000 milliseconds)
+    const delay = Math.floor(Math.random() * (300000 - 120000 + 1)) + 120000;
+    setTimeout(triggerRandomEvent, delay);
+}
+
+
+function triggerRandomEvent() {
+    const availableEvents = eventList.filter(event => {
+        if (event.type === 'unique') {
+            return !gameState.uniqueEventsTriggered.includes(event.name);
+        }
+        return true; // Regular events are always available
+    });
+
+    if (availableEvents.length === 0) {
+        // No more unique events to trigger
+        return;
+    }
+
+    // Select a random event from available events
+    const randomIndex = Math.floor(Math.random() * availableEvents.length);
+    const selectedEvent = availableEvents[randomIndex];
+
+    // Execute the event's handler
+    selectedEvent.handler();
+
+    // If it's a unique event, mark it as triggered
+    if (selectedEvent.type === 'unique') {
+        gameState.uniqueEventsTriggered.push(selectedEvent.name);
+    }
+
+    // Schedule the next event
+    scheduleNextEvent();
+}
+
+
+function wanderingTraderEvent() {
+    addMessage('A small trading vessel approaches your ship with a friendly trader.');
+    setTimeout(() => showAlert('The trader offers you two trades:', [
+        {
+            text: 'Trade Wood for Rope (80 Wood → 20 Rope)',
+            callback: () => {
+                if (gameState.storage.wood >= 80) {
+                    gameState.storage.wood -= 80;
+                    gameState.storage.rope += 20;
+                    addMessage('You traded 80 wood for 20 rope.');
+                    updateStorageDisplay();
+                } else {
+                    addMessage('You do not have enough wood to trade.');
+                }
+            }
+        },
+        {
+            text: 'Trade Food for Fabric (20 Food → 5 Fabric)',
+            callback: () => {
+                if (gameState.storage.food >= 20) {
+                    gameState.storage.food -= 20;
+                    gameState.storage.fabric += 5;
+                    addMessage('You traded 20 food for 5 fabric.');
+                    updateStorageDisplay();
+                } else {
+                    addMessage('You do not have enough food to trade.');
+                }
+            }
+        },
+        {
+            text: 'Decline',
+            callback: () => {
+                addMessage('You politely decline the trader\'s offers.');
+            }
+        }
+    ]), 2000); // 2 seconds delay before showing the alert
+}
+
+function smokeSignalEvent() {
+    setTimeout(() => showAlert('A smoke signal is spotted on the horizon.', [
+        {
+            text: 'Yes',
+            callback: () => {
+                const outcome = Math.random();
+                if (outcome < 0.25) {
+                    // Sinking ship with crewmates who join
+                    if (gameState.crew.length < gameState.maxCrew) {
+                        gameState.crew.push({ id: Date.now(), name: `Sailor ${gameState.crew.length + 1}` });
+                        addMessage('You find a sinking ship with stranded sailors. They join your crew.');
+                        updateNetsAndCrewDisplay();
+                    } else {
+                        addMessage('You find a sinking ship with sailors, but your crew is already at maximum capacity.');
+                    }
+                } else if (outcome < 0.5) {
+                    // Ambush that kills a crewmate
+                    if (gameState.crew.length > 0) {
+                        const lostCrew = gameState.crew.pop();
+                        addMessage(`An ambush attacks your ship. You lose a crewmate: ${lostCrew.name}.`);
+                        updateNetsAndCrewDisplay();
+                    } else {
+                        addMessage('An ambush attacks your ship, but you have no crew to lose.');
+                    }
+                } else if (outcome < 0.75) {
+                    // Ambush that steals some wood and food
+                    const stolenWood = Math.min(5, gameState.storage.wood);
+                    const stolenFood = Math.min(5, gameState.storage.food);
+                    gameState.storage.wood -= stolenWood;
+                    gameState.storage.food -= stolenFood;
+                    addMessage(`An ambush attacks your ship and steals ${stolenWood} wood and ${stolenFood} food.`);
+                    updateStorageDisplay();
+                } else {
+                    // Sinking ship with dead crew but some debris
+                    const debrisWood = Math.floor(Math.random() * 5) + 1;
+                    const debrisRope = Math.floor(Math.random() * 5) + 1;
+                    gameState.storage.wood += debrisWood;
+                    gameState.storage.rope += debrisRope;
+                    addMessage('You find a sinking ship with dead sailors but salvage some debris:');
+                    addMessage(`+${debrisWood} wood, +${debrisRope} rope.`);
+                    updateStorageDisplay();
+                }
+            }
+        },
+        {
+            text: 'No',
+            callback: () => {
+                addMessage('You decide not to investigate the smoke signal.');
+            }
+        }
+    ]), 2000);
+}
+
+function shipwreckFoundEvent() {
+    setTimeout(() => showAlert('You come across a shipwreck floating in the sea. No survivors can be seen.', [
+        {
+            text: 'Yes',
+            callback: () => {
+                const foundWood = Math.floor(Math.random() * 10) + 5;
+                const foundRope = Math.floor(Math.random() * 5) + 2;
+                const foundFood = Math.floor(Math.random() * 5) + 1;
+                const foundFabric = Math.floor(Math.random() * 3); // Fabric might not always be found
+                
+                gameState.storage.wood += foundWood;
+                gameState.storage.rope += foundRope;
+                gameState.storage.food += foundFood;
+                if (foundFabric > 0) {
+                    gameState.storage.fabric += foundFabric;
+                    if (!gameState.discoveredResources.includes('fabric')) {
+                        gameState.discoveredResources.push('fabric');
+                        addMessage('You discovered fabric at the shipwreck!');
+                    }
+                }
+                
+                addMessage(`You scavenge the shipwreck and collect ${foundWood} wood, ${foundRope} rope, ${foundFood} food${foundFabric > 0 ? `, and ${foundFabric} fabric` : ''}.`);
+                updateStorageDisplay();
+            }
+        },
+        {
+            text: 'No',
+            callback: () => {
+                addMessage('You decide to leave the shipwreck untouched.');
+            }
+        }
+    ]), 2000);
+}
+
+function rogueWaveEvent() {
+    setTimeout(() => showAlert('A rogue wave suddenly surges over the bow, causing damage to your ship.', [
+        {
+            text: 'Secure the Ship',
+            callback: () => {
+                const lostWood = Math.floor(Math.random() * 10) + 5;
+                const lostRope = Math.floor(Math.random() * 5) + 2;
+                gameState.storage.wood = Math.max(0, gameState.storage.wood - lostWood);
+                gameState.storage.rope = Math.max(0, gameState.storage.rope - lostRope);
+                addMessage(`You manage to secure the ship but lose ${lostWood} wood and ${lostRope} rope in the process.`);
+                updateStorageDisplay();
+            }
+        },
+        {
+            text: 'Take Cover',
+            callback: () => {
+                const chance = Math.random();
+                if (chance < 0.5 && gameState.crew.length > 0) {
+                    const lostCrew = gameState.crew.pop();
+                    addMessage(`In the chaos, ${lostCrew.name} is lost at sea.`);
+                    updateNetsAndCrewDisplay();
+                } else if (chance >= 0.5) {
+                    const lostWood = Math.floor(Math.random() * 5) + 1;
+                    gameState.storage.wood = Math.max(0, gameState.storage.wood - lostWood);
+                    addMessage(`You take cover but still lose ${lostWood} wood due to the impact.`);
+                    updateStorageDisplay();
+                } else {
+                    addMessage('You survive the rogue wave without any losses.');
+                }
+            }
+        },
+        {
+            text: 'Ignore',
+            callback: () => {
+                addMessage('You choose to ignore the rogue wave, risking greater damage.');
+                // Potentially add more severe consequences here
+            }
+        }
+    ]), 2000);
+}
+
+function flotillaEncounterEvent() {
+    setTimeout(() => showAlert('You come across a flotilla of linked ships. They appear suspicious of your strange vessel but offer assistance.', [
+        {
+            text: 'Accept',
+            callback: () => {
+                // Increase crew and debris nets capacity
+                gameState.maxCrew += 3;
+                gameState.maxNetsCrafted += 3;
+                addMessage('You accept their offer. Your crew size and debris nets capacity have increased by 3.');
+                updateNetsAndCrewDisplay();
+            }
+        },
+        {
+            text: 'Decline',
+            callback: () => {
+                addMessage('You decline their offer and continue on your journey.');
+            }
+        }
+    ]), 2000);
+}
 
 
 
@@ -1551,7 +1982,6 @@ function distributeItems(items, spaceLeft) {
 
 // Switch location when location name is clicked
 function switchLocation(targetLocation) {
-
     if (gameState.location !== targetLocation) {
         gameState.location = targetLocation;
         updateLocationDisplay();
@@ -1598,19 +2028,19 @@ function switchLocation(targetLocation) {
             // Add "Craft raft" button if prompted and raft not yet crafted
             if (gameState.raftPrompted && !gameState.raftCrafted) {
                 addActionButton('Craft raft');
-                const raftButtonExists = document.querySelector('[data-action="Craft raft"]');
-                if (!raftButtonExists) {
-                    addActionButton('Craft raft');
-                }
             }
 
             // Add "Craft flag" button if prompted and flag not yet crafted
             if (gameState.flagPrompted && !gameState.flagCrafted) {
                 addActionButton('Craft flag');
-                const flagButtonExists = document.querySelector('[data-action="Craft flag"]');
-                if (!flagButtonExists) {
-                    addActionButton('Craft flag');
-                }
+            }
+
+            // Add "Repair mast" and "Repair sails" if prompted and not yet crafted
+            if (gameState.mastPrompted && !gameState.mastCrafted) {
+                addActionButton('Repair mast');
+            }
+            if (gameState.sailsPrompted && !gameState.sailsCrafted) {
+                addActionButton('Repair sails');
             }
 
         } else if (gameState.location === 'Below Deck') {
@@ -1628,7 +2058,7 @@ function switchLocation(targetLocation) {
                 addActionButton('Eat food');
 
                 // Show storage upgrade button if necessary
-                if (getTotalItems(gameState.storage) >= gameState.maxStorage || gameState.storagePrompted == true) {
+                if (getTotalItems(gameState.storage) >= gameState.maxStorage || gameState.storagePrompted === true) {
                     addActionButton('Upgrade storage');
                     gameState.storagePrompted = true;
                 }
@@ -1644,6 +2074,7 @@ function switchLocation(targetLocation) {
     // Always update nets and crew display, regardless of location
     updateNetsAndCrewDisplay();
 }
+
 
 
 
