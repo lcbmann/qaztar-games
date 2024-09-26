@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="sunkenskystyles.css">
     <!-- Link to the favicon -->
     <link rel="icon" href="faviconsss.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <div id="game-container">
@@ -24,9 +26,22 @@
                 <div id="inventory"></div> 
                 <div id="storage"></div> 
             </div>
+            <!-- Combined Debris Nets and Crew Display -->
+            <div id="nets-and-crew-display" class="box"></div>
         </div>
     </div>
     
+    <!-- Alert Modal -->
+    <div id="alert-modal" class="hidden">
+        <div class="alert-overlay"></div>
+        <div class="alert-content">
+            <p id="alert-message">This is an alert message.</p>
+            <div id="alert-buttons" class="alert-buttons">
+                <!-- Buttons will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
     <script src="sunkensky.js"></script>
 </body>
 </html>
