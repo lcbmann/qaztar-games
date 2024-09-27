@@ -77,10 +77,10 @@ body.below-deck::before {
     --background-tint: rgba(0, 0, 0, 0.8); /* Dark tint for Below Deck */
 }
 
-/* Lightning Flash Effect */
+/* Lightning Flash Effect - More Subtle */
 body.lightning-flash::before {
-    background-color: rgba(255, 255, 255, 0.8); /* Bright white flash */
-    transition: background-color 0.1s ease-in-out;
+    background-color: rgba(255, 255, 255, 0.4); /* Reduced opacity for subtle flash */
+    transition: background-color 0.2s ease-in-out; /* Slightly longer transition */
 }
 
 /* Layout adjustments */
@@ -375,15 +375,3 @@ body.lightning-flash::before {
     margin: 5px 0;
 }
 
-/* Additional Styles for Full Screen Background */
-body::before {
-    /* Ensure the pseudo-element covers the entire viewport */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    content: '';
-    pointer-events: none;
-    z-index: -1;
-}
