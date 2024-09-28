@@ -33,6 +33,11 @@ const costs = {
         wood: 50,
         fabric: 30,
     },
+    extractor : {
+        wood: 100,
+        fabric: 50,
+        rope: 75
+    }
 
 };
 
@@ -45,9 +50,9 @@ let gameState = {
     discoveredLocations: ['Below Deck'], // Start with only 'Below Deck' discovered
     actionCooldowns: {}, // Store cooldowns for actions
     weather: 'windy', // Current weather
-    storage: { wood: 2, rope: 2, food: 4, bucket: 0, fabric: 0 }, // Initial storage amounts, including buckets
-    maxStorage: 150, // Maximum storage capacity
-    inventory: { wood: 0, rope: 0, food: 0, fabric: 0 }, // Player's carry inventory
+    storage: { wood: 300, rope: 2, food: 4, bucket: 0, fabric: 0, metal: 0 }, // Initial storage amounts, including buckets
+    maxStorage: 500, // Maximum storage capacity
+    inventory: { wood: 0, rope: 0, food: 0, fabric: 0, metal: 0 }, // Player's carry inventory
     discoveredResources: ['wood', 'rope', 'food'], // Initial resources discovered
     baseMaxInventory: 15, // Base max items player can carry
     maxInventory: 15, // Current max inventory, increases with buckets
@@ -96,9 +101,11 @@ let gameState = {
     sailsCrafted: false,
     sailsAndMastCrafted: false,
     uniqueEventsTriggered: [],
+    extractorPrompted: false,
+    extractorCrafted: false
 };
 
-const resources = ['wood', 'rope', 'food', 'fabric'];
+const resources = ['wood', 'rope', 'food', 'fabric', 'metal'];
 const weatherOptions = ['windy', 'cloudy', 'rainy', 'stormy'];
 let currentWeatherIndex = 0;
 
@@ -112,7 +119,7 @@ let rainBarrelHintTimeout;
 // Action definitions
 const actions = {
     'Stand up': {
-        cooldown: 5,
+        cooldown: 1,
         execute: standUpAction,
     },
     'Climb the stairs': {
@@ -175,6 +182,15 @@ const actions = {
         cooldown: 0,
         execute: repairSailsAction,
     },
+    'Craft extractor' : {
+        cooldown: 0,
+        execute: craftExtractorAction,
+    },
+    'Extract metal' : {
+        cooldown: 20,
+        execute: extractMetalAction,
+    }
+    
 };
 
 const eventList = [
@@ -320,21 +336,32 @@ function startLightningEffect() {
         clearInterval(gameState.lightningInterval);
     }
 
-    gameState.lightningInterval = setInterval(() => {
-        // Add a temporary class to trigger the flash
+    // Define minimum and maximum interval durations in milliseconds
+    const minInterval = 5000; // 5 seconds
+    const maxInterval = 12000; // 12 seconds
+
+    // Function to trigger a lightning flash
+    const triggerFlash = () => {
         body.classList.add('lightning-flash');
 
         // Remove the class after the flash duration
         setTimeout(() => {
             body.classList.remove('lightning-flash');
-        }, 100); // Flash duration of 100ms
-    }, Math.random() * 5000 + 2000); // Random interval between 2-7 seconds
+        }, 80); // Flash duration of 80ms
+
+        // Schedule the next flash
+        const nextFlash = Math.random() * (maxInterval - minInterval) + minInterval;
+        gameState.lightningInterval = setTimeout(triggerFlash, nextFlash);
+    };
+
+    // Initial flash trigger
+    triggerFlash();
 }
 
 // Function to stop lightning effect
 function stopLightningEffect() {
     if (gameState.lightningInterval) {
-        clearInterval(gameState.lightningInterval);
+        clearTimeout(gameState.lightningInterval);
         gameState.lightningInterval = null;
     }
 
@@ -400,7 +427,7 @@ function addActionButton(actionName) {
     if (!action) return;
 
     // Update the list of above-deck-only actions to include new crafting options
-    const aboveDeckOnlyActions = ['Craft flag', 'Repair Mast', 'Repair Sails'];
+    const aboveDeckOnlyActions = ['Craft flag', 'Repair mast', 'Repair sails', 'Craft extractor', 'Extract metal'];
     if (aboveDeckOnlyActions.includes(actionName) && gameState.location !== 'Above Deck') {
         return; // Do not add the button if not above deck
     }
@@ -447,10 +474,14 @@ function addActionButton(actionName) {
         costElement.textContent = `Cost: ${costs.mast.wood} wood, ${costs.mast.rope} rope`;
     } else if (actionName === 'Repair sails') { // Handle Repair Sails costs
         costElement.textContent = `Cost: ${costs.sails.fabric} fabric, ${costs.sails.wood} wood`;
+    } else if (actionName === 'Craft extractor') { // Handle Craft Extractor costs
+        costElement.textContent = `Cost: ${costs.extractor.wood} wood, ${costs.extractor.rope} rope, ${costs.extractor.fabric} fabric`;
+    } else if (actionName === 'Extract metal') { // "Extract metal" has no cost
+        // No cost display needed
     }
 
     buttonContainer.appendChild(button);
-    if (costElement.textContent) {
+    if (costElement.textContent && actionName !== 'Extract metal') { // Exclude "Extract metal" from cost display
         buttonContainer.appendChild(costElement);
     }
 
@@ -557,6 +588,14 @@ function updateActionButtonCosts() {
     if (repairSailsButton) {
         repairSailsButton.textContent = `Cost: ${costs.sails.fabric} fabric, ${costs.sails.wood} wood`;
     }
+
+    // Craft Extractor
+    const extractorButton = document.querySelector('[data-action="Craft extractor"] .cost');
+    if (extractorButton) {
+        extractorButton.textContent = `Cost: ${costs.extractor.wood} wood, ${costs.extractor.rope} rope, ${costs.extractor.fabric} fabric`;
+    }
+
+    // **No cost update needed for "Extract metal" since it has no cost**
 }
 
 
@@ -947,10 +986,13 @@ function depositItemsAction() {
         return;
     }
 
-    // Determine which resources can be deposited (including fabric if discovered)
+    // Determine which resources can be deposited (including fabric and metal if discovered)
     const resourcesToDeposit = ['wood', 'rope', 'food'];
     if (gameState.discoveredResources.includes('fabric')) {
         resourcesToDeposit.push('fabric');
+    }
+    if (gameState.discoveredResources.includes('metal')) {
+        resourcesToDeposit.push('metal');
     }
 
     // Extract current inventory amounts for the resources to deposit
@@ -965,8 +1007,12 @@ function depositItemsAction() {
         const depositedRope = distributed[1];
         const depositedFood = distributed[2];
         let depositedFabric = 0;
+        let depositedMetal = 0;
         if (resourcesToDeposit.includes('fabric')) {
             depositedFabric = distributed[3] || 0;
+        }
+        if (resourcesToDeposit.includes('metal')) {
+            depositedMetal = distributed[4] || 0;
         }
 
         // Update storage with deposited items
@@ -976,6 +1022,9 @@ function depositItemsAction() {
         if (depositedFabric > 0) {
             gameState.storage.fabric += depositedFabric;
         }
+        if (depositedMetal > 0) {
+            gameState.storage.metal += depositedMetal;
+        }
 
         // Reduce inventory accordingly
         gameState.inventory.wood -= depositedWood;
@@ -983,6 +1032,9 @@ function depositItemsAction() {
         gameState.inventory.food -= depositedFood;
         if (depositedFabric > 0) {
             gameState.inventory.fabric -= depositedFabric;
+        }
+        if (depositedMetal > 0) {
+            gameState.inventory.metal -= depositedMetal;
         }
 
         // Construct deposit message
@@ -992,6 +1044,7 @@ function depositItemsAction() {
         if (depositedRope > 0) depositedItems.push(`${depositedRope} rope`);
         if (depositedFood > 0) depositedItems.push(`${depositedFood} food`);
         if (depositedFabric > 0) depositedItems.push(`${depositedFabric} fabric`);
+        if (depositedMetal > 0) depositedItems.push(`${depositedMetal} metal`);
         depositMessage += depositedItems.join(', ') + '.';
         addMessage(depositMessage);
 
@@ -1471,6 +1524,8 @@ function checkBothCrafted() {
         addMessage('With both the mast and sails repaired, your ship is now fully functional. New opportunities await.', true);
         
         startEventLoop(); // Start the event loop after both are crafted
+
+        setTimeout(() => promptExtractorCraft(), 3000);
     }
 }
 
@@ -1492,7 +1547,7 @@ function scheduleNextSailorEncounter() {
 // Variable to hold the interval for crew fabric collection
 let crewInterval = null;
 
-// Function to start automatic fabric collection by crew members
+// Function to start automatic fabric and metal collection by crew members
 function startcrewCollection() {
     if (crewInterval) return; // Prevent multiple intervals
 
@@ -1504,18 +1559,46 @@ function startcrewCollection() {
                 return;
             }
 
-            const totalFabricCollected = gameState.crew.length; // 1 fabric per crew member
+            // Each crew member collects 1 fabric and 1 metal, if metal has been discovered
+            let fabricToCollect = gameState.crew.length;
+            let metalToCollect = gameState.extractorCrafted ? gameState.crew.length : 0;
 
-            const fabricToCollect = Math.min(totalFabricCollected, spaceLeft);
+            // Adjust based on storage space
+            if (fabricToCollect + metalToCollect > spaceLeft) {
+                const availableSpace = spaceLeft;
+                const perCrew = gameState.extractorCrafted ? 2 : 1; // 2 if metal is collected
+                fabricToCollect = Math.min(Math.floor(availableSpace / perCrew), fabricToCollect);
+                metalToCollect = gameState.extractorCrafted ? Math.min(Math.floor(availableSpace / perCrew), metalToCollect) : 0;
+            }
+
+            let collectedMessage = '';
 
             if (fabricToCollect > 0) {
                 gameState.storage.fabric += fabricToCollect;
-                addMessage(`Your crew has collected ${fabricToCollect} fabric.`);
-                updateStorageDisplay();
-                updateNetsAndCrewDisplay(); // Update combined display
+                collectedMessage += `Your crew has collected ${fabricToCollect} fabric`;
             }
+
+            if (metalToCollect > 0) {
+                gameState.storage.metal += metalToCollect;
+                if (collectedMessage) collectedMessage += ' and ';
+                collectedMessage += `${metalToCollect} metal`;
+
+                // If metal is collected for the first time, add it to discoveredResources
+                if (gameState.storage.metal === metalToCollect) { // Means it was 0 before
+                    gameState.discoveredResources.push('metal');
+                    addMessage('Metal has been discovered and is now part of your resources.', true);
+                }
+            }
+
+            if (collectedMessage) {
+                collectedMessage += '.';
+                addMessage(collectedMessage);
+            }
+
+            updateStorageDisplay();
+            updateNetsAndCrewDisplay(); // Update combined display
         }
-    }, 20000); // Every 20 seconds
+    }, 20000); // Collect resources every 20 seconds
 }
 
 
@@ -1540,10 +1623,27 @@ function updateNetsAndCrewDisplay() {
 
         // Crew Section
         if (gameState.crew.length > 0) {
+            let collectionDescription = `${gameState.crew.length} fabric`;
+            let metalDescription = '';
+
+            if (gameState.extractorCrafted) {
+                collectionDescription += ` and ${gameState.crew.length} metal`;
+            }
+
             displayContent += `
                 <div class="section crew-info">
                     <p><strong>Crew (${gameState.crew.length}/${gameState.maxCrew}):</strong></p>
-                    <p>Your crew is collecting ${gameState.crew.length} fabric every 20 seconds.</p>
+                    <p>Your crew is collecting ${collectionDescription} every 20 seconds.</p>
+                </div>
+            `;
+        }
+
+        // Display storage metal if applicable
+        if (gameState.storage.metal > 0) {
+            displayContent += `
+                <div class="section metal-info">
+                    <p><strong>Metal (${gameState.storage.metal}):</strong></p>
+                    <p>You have collected ${gameState.storage.metal} metal.</p>
                 </div>
             `;
         }
@@ -1563,8 +1663,8 @@ function startEventLoop() {
 }
 
 function scheduleNextEvent() {
-    // Random delay between 2 to 5 minutes (120,000 to 300,000 milliseconds)
-    const delay = Math.floor(Math.random() * (300000 - 120000 + 1)) + 120000;
+
+    const delay = Math.floor(Math.random() * (300000 - 120000 + 1)) + 60000;
     setTimeout(triggerRandomEvent, delay);
 }
 
@@ -1600,8 +1700,7 @@ function triggerRandomEvent() {
 
 
 function wanderingTraderEvent() {
-    addMessage('A small trading vessel approaches your ship with a friendly trader.');
-    setTimeout(() => showAlert('The trader offers you two trades:', [
+    setTimeout(() => showAlert('A small trading vessel pulls up next to your vessel. The trader offers you two trades:', [
         {
             text: 'Trade Wood for Rope (80 Wood → 20 Rope)',
             callback: () => {
@@ -1787,6 +1886,101 @@ function flotillaEncounterEvent() {
 }
 
 
+function promptExtractorCraft() {
+    if (!gameState.extractorPrompted) {
+        gameState.extractorPrompted = true;
+        
+        // Select a random crew member's name
+        const crewNames = gameState.crew.map(member => member.name);
+        const randomCrewName = crewNames.length > 0 ? crewNames[Math.floor(Math.random() * crewNames.length)] : 'A crew member';
+        
+        // Display the prompt message in bold
+        addMessage(`${randomCrewName} claims the water here is dense in silt. We could extract useful materials from it.`, true);
+        
+        // Add the "Craft extractor" action button
+        setTimeout(() => {
+            if (gameState.location === 'Above Deck') {
+                addActionButton('Craft extractor');
+            }
+        }, 2000); // Delay of 2 seconds before showing the button
+    }
+}
+
+function craftExtractorAction() {
+    const requiredWood = costs.extractor.wood;
+    const requiredRope = costs.extractor.rope;
+    const requiredFabric = costs.extractor.fabric;
+
+    // Check if player has enough resources
+    if (
+        gameState.storage.wood >= requiredWood &&
+        gameState.storage.rope >= requiredRope &&
+        gameState.storage.fabric >= requiredFabric
+    ) {
+        // Deduct resources
+        gameState.storage.wood -= requiredWood;
+        gameState.storage.rope -= requiredRope;
+        gameState.storage.fabric -= requiredFabric;
+
+        // Update game state
+        gameState.extractorCrafted = true;
+
+        addMessage(`You craft the Extractor using ${requiredWood} wood, ${requiredRope} rope, and ${requiredFabric} fabric.`);
+        setTimeout(() => addMessage('The Extractor is ready to use for collecting metal from the water.', true), 2000);
+
+        updateStorageDisplay();
+
+        // Remove the "Craft extractor" button
+        const actionsContainer = document.getElementById('actions');
+        const extractorButton = actionsContainer.querySelector('[data-action="Craft extractor"]');
+        if (extractorButton) {
+            extractorButton.remove();
+        }
+
+        // Add the "Extract metal" button
+        if (gameState.location === 'Above Deck') {
+            addActionButton('Extract metal');
+        }
+    } else {
+        addMessage(`You don't have enough resources to craft the extractor. Required: ${requiredWood} wood, ${requiredRope} rope, and ${requiredFabric} fabric.`);
+    }
+
+    updateStorageDisplay();
+}
+
+function extractMetalAction() {
+    // Check if the player has crafted the extractor
+    if (!gameState.extractorCrafted) {
+        addMessage('You need to craft the extractor first.');
+        return;
+    }
+
+    // Check if the inventory is full
+    const totalInventory = getTotalItems(gameState.inventory);
+    const spaceLeft = gameState.maxInventory - totalInventory;
+
+    if (spaceLeft <= 0) {
+        addMessage('Your inventory is full. You need to deposit items below deck.');
+        return;
+    }
+
+    // Perform metal extraction
+    const metalFound = Math.floor(Math.random() * 5) + 5; // Collect 5-9 metal
+    const metalToAdd = Math.min(metalFound, spaceLeft);
+    gameState.inventory.metal += metalToAdd;
+
+    addMessage(`You extract ${metalToAdd} metal from the dense water.`);
+    updateInventoryDisplay();
+
+    // If metal is collected for the first time, add it to discoveredResources
+    if (metalToAdd > 0 && !gameState.discoveredResources.includes('metal')) {
+        gameState.discoveredResources.push('metal');
+        addMessage('Metal has been discovered and is now part of your resources.', true);
+        updateInventoryDisplay();
+        updateStorageDisplay();
+    }
+}
+
 
 // Function to update the inventory display
 function updateInventoryDisplay() {
@@ -1822,7 +2016,7 @@ function updateInventoryDisplay() {
 // Function to update the storage display
 function updateStorageDisplay() {
     const storageElement = document.getElementById('storage');
-    const totalStorage = getTotalItems(gameState.storage);
+    const totalStorage = getTotalItems(gameState.storage) + gameState.storage.metal;
 
     if (gameState.storageVisible && gameState.location === 'Below Deck') {
         let storageContent = `
@@ -1839,6 +2033,11 @@ function updateStorageDisplay() {
 
         if (gameState.storage.bucket > 0) {
             storageContent += `<p>Buckets: ${gameState.storage.bucket}</p>`;
+        }
+
+        // Display metal if at least one has been collected
+        if (gameState.storage.metal > 0) {
+            storageContent += `<p>Metal: ${gameState.storage.metal}</p>`;
         }
 
         storageContent += '</div>';
@@ -2034,6 +2233,16 @@ function switchLocation(targetLocation) {
                 addActionButton('Repair sails');
             }
 
+            // **Add "Craft extractor" button if prompted and not yet crafted**
+            if (gameState.extractorPrompted && !gameState.extractorCrafted) {
+                addActionButton('Craft extractor');
+            }
+
+            // **Add "Extract metal" button if extractor is crafted**
+            if (gameState.extractorCrafted) {
+                addActionButton('Extract metal');
+            }
+
         } else if (gameState.location === 'Below Deck') {
             // Add actions for Below Deck
             if (gameState.storageVisible) {
@@ -2062,9 +2271,6 @@ function switchLocation(targetLocation) {
         }
     }
 }
-
-
-
 
 function capitalize(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
