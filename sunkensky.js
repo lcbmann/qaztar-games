@@ -1364,7 +1364,7 @@ function spawnSailor() {
 
                     // Prompt to repair mast and sails after adding the first crewmate
                     if (gameState.crew.length === 1) {
-                        promptMastAndSails();
+                        setTimeout(() => promptMastAndSails(), 3000);
                     }
                 } else {
                     addMessage(`You do not have enough food to accept ${randomName}.`);
