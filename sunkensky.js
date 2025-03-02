@@ -33,7 +33,7 @@ const costs = {
         wood: 50,
         fabric: 30,
     },
-    extractor : {
+    extractor: {
         wood: 100,
         fabric: 50,
         rope: 75
@@ -88,9 +88,9 @@ let gameState = {
         '<i>A scrap of parchment, unnaturally warm to the touch, flutters into your hands. The ink has faded, but a strange symbol remains at the top, and a few lines are still clear.</i><br><br>"...the cloud is alive. I felt it. A breath, a pulse."',
         '<i>A small, ornate scroll, likely torn from a journal, is caught in the debris. The handwriting is neat and imprecise, as though written in haste.</i><br><br>"We\'re not the first to attempt this. The journals we found on the wreck suggest others sought the city long before us. Their paths end in silence, just like ours will."',
         '<i>A small scroll of parchment, the edges singed, is caught in the net.</i><br><br>"Is the city real? Or nothing but a fanciful illusion, a dream? The answer has been lost to time."',
-    
-    
-    ], 
+
+
+    ],
     flagPrompted: false,
     flagCrafted: false,
     crew: [],
@@ -166,31 +166,31 @@ const actions = {
         cooldown: 1, // Add a cooldown if desired
         execute: scavengeAtSeaAction, // Define the action here
     },
-    'Craft raft': { 
+    'Craft raft': {
         cooldown: 0,
         execute: craftRaftAction,
     },
-    'Craft flag' : {
+    'Craft flag': {
         cooldown: 0,
         execute: craftFlagAction,
     },
-    'Repair mast' : {
+    'Repair mast': {
         cooldown: 0,
         execute: repairMastAction,
     },
-    'Repair sails' : {
+    'Repair sails': {
         cooldown: 0,
         execute: repairSailsAction,
     },
-    'Craft extractor' : {
+    'Craft extractor': {
         cooldown: 0,
         execute: craftExtractorAction,
     },
-    'Extract metal' : {
+    'Extract metal': {
         cooldown: 20,
         execute: extractMetalAction,
     }
-    
+
 };
 
 const eventList = [
@@ -215,7 +215,7 @@ const eventList = [
         type: 'regular',
         handler: rogueWaveEvent,
     },
-    
+
     // Unique Events
     {
         name: 'Flotilla Encounter',
@@ -661,7 +661,7 @@ function clearActionButtons() {
 function startHeadacheMessage() {
     // Prevent multiple intervals
     if (headacheInterval) return;
-    
+
     // Only schedule if headacheActive is true
     if (gameState.headacheActive) {
         headacheInterval = setInterval(() => {
@@ -729,7 +729,7 @@ function startStaminaRegeneration() {
         if (gameState.stamina < gameState.maxStamina) {
             changeStamina(1);
         }
-    }, 10000);  
+    }, 10000);
 }
 
 // Action implementations
@@ -750,10 +750,10 @@ function standUpAction() {
 
 function climbStairsAction() {
     addMessage('You slowly make your way up the stairs.');
-    
+
     // Use switchLocation to handle the location change
     switchLocation('Above Deck');
-    
+
     // Add "Assess the situation" action after 2 seconds
     setTimeout(() => addActionButton('Assess the situation'), 2000);
 }
@@ -864,7 +864,7 @@ function scavengeDebrisAction() {
                     }
                 }
             ]);
-        } 
+        }
     }
 
     updateInventoryDisplay();
@@ -897,12 +897,12 @@ function scavengeAtSeaAction() {
     changeStamina(-15); // Subtract 15 stamina for scavenging at sea
 
     // Random amounts
-    const woodFound = Math.floor(Math.random() * 4) + 8;  
-    const ropeFound = Math.floor(Math.random() * 3) + 4;  
-    const foodFound = Math.floor(Math.random() * 3) + 0;  
-    const fabricFound = Math.floor(Math.random() * 2) + 1; 
+    const woodFound = Math.floor(Math.random() * 4) + 8;
+    const ropeFound = Math.floor(Math.random() * 3) + 4;
+    const foodFound = Math.floor(Math.random() * 3) + 0;
+    const fabricFound = Math.floor(Math.random() * 2) + 1;
 
-    if(fabricFound > 0 && !gameState.flagPrompted && !gameState.flagCrafted) {
+    if (fabricFound > 0 && !gameState.flagPrompted && !gameState.flagCrafted) {
         gameState.flagPrompted = true;
         setTimeout(() => {
             addMessage('Crafting a flag could help you communicate and find other sailors.', true);
@@ -956,7 +956,7 @@ function scavengeAtSeaAction() {
                     }
                 }
             ]);
-        } 
+        }
     }
 
     updateInventoryDisplay();
@@ -1226,18 +1226,18 @@ function craftRaftAction() {
 
 function craftDebrisNetAction() {
     const currentNetCost = costs.debrisNet.baseRope + (gameState.netsCrafted * costs.debrisNet.additionalCostPerNet);
-    
+
     if (gameState.netsCrafted >= gameState.maxNetsCrafted) {
         addMessage('You have reached the maximum number of debris nets.', true);
         return;
     }
-    
+
     if (gameState.storage.rope >= currentNetCost) {
         gameState.storage.rope -= currentNetCost;
         gameState.netsCrafted += 1; // Increment nets crafted
         addMessage(`You craft a debris net using ${currentNetCost} rope. It will now collect resources automatically.`, true);
         updateStorageDisplay();
-        updateNetsAndCrewDisplay(); 
+        updateNetsAndCrewDisplay();
         updateActionButtonCosts();
 
         // If this is the first debris net, start the collection interval
@@ -1522,7 +1522,7 @@ function checkBothCrafted() {
     if (gameState.mastCrafted && gameState.sailsCrafted && !gameState.sailsAndMastCrafted) {
         gameState.sailsAndMastCrafted = true;
         addMessage('With both the mast and sails repaired, your ship is now fully functional. New opportunities await.', true);
-        
+
         startEventLoop(); // Start the event loop after both are crafted
 
         setTimeout(() => promptExtractorCraft(), 3000);
@@ -1700,46 +1700,101 @@ function triggerRandomEvent() {
 
 
 function wanderingTraderEvent() {
-    setTimeout(() => showAlert('A small trading vessel pulls up next to your vessel. The trader offers you two trades:', [
+    // Define a list of possible trades
+    const possibleTrades = [
         {
             text: 'Trade Wood for Rope (80 Wood → 20 Rope)',
-            callback: () => {
-                if (gameState.storage.wood >= 80) {
-                    gameState.storage.wood -= 80;
-                    gameState.storage.rope += 20;
-                    addMessage('You traded 80 wood for 20 rope.');
-                    updateStorageDisplay();
-                } else {
-                    addMessage('You do not have enough wood to trade.');
-                }
-            }
+            required: { wood: 80 },
+            reward: { rope: 20 },
+            message: 'You traded 80 wood for 20 rope.'
         },
         {
             text: 'Trade Food for Fabric (20 Food → 5 Fabric)',
-            callback: () => {
-                if (gameState.storage.food >= 20) {
-                    gameState.storage.food -= 20;
-                    gameState.storage.fabric += 5;
-                    addMessage('You traded 20 food for 5 fabric.');
-                    updateStorageDisplay();
-                } else {
-                    addMessage('You do not have enough food to trade.');
-                }
-            }
+            required: { food: 20 },
+            reward: { fabric: 5 },
+            message: 'You traded 20 food for 5 fabric.'
         },
         {
-            text: 'Decline',
-            callback: () => {
-                addMessage('You politely decline the trader\'s offers.');
+            text: 'Trade Rope for Wood (15 Rope → 50 Wood)',
+            required: { rope: 15 },
+            reward: { wood: 50 },
+            message: 'You traded 15 rope for 50 wood.'
+        },
+        {
+            text: 'Trade Fabric for Food (5 Fabric → 15 Food)',
+            required: { fabric: 5 },
+            reward: { food: 15 },
+            message: 'You traded 5 fabric for 15 food.'
+        },
+        {
+            text: 'Trade Rope for Fabric (30 Rope → 8 Fabric)',
+            required: { rope: 10 },
+            reward: { fabric: 3 },
+            message: 'You traded 10 rope for 3 fabric.'
+        },
+        {
+            text: 'Trade Wood for Food (30 Wood → 10 Food)',
+            required: { wood: 30 },
+            reward: { food: 10 },
+            message: 'You traded 30 wood for 10 food.'
+        }
+    ];
+
+    // Randomly select two different trade offers
+    const shuffledTrades = possibleTrades.sort(() => 0.5 - Math.random());
+    const selectedTrades = shuffledTrades.slice(0, 2);
+
+    // Convert selected trades into the format for the showAlert function
+    const tradeOptions = selectedTrades.map(trade => ({
+        text: trade.text,
+        callback: () => {
+            const { required, reward, message } = trade;
+            let canTrade = true;
+
+            // Check if player has enough resources
+            for (let resource in required) {
+                if (gameState.storage[resource] < required[resource]) {
+                    canTrade = false;
+                    break;
+                }
+            }
+
+            if (canTrade) {
+                // Deduct the required resources
+                for (let resource in required) {
+                    gameState.storage[resource] -= required[resource];
+                }
+
+                // Add the reward resources
+                for (let resource in reward) {
+                    gameState.storage[resource] += reward[resource];
+                }
+
+                addMessage(message);
+                updateStorageDisplay();
+            } else {
+                addMessage(`You do not have enough resources to make this trade.`);
             }
         }
-    ]), 2000); // 2 seconds delay before showing the alert
+    }));
+
+    // Add an option to decline the trade
+    tradeOptions.push({
+        text: 'Decline',
+        callback: () => {
+            addMessage('You politely decline the trader\'s offers.');
+        }
+    });
+
+    // Show the trader's offer after a delay
+    setTimeout(() => showAlert('A small trading vessel pulls up next to your vessel. The trader offers you two trades:', tradeOptions), 2000); // 2 seconds delay
 }
+
 
 function smokeSignalEvent() {
     setTimeout(() => showAlert('A smoke signal is spotted on the horizon.', [
         {
-            text: 'Yes',
+            text: 'Investigate',
             callback: () => {
                 const outcome = Math.random();
                 if (outcome < 0.25) {
@@ -1755,10 +1810,10 @@ function smokeSignalEvent() {
                     // Ambush that kills a crewmate
                     if (gameState.crew.length > 0) {
                         const lostCrew = gameState.crew.pop();
-                        addMessage(`An ambush attacks your ship. You lose a crewmate: ${lostCrew.name}.`);
+                        addMessage(`An ambush attacks your ship. Crewmate ${lostCrew.name} is killed in the fighting.`);
                         updateNetsAndCrewDisplay();
                     } else {
-                        addMessage('An ambush attacks your ship, but you have no crew to lose.');
+                        addMessage('An ambush attacks your ship, but you manage to escape.');
                     }
                 } else if (outcome < 0.75) {
                     // Ambush that steals some wood and food
@@ -1781,7 +1836,7 @@ function smokeSignalEvent() {
             }
         },
         {
-            text: 'No',
+            text: 'Sail away',
             callback: () => {
                 addMessage('You decide not to investigate the smoke signal.');
             }
@@ -1798,18 +1853,12 @@ function shipwreckFoundEvent() {
                 const foundRope = Math.floor(Math.random() * 5) + 2;
                 const foundFood = Math.floor(Math.random() * 5) + 1;
                 const foundFabric = Math.floor(Math.random() * 3); // Fabric might not always be found
-                
+
                 gameState.storage.wood += foundWood;
                 gameState.storage.rope += foundRope;
                 gameState.storage.food += foundFood;
-                if (foundFabric > 0) {
-                    gameState.storage.fabric += foundFabric;
-                    if (!gameState.discoveredResources.includes('fabric')) {
-                        gameState.discoveredResources.push('fabric');
-                        addMessage('You discovered fabric at the shipwreck!');
-                    }
-                }
-                
+                gameState.storage.fabric += foundFabric;
+
                 addMessage(`You scavenge the shipwreck and collect ${foundWood} wood, ${foundRope} rope, ${foundFood} food${foundFabric > 0 ? `, and ${foundFabric} fabric` : ''}.`);
                 updateStorageDisplay();
             }
@@ -1889,14 +1938,14 @@ function flotillaEncounterEvent() {
 function promptExtractorCraft() {
     if (!gameState.extractorPrompted) {
         gameState.extractorPrompted = true;
-        
+
         // Select a random crew member's name
         const crewNames = gameState.crew.map(member => member.name);
         const randomCrewName = crewNames.length > 0 ? crewNames[Math.floor(Math.random() * crewNames.length)] : 'A crew member';
-        
+
         // Display the prompt message in bold
         addMessage(`${randomCrewName} claims the water here is dense in silt. We could extract useful materials from it.`, true);
-        
+
         // Add the "Craft extractor" action button
         setTimeout(() => {
             if (gameState.location === 'Above Deck') {
