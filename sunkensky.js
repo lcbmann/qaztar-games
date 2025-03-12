@@ -1,3 +1,165 @@
+window.devTools = {
+    addResource: (resource, amount) => {
+        if (gameState.storage[resource] !== undefined) {
+            gameState.storage[resource] += amount;
+        } else if (gameState.inventory[resource] !== undefined) {
+            gameState.inventory[resource] += amount;
+        }
+        console.log(`Added ${amount} ${resource}`);
+        updateInventoryDisplay();
+        updateStorageDisplay();
+    },
+    setFlag: (flag, value = true) => {
+        if (gameState.hasOwnProperty(flag)) {
+            gameState[flag] = value;
+            console.log(`Set ${flag} to ${value}`);
+        } else {
+            console.warn(`Flag ${flag} not found in gameState`);
+        }
+    },
+    triggerEvent: (eventName) => {
+        const event = eventList.find(e => e.name === eventName);
+        if (event) {
+            event.handler();
+            console.log(`Triggered event: ${eventName}`);
+        } else {
+            console.warn(`Event ${eventName} not found`);
+        }
+    },
+
+    // ~~~~~~~~~~~~~~~~~~~~~~
+    // The main "Skip" function
+    // ~~~~~~~~~~~~~~~~~~~~~~
+    skipToMetalCrafting: () => {
+        console.log("Skipping to mid-game with buckets, nets, raft, and metal extraction flow...");
+
+        // (A) Set ample resources
+        gameState.storage.wood = 1000;
+        gameState.storage.rope = 500;
+        gameState.storage.food = 200;
+        gameState.storage.fabric = 100;
+        gameState.storage.metal = 0;  // We'll start from 0 so we see metal extraction
+        gameState.inventory.wood = 0; // We'll craft everything directly from storage
+        gameState.inventory.rope = 0;
+        gameState.inventory.food = 0;
+        // Make sure we've discovered rope, wood, food, fabric, etc.
+        if (!gameState.discoveredResources.includes('fabric')) {
+            gameState.discoveredResources.push('fabric');
+        }
+
+        // Force "Below Deck" so we can craft buckets, etc.
+        switchLocation('Below Deck');
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // (B) In 1 second: Craft multiple buckets, Rain Barrel, do some storage upgrades, craft Debris Nets
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        setTimeout(() => {
+            // 1) Craft up to 2 or 3 buckets for extra space
+            while (gameState.bucketCrafted < 3) {
+                craftBucketAction();
+            }
+
+            // 2) Craft a rain barrel
+            if (!gameState.rainBarrelCrafted) {
+                craftRainBarrelAction();
+            }
+
+            // 3) Upgrade storage (twice) so we won't overflow
+            upgradeStorageAction();
+            upgradeStorageAction();
+
+            // 4) Craft 2 debris nets
+            //   (We can do more than 2 if you want, but let's do 2 for demonstration)
+            let netsToMake = 2;
+            while (netsToMake > 0 && gameState.netsCrafted < gameState.maxNetsCrafted) {
+                craftDebrisNetAction();
+                netsToMake--;
+            }
+        }, 1000);
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // (C) In 3 seconds: Go Above Deck, craft raft & flag, spawn a sailor
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        setTimeout(() => {
+            // Switch above deck so we can craft the raft & flag
+            switchLocation('Above Deck');
+
+            // 1) Craft raft
+            if (!gameState.raftCrafted) {
+                craftRaftAction();
+            }
+
+            // 2) Craft flag => triggers spawnSailor after 10sec
+            if (!gameState.flagCrafted) {
+                craftFlagAction();
+            }
+
+            // 3) Force immediate spawn of a sailor (so you see the "Accept" prompt):
+            //    If you want it immediate, call spawnSailor() directly:
+            // spawnSailor();
+
+            // Or rely on the 10 second timer after the flag is crafted.  
+            // We'll do it directly, for demonstration:
+            setTimeout(() => {
+                if (gameState.crew.length < 1) {
+                    spawnSailor();
+                }
+            }, 2000);
+
+        }, 3000);
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // (D) In 5 seconds: Repair mast & sails => triggers event loop
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        setTimeout(() => {
+            // We want to ensure we can do the repairs
+            if (!gameState.mastCrafted) {
+                repairMastAction();
+            }
+            if (!gameState.sailsCrafted) {
+                repairSailsAction();
+            }
+            // This will start the event loop & eventually prompt the extractor
+            // (which normally happens after sailsAndMastCrafted = true).
+        }, 5000);
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // (E) In 7 seconds: Craft the extractor
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        setTimeout(() => {
+            if (!gameState.extractorCrafted) {
+                craftExtractorAction();
+            }
+        }, 7000);
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // (F) In 9 seconds: Actually do a metal extraction so you see it in action
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        setTimeout(() => {
+            // "Extract metal" requires the user to be Above Deck:
+            if (gameState.location !== 'Above Deck') {
+                switchLocation('Above Deck');
+            }
+            if (gameState.extractorCrafted) {
+                extractMetalAction();
+            }
+        }, 9000);
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Wrap up around 10 seconds
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        setTimeout(() => {
+            addMessage("You're now set up for metal crafting in mid-game!", true);
+            console.log("Mid-game skip complete.");
+        }, 10000);
+
+    }
+};
+
+
+
+
+
 // Define a centralized costs object
 const costs = {
     bucket: {
@@ -37,7 +199,18 @@ const costs = {
         wood: 100,
         fabric: 50,
         rope: 75
-    }
+    },
+    foundry: {
+        wood: 200,
+        rope: 50,
+        metal: 50,
+    },
+    divingSuit: {
+        fabric: 50,
+        glass: 5,
+        rope: 25,
+        metal: 25,
+    },
 
 };
 
@@ -46,11 +219,11 @@ const costs = {
 let gameState = {
     location: 'Below Deck',
     standAttempts: 0,
-    locations: ['Below Deck', 'Above Deck'],
+    locations: ['Below Deck', 'Above Deck', 'Foundry'],
     discoveredLocations: ['Below Deck'], // Start with only 'Below Deck' discovered
     actionCooldowns: {}, // Store cooldowns for actions
     weather: 'windy', // Current weather
-    storage: { wood: 300, rope: 2, food: 4, bucket: 0, fabric: 0, metal: 0 }, // Initial storage amounts, including buckets
+    storage: { wood: 300, rope: 2, food: 4, bucket: 0, fabric: 0, metal: 0, glass: 0 }, // Initial storage amounts, including buckets
     maxStorage: 500, // Maximum storage capacity
     inventory: { wood: 0, rope: 0, food: 0, fabric: 0, metal: 0 }, // Player's carry inventory
     discoveredResources: ['wood', 'rope', 'food'], // Initial resources discovered
@@ -102,10 +275,14 @@ let gameState = {
     sailsAndMastCrafted: false,
     uniqueEventsTriggered: [],
     extractorPrompted: false,
-    extractorCrafted: false
+    extractorCrafted: false,
+    foundryPrompted: false,
+    foundryConstructed: false,
+    divingExplanationShown: false,
+
 };
 
-const resources = ['wood', 'rope', 'food', 'fabric', 'metal'];
+const resources = ['wood', 'rope', 'food', 'fabric', 'metal', 'glass'];
 const weatherOptions = ['windy', 'cloudy', 'rainy', 'stormy'];
 let currentWeatherIndex = 0;
 
@@ -189,7 +366,15 @@ const actions = {
     'Extract metal': {
         cooldown: 20,
         execute: extractMetalAction,
-    }
+    },
+    'Construct Foundry': {
+        cooldown: 0,
+        execute: constructFoundryAction,
+    },
+    'Craft diving suit': {
+        cooldown: 0,
+        execute: craftDivingSuitAction,
+    },
 
 };
 
@@ -215,6 +400,7 @@ const eventList = [
         type: 'regular',
         handler: rogueWaveEvent,
     },
+    
 
     // Unique Events
     {
@@ -247,14 +433,18 @@ function startGame() {
 // Helper function to apply location class to body
 function applyLocationClass(location) {
     const body = document.body;
-    body.classList.remove('above-deck', 'below-deck'); // Remove existing classes
+    // Remove ALL location classes
+    body.classList.remove('above-deck', 'below-deck', 'foundry');
 
     if (location === 'Above Deck') {
         body.classList.add('above-deck');
     } else if (location === 'Below Deck') {
         body.classList.add('below-deck');
+    } else if (location === 'Foundry') {
+        body.classList.add('foundry');
     }
 }
+
 
 
 // Function to update the location display
@@ -468,16 +658,18 @@ function addActionButton(actionName) {
     } else if (actionName === 'Upgrade storage') {
         const currentUpgradeCost = costs.storageUpgrade.baseWood + (gameState.storageUpgrades * costs.storageUpgrade.additionalCostPerUpgrade);
         costElement.textContent = `Cost: ${currentUpgradeCost} wood`;
-    } else if (actionName === 'Craft flag') { // Handle flag costs
+    } else if (actionName === 'Craft flag') {
         costElement.textContent = `Cost: ${costs.flag.wood} wood, ${costs.flag.rope} rope, ${costs.flag.fabric} fabric`;
-    } else if (actionName === 'Repair mast') { // Handle Repair Mast costs
+    } else if (actionName === 'Repair mast') {
         costElement.textContent = `Cost: ${costs.mast.wood} wood, ${costs.mast.rope} rope`;
-    } else if (actionName === 'Repair sails') { // Handle Repair Sails costs
+    } else if (actionName === 'Repair sails') {
         costElement.textContent = `Cost: ${costs.sails.fabric} fabric, ${costs.sails.wood} wood`;
-    } else if (actionName === 'Craft extractor') { // Handle Craft Extractor costs
+    } else if (actionName === 'Craft extractor') {
         costElement.textContent = `Cost: ${costs.extractor.wood} wood, ${costs.extractor.rope} rope, ${costs.extractor.fabric} fabric`;
-    } else if (actionName === 'Extract metal') { // "Extract metal" has no cost
-        // No cost display needed
+    } else if (actionName === 'Construct Foundry') {
+        costElement.textContent = `Cost: ${costs.foundry.wood} wood, ${costs.foundry.rope} rope, ${costs.foundry.metal} metal`;
+    } else if (actionName === 'Craft diving suit') {
+        costElement.textContent = `Cost: ${costs.divingSuit.fabric} fabric, ${costs.divingSuit.glass} glass, ${costs.divingSuit.rope} rope, ${costs.divingSuit.metal} metal`;
     }
 
     buttonContainer.appendChild(button);
@@ -594,6 +786,21 @@ function updateActionButtonCosts() {
     if (extractorButton) {
         extractorButton.textContent = `Cost: ${costs.extractor.wood} wood, ${costs.extractor.rope} rope, ${costs.extractor.fabric} fabric`;
     }
+
+    // Construct Foundry
+    const foundryButton = document.querySelector('[data-action="Construct Foundry"] .cost');
+    if (foundryButton) {
+    foundryButton.textContent = `Cost: ${costs.foundry.wood} wood, ${costs.foundry.rope} rope, ${costs.foundry.metal} metal`;
+    }
+
+    // Craft Diving Suit
+    const divingSuitButton = document.querySelector('[data-action="Craft diving suit"] .cost');
+    if (divingSuitButton) {
+      divingSuitButton.textContent = `Cost: ${costs.divingSuit.fabric} fabric, ${costs.divingSuit.glass} glass, ${costs.divingSuit.rope} rope, ${costs.divingSuit.metal} metal`;
+    }
+    
+
+
 
     // **No cost update needed for "Extract metal" since it has no cost**
 }
@@ -1638,16 +1845,6 @@ function updateNetsAndCrewDisplay() {
             `;
         }
 
-        // Display storage metal if applicable
-        if (gameState.storage.metal > 0) {
-            displayContent += `
-                <div class="section metal-info">
-                    <p><strong>Metal (${gameState.storage.metal}):</strong></p>
-                    <p>You have collected ${gameState.storage.metal} metal.</p>
-                </div>
-            `;
-        }
-
         displayElement.innerHTML = displayContent;
         displayElement.classList.add('visible');
     } else {
@@ -1737,6 +1934,12 @@ function wanderingTraderEvent() {
             required: { wood: 30 },
             reward: { food: 10 },
             message: 'You traded 30 wood for 10 food.'
+        },
+        {
+            text: 'Trade Wood for Glass (50 Wood → 1 Glass)',
+            required: { wood: 50 },
+            reward: { glass: 1 },
+            message: 'You traded 50 wood for 1 glass.'
         }
     ];
 
@@ -1769,7 +1972,10 @@ function wanderingTraderEvent() {
                 for (let resource in reward) {
                     gameState.storage[resource] += reward[resource];
                 }
-
+                if(reward.glass > 0 && !gameState.discoveredResources.includes('glass')) {
+                    gameState.discoveredResources.push('glass');
+                    addMessage('You traded for glass. Glass is now part of your resources.');
+                }
                 addMessage(message);
                 updateStorageDisplay();
             } else {
@@ -1782,7 +1988,7 @@ function wanderingTraderEvent() {
     tradeOptions.push({
         text: 'Decline',
         callback: () => {
-            addMessage('You politely decline the trader\'s offers.');
+            addMessage('You decline the trader\'s offers.');
         }
     });
 
@@ -1847,24 +2053,31 @@ function smokeSignalEvent() {
 function shipwreckFoundEvent() {
     setTimeout(() => showAlert('You come across a shipwreck floating in the sea. No survivors can be seen.', [
         {
-            text: 'Yes',
+            text: 'Investigate',
             callback: () => {
                 const foundWood = Math.floor(Math.random() * 10) + 5;
                 const foundRope = Math.floor(Math.random() * 5) + 2;
                 const foundFood = Math.floor(Math.random() * 5) + 1;
-                const foundFabric = Math.floor(Math.random() * 3); // Fabric might not always be found
+                const foundFabric = Math.floor(Math.random() * 3); 
+                const foundGlass = Math.floor(Math.random() * 2); 
+                
+                if(!gameState.discoveredResources.includes('glass') && foundGlass > 0) {
+                    gameState.discoveredResources.push('glass');
+                    addMessage('You find some glass among the wreckage. Glass is now part of your resources.');
+                }
 
                 gameState.storage.wood += foundWood;
                 gameState.storage.rope += foundRope;
                 gameState.storage.food += foundFood;
                 gameState.storage.fabric += foundFabric;
+                gameState.storage.glass += foundGlass;
 
                 addMessage(`You scavenge the shipwreck and collect ${foundWood} wood, ${foundRope} rope, ${foundFood} food${foundFabric > 0 ? `, and ${foundFabric} fabric` : ''}.`);
                 updateStorageDisplay();
             }
         },
         {
-            text: 'No',
+            text: 'Sail away',
             callback: () => {
                 addMessage('You decide to leave the shipwreck untouched.');
             }
@@ -1907,11 +2120,53 @@ function rogueWaveEvent() {
             text: 'Ignore',
             callback: () => {
                 addMessage('You choose to ignore the rogue wave, risking greater damage.');
-                // Potentially add more severe consequences here
+                
+                const ignoreChance = Math.random();
+
+                if (ignoreChance < 0.2) {
+                    // Catastrophic damage
+                    const lostWood = Math.floor(Math.random() * 15) + 10; 
+                    const lostRope = Math.floor(Math.random() * 5) + 5; 
+                    const crewLossChance = Math.random() < 0.5; 
+                    
+                    gameState.storage.wood = Math.max(0, gameState.storage.wood - lostWood);
+                    gameState.storage.rope = Math.max(0, gameState.storage.rope - lostRope);
+                    
+                    let msg = `The wave slams into your ship with full force. You lose ${lostWood} wood and ${lostRope} rope.`;
+                    
+                    if (crewLossChance && gameState.crew.length > 0) {
+                        const lostCrew = gameState.crew.pop();
+                        msg += ` In the chaos, ${lostCrew.name} is swept overboard.`;
+                        updateNetsAndCrewDisplay();
+                    }
+                    
+                    addMessage(msg);
+                    updateStorageDisplay();
+                    
+                } else if (ignoreChance < 0.6) {
+                    // Moderate damage
+                    const lostWood = Math.floor(Math.random() * 10) + 5;
+                    gameState.storage.wood = Math.max(0, gameState.storage.wood - lostWood);
+                    addMessage(`The wave crashes into the ship, splintering some of the hull. You lose ${lostWood} wood.`);
+                    updateStorageDisplay();
+                    
+                } else {
+                    // Minor or no damage
+                    const lostFood = Math.floor(Math.random() * 3);
+                    if (lostFood > 0 && gameState.storage.food > 0) {
+                        const actualLostFood = Math.min(lostFood, gameState.storage.food);
+                        gameState.storage.food -= actualLostFood;
+                        addMessage(`The wave washes away ${actualLostFood} food rations, but the ship remains intact.`);
+                    } else {
+                        addMessage('The wave passes under you, rumbling ominously, but causing no severe damage.');
+                    }
+                    updateStorageDisplay();
+                }
             }
         }
     ]), 2000);
 }
+
 
 function flotillaEncounterEvent() {
     setTimeout(() => showAlert('You come across a flotilla of linked ships. They appear suspicious of your strange vessel but offer assistance.', [
@@ -1990,6 +2245,17 @@ function craftExtractorAction() {
         if (gameState.location === 'Above Deck') {
             addActionButton('Extract metal');
         }
+
+        
+        setTimeout(() => {
+            addMessage('Constructing a Foundry could allow for the crafting of new equipment.', true);
+            
+            // Only add the button if we haven't constructed it yet
+            if (!gameState.foundryConstructed) {
+                addActionButton('Construct Foundry');
+            }
+        }, 10000);
+
     } else {
         addMessage(`You don't have enough resources to craft the extractor. Required: ${requiredWood} wood, ${requiredRope} rope, and ${requiredFabric} fabric.`);
     }
@@ -2027,6 +2293,104 @@ function extractMetalAction() {
         addMessage('Metal has been discovered and is now part of your resources.', true);
         updateInventoryDisplay();
         updateStorageDisplay();
+    }
+ 
+    
+}
+
+
+function constructFoundryAction() {
+    const requiredWood = costs.foundry.wood;
+    const requiredRope = costs.foundry.rope;
+    const requiredMetal = costs.foundry.metal;
+
+    // Check if player has enough resources
+    if (
+        gameState.storage.wood >= requiredWood &&
+        gameState.storage.rope >= requiredRope &&
+        gameState.storage.metal >= requiredMetal
+    ) {
+        // Deduct resources
+        gameState.storage.wood -= requiredWood;
+        gameState.storage.rope -= requiredRope;
+        gameState.storage.metal -= requiredMetal;
+
+        // Mark foundry as constructed in your game state
+        // (Add 'foundryConstructed' to gameState if you haven't already.)
+        gameState.foundryConstructed = true;
+
+        addMessage(`You build a sturdy Foundry using ${requiredWood} wood, ${requiredRope} rope, and ${requiredMetal} metal.`);
+        updateStorageDisplay();
+
+        // Remove the "Construct Foundry" button so it can’t be rebuilt
+        const actionsContainer = document.getElementById('actions');
+        const foundryButton = actionsContainer.querySelector('[data-action="Construct Foundry"]');
+        if (foundryButton) {
+            foundryButton.remove();
+        }
+
+        setTimeout(() => {
+            addMessage('With the Foundry operational, you can craft more advanced items. Head below decks.', true);
+            if (!gameState.discoveredLocations.includes('Foundry')) {
+                gameState.discoveredLocations.push('Foundry');
+            }
+            
+        }, 2000);
+
+    } else {
+        addMessage(`You don't have enough resources to build the Foundry. You need ${requiredWood} wood, ${requiredRope} rope, and ${requiredMetal} metal.`);
+    }
+
+    updateStorageDisplay();
+}
+
+function craftDivingSuitAction() {
+    const requiredFabric = costs.divingSuit.fabric;
+    const requiredGlass = costs.divingSuit.glass;
+    const requiredRope = costs.divingSuit.rope;
+    const requiredMetal = costs.divingSuit.metal;
+
+    if (
+        gameState.storage.fabric >= requiredFabric &&
+        gameState.storage.glass >= requiredGlass &&
+        gameState.storage.rope >= requiredRope &&
+        gameState.storage.metal >= requiredMetal
+    ) {
+        // Deduct resources
+        gameState.storage.fabric -= requiredFabric;
+        gameState.storage.glass -= requiredGlass;
+        gameState.storage.rope -= requiredRope;
+        gameState.storage.metal -= requiredMetal;
+        
+
+        // Mark the diving suit as crafted
+        gameState.divingSuitCrafted = true;
+
+        addMessage(
+          `You craft a diving suit using ${requiredFabric} fabric, ${requiredGlass} glass, ${requiredRope} rope, and ${requiredMetal} metal.`
+        );
+        updateStorageDisplay();
+
+        // Optionally remove the button so it can’t be crafted multiple times
+        const actionsContainer = document.getElementById('actions');
+        const suitButton = actionsContainer.querySelector('[data-action="Craft diving suit"]');
+        if (suitButton) {
+            suitButton.remove();
+        }
+
+        // If first time, show a one-time explanation
+        if (!gameState.divingExplanationShown) {
+            setTimeout(() => {
+                addMessage(
+                  'With the diving suit, you can explore the depths for precious Oil and Ether. ' +
+                  'Head back Above Deck and initiate a dive.',
+                  true
+                );
+                gameState.divingExplanationShown = true;
+            }, 2000);
+        }
+    } else {
+        addMessage('You don’t have enough resources for the diving suit.');
     }
 }
 
@@ -2226,6 +2590,8 @@ function switchLocation(targetLocation) {
         if (gameState.location === 'Above Deck') {
             addMessage('You ascend to the deck.');
             setTimeout(() => displayWeatherMessage(), 2000);
+        } else if (gameState.location === 'Foundry') {
+            addMessage('You head into the Foundry. The air is thick with heat from sparking furnaces.');
         } else {
             addMessage('You descend to the lower deck.');
         }
@@ -2242,7 +2608,9 @@ function switchLocation(targetLocation) {
 
         // Add actions based on the new location
         if (gameState.location === 'Above Deck') {
-            // Add actions for Above Deck
+            // ------------------------------
+            //       ABOVE DECK ACTIONS
+            // ------------------------------
             if (gameState.inventoryVisible) {
                 if (gameState.scavengeAttempts < gameState.maxScavengeAttempts) {
                     addActionButton('Scavenge debris');
@@ -2282,18 +2650,25 @@ function switchLocation(targetLocation) {
                 addActionButton('Repair sails');
             }
 
-            // **Add "Craft extractor" button if prompted and not yet crafted**
+            // Add "Craft extractor" button if prompted and not yet crafted
             if (gameState.extractorPrompted && !gameState.extractorCrafted) {
                 addActionButton('Craft extractor');
             }
 
-            // **Add "Extract metal" button if extractor is crafted**
+            // Add "Extract metal" button if extractor is crafted
             if (gameState.extractorCrafted) {
                 addActionButton('Extract metal');
             }
 
+            // Ensure "Craft Foundry" button is shown if prompted but not yet built
+            if (gameState.foundryPrompted && !gameState.foundryConstructed) {
+                addActionButton('Construct Foundry');
+            }
+
         } else if (gameState.location === 'Below Deck') {
-            // Add actions for Below Deck
+            // ------------------------------
+            //       BELOW DECK ACTIONS
+            // ------------------------------
             if (gameState.storageVisible) {
                 if (getTotalItems(gameState.inventory) > 0) {
                     addActionButton('Deposit items into storage');
@@ -2317,9 +2692,25 @@ function switchLocation(targetLocation) {
                 // Player can still climb back up if inventory is not yet visible
                 addActionButton('Climb the stairs');
             }
+
+        } else if (gameState.location === 'Foundry') {
+            // ------------------------------
+            //         FOUNDRY ACTIONS
+            // ------------------------------
+            // If the Foundry has been constructed, show advanced crafting
+            if (gameState.foundryConstructed) {
+                addMessage('The Foundry crackles with heat, ready for advanced crafting.');
+                // Example: "Craft diving suit"
+                addActionButton('Craft diving suit');
+                // Add other advanced items as needed
+            } else {
+                addMessage('The Foundry area is deserted—perhaps build it first?');
+            }
         }
     }
 }
+
+
 
 function capitalize(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
