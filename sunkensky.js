@@ -1,9 +1,9 @@
 window.devTools = {
     addResource: (resource, amount) => {
         if (gameState.storage[resource] !== undefined) {
-            gameState.storage[resource] += amount;
+            addToStorage(resource, amount);
         } else if (gameState.inventory[resource] !== undefined) {
-            gameState.inventory[resource] += amount;
+            addToInventory(resource, amount);
         }
         console.log(`Added ${amount} ${resource}`);
         updateInventoryDisplay();
@@ -160,7 +160,7 @@ window.devTools = {
 
 
 
-// Define a centralized costs object
+// Costs 
 const costs = {
     bucket: {
         baseWood: 10, // Base wood cost for the first bucket
@@ -225,7 +225,7 @@ let gameState = {
     weather: 'windy', // Current weather
     storage: { wood: 300, rope: 2, food: 4, bucket: 0, fabric: 0, metal: 0, glass: 0 }, // Initial storage amounts, including buckets
     maxStorage: 500, // Maximum storage capacity
-    inventory: { wood: 0, rope: 0, food: 0, fabric: 0, metal: 0 }, // Player's carry inventory
+    inventory: { wood: 0, rope: 0, food: 0, fabric: 0, metal: 0, glass: 0 }, // Player's carry inventory
     discoveredResources: ['wood', 'rope', 'food'], // Initial resources discovered
     baseMaxInventory: 15, // Base max items player can carry
     maxInventory: 15, // Current max inventory, increases with buckets
@@ -264,6 +264,8 @@ let gameState = {
 
 
     ],
+    alertQueue: [],
+    alertVisible: false,
     flagPrompted: false,
     flagCrafted: false,
     crew: [],
@@ -887,11 +889,20 @@ function stopHeadacheMessage() {
 
 // Function to show an alert
 function showAlert(message, buttons = []) {
+    // If an alert is already on screen, we queue up the new one
+    if (gameState.alertVisible) {  // <-- NEW check
+        gameState.alertQueue.push({ message, buttons });
+        return; 
+    }
+
+    // Otherwise, display it as normal
+    gameState.alertVisible = true; // <-- NEW line
+
     const alertModal = document.getElementById('alert-modal');
     const alertMessage = document.getElementById('alert-message');
     const alertButtonsContainer = document.getElementById('alert-buttons');
 
-    // Set the alert message using innerHTML to allow HTML formatting
+    // Set the alert message (allowing HTML formatting, if desired)
     alertMessage.innerHTML = message;
 
     // Clear existing buttons
@@ -920,6 +931,7 @@ function showAlert(message, buttons = []) {
     document.body.classList.add('no-scroll');
 }
 
+// OLD function, now updated to pull the next alert from the queue:
 function hideAlert() {
     const alertModal = document.getElementById('alert-modal');
     alertModal.classList.remove('visible');
@@ -927,7 +939,62 @@ function hideAlert() {
 
     // Allow background scroll
     document.body.classList.remove('no-scroll');
+
+    // We just closed an alert
+    gameState.alertVisible = false;  // <-- NEW line
+
+    // Check if there are more alerts in the queue
+    if (gameState.alertQueue.length > 0) {        
+        const nextAlert = gameState.alertQueue.shift();   // Get next pending alert
+        // Immediately display it:
+        showAlert(nextAlert.message, nextAlert.buttons);
+    }
 }
+
+// Add resource to storage
+function addToStorage(resource, amount) {
+    // 1) If this resource has never been discovered, discover it now
+    if (!gameState.discoveredResources.includes(resource) && amount > 0) {
+        gameState.discoveredResources.push(resource);
+    }
+
+    // 2) Calculate available space
+    let spaceLeft = gameState.maxStorage - getTotalItems(gameState.storage);
+    if (spaceLeft <= 0) {
+        return 0; // No space at all
+    }
+
+    // 3) Determine how many units we can actually add
+    const amountToAdd = Math.min(amount, spaceLeft);
+
+    // 4) Add to storage
+    gameState.storage[resource] += amountToAdd;
+
+    return amountToAdd; // Return how many were actually added
+}
+
+function addToInventory(resource, amount) {
+    // 1) Discover the resource if not discovered yet
+    if (!gameState.discoveredResources.includes(resource) && amount > 0) {
+        gameState.discoveredResources.push(resource);
+    }
+
+    // 2) Calculate available inventory space
+    let spaceLeft = gameState.maxInventory - getTotalItems(gameState.inventory);
+    if (spaceLeft <= 0) {
+        return 0; // No space at all
+    }
+
+    // 3) Determine how many we can actually add
+    const amountToAdd = Math.min(amount, spaceLeft);
+
+    // 4) Add it
+    gameState.inventory[resource] += amountToAdd;
+
+    return amountToAdd; // Return how many were actually added
+}
+
+
 
 
 // Function to start stamina regeneration
@@ -1940,6 +2007,24 @@ function wanderingTraderEvent() {
             required: { wood: 50 },
             reward: { glass: 1 },
             message: 'You traded 50 wood for 1 glass.'
+        },
+        {
+            text: 'Trade Rope for Glass (20 Rope → 1 Glass)',
+            required: { rope: 20 },
+            reward: { glass: 1 },
+            message: 'You traded 20 rope for 1 glass.'
+        },
+        {
+            text: 'Trade Fabric for Glass (5 Fabric → 1 Glass)',
+            required: { fabric: 5 },
+            reward: { glass: 1 },
+            message: 'You traded 5 fabric for 1 glass.'
+        },
+        {
+            text: 'Trade Metal for Glass (3 Metal → 1 Glass)',
+            required: { metal: 3 },
+            reward: { glass: 1 },
+            message: 'You traded 3 metal for 1 glass.'
         }
     ];
 
@@ -1963,19 +2048,27 @@ function wanderingTraderEvent() {
             }
 
             if (canTrade) {
-                // Deduct the required resources
+                // 1) Deduct the required (cost)
                 for (let resource in required) {
                     gameState.storage[resource] -= required[resource];
                 }
 
-                // Add the reward resources
+                // 2) Add the reward with addToStorage
                 for (let resource in reward) {
-                    gameState.storage[resource] += reward[resource];
+                    const amountToAdd = reward[resource];
+                    const actuallyAdded = addToStorage(resource, amountToAdd);
+
+                    if (actuallyAdded < amountToAdd) {
+                        addMessage(`Storage nearly full. Only ${actuallyAdded}/${amountToAdd} of ${resource} was stored.`);
+                    }
                 }
-                if(reward.glass > 0 && !gameState.discoveredResources.includes('glass')) {
+
+                // If the reward includes glass, discover it if not discovered
+                if (reward.glass > 0 && !gameState.discoveredResources.includes('glass')) {
                     gameState.discoveredResources.push('glass');
                     addMessage('You traded for glass. Glass is now part of your resources.');
                 }
+
                 addMessage(message);
                 updateStorageDisplay();
             } else {
@@ -1993,8 +2086,14 @@ function wanderingTraderEvent() {
     });
 
     // Show the trader's offer after a delay
-    setTimeout(() => showAlert('A small trading vessel pulls up next to your vessel. The trader offers you two trades:', tradeOptions), 2000); // 2 seconds delay
+    setTimeout(() => {
+        showAlert(
+            'A small trading vessel pulls up next to your vessel. The trader offers you two trades:',
+            tradeOptions
+        );
+    }, 2000); // 2 seconds delay
 }
+
 
 
 function smokeSignalEvent() {
@@ -2033,10 +2132,21 @@ function smokeSignalEvent() {
                     // Sinking ship with dead crew but some debris
                     const debrisWood = Math.floor(Math.random() * 5) + 1;
                     const debrisRope = Math.floor(Math.random() * 5) + 1;
-                    gameState.storage.wood += debrisWood;
-                    gameState.storage.rope += debrisRope;
-                    addMessage('You find a sinking ship with dead sailors but salvage some debris:');
-                    addMessage(`+${debrisWood} wood, +${debrisRope} rope.`);
+
+                    // Use addToStorage for partial deposit
+                    const actuallyWood = addToStorage('wood', debrisWood);
+                    const actuallyRope = addToStorage('rope', debrisRope);
+
+                    // Optionally note if not everything fit
+                    if (actuallyWood < debrisWood) {
+                        addMessage(`Storage is nearly full. Only ${actuallyWood}/${debrisWood} wood was stored.`);
+                    }
+                    if (actuallyRope < debrisRope) {
+                        addMessage(`Storage is nearly full. Only ${actuallyRope}/${debrisRope} rope was stored.`);
+                    }
+
+                    addMessage(`You find a sinking ship with dead sailors but salvage some debris: `
+                               + `${actuallyWood} wood and ${actuallyRope} rope.`);
                     updateStorageDisplay();
                 }
             }
@@ -2050,29 +2160,46 @@ function smokeSignalEvent() {
     ]), 2000);
 }
 
+
 function shipwreckFoundEvent() {
     setTimeout(() => showAlert('You come across a shipwreck floating in the sea. No survivors can be seen.', [
         {
             text: 'Investigate',
             callback: () => {
-                const foundWood = Math.floor(Math.random() * 10) + 5;
-                const foundRope = Math.floor(Math.random() * 5) + 2;
-                const foundFood = Math.floor(Math.random() * 5) + 1;
-                const foundFabric = Math.floor(Math.random() * 3); 
-                const foundGlass = Math.floor(Math.random() * 2); 
-                
-                if(!gameState.discoveredResources.includes('glass') && foundGlass > 0) {
+                const foundWood   = Math.floor(Math.random() * 10) + 5;
+                const foundRope   = Math.floor(Math.random() * 5) + 2;
+                const foundFood   = Math.floor(Math.random() * 5) + 1;
+                const foundFabric = Math.floor(Math.random() * 3);
+
+                // Fix scoping: define foundGlass with 'let'
+                let foundGlass;
+                if (!gameState.foundryConstructed) {
+                    // If foundry not built, drop 2–3 glass
+                    foundGlass = Math.floor(Math.random() * 2) + 2;
+                } else {
+                    // If foundry is built, drop 0–1 glass
+                    foundGlass = Math.floor(Math.random() * 2);
+                }
+
+                // Add items to storage using addToStorage
+                const actuallyWood   = addToStorage('wood',   foundWood);
+                const actuallyRope   = addToStorage('rope',   foundRope);
+                const actuallyFood   = addToStorage('food',   foundFood);
+                const actuallyFabric = addToStorage('fabric', foundFabric);
+                const actuallyGlass  = addToStorage('glass',  foundGlass);
+
+                // If glass is newly discovered, notify
+                if (!gameState.discoveredResources.includes('glass') && actuallyGlass > 0) {
                     gameState.discoveredResources.push('glass');
                     addMessage('You find some glass among the wreckage. Glass is now part of your resources.');
                 }
 
-                gameState.storage.wood += foundWood;
-                gameState.storage.rope += foundRope;
-                gameState.storage.food += foundFood;
-                gameState.storage.fabric += foundFabric;
-                gameState.storage.glass += foundGlass;
+                // Build a message showing how many items were actually stored
+                let message = `You scavenge the shipwreck and collect ${actuallyWood} wood, ${actuallyRope} rope, ${actuallyFood} food`;
+                if (actuallyFabric > 0) message += `, and ${actuallyFabric} fabric`;
+                message += '.';
 
-                addMessage(`You scavenge the shipwreck and collect ${foundWood} wood, ${foundRope} rope, ${foundFood} food${foundFabric > 0 ? `, and ${foundFabric} fabric` : ''}.`);
+                addMessage(message);
                 updateStorageDisplay();
             }
         },
@@ -2084,6 +2211,7 @@ function shipwreckFoundEvent() {
         }
     ]), 2000);
 }
+
 
 function rogueWaveEvent() {
     setTimeout(() => showAlert('A rogue wave suddenly surges over the bow, causing damage to your ship.', [
